@@ -177,6 +177,9 @@ class SemanticMatcher:
         normed = [norm_match(t) for t in texts]
         keys = [cache_key(t, self.model, self.dim) for t in normed]
         found = self.cache.get_many(list(dict.fromkeys(keys)))
+        empty_key = cache_key("", self.model, self.dim)
+        if empty_key in keys:                      # chuỗi rỗng: vector 0 (cosine 0), không gửi API
+            found[empty_key] = np.zeros(self.dim, np.float32)
         missing = list(dict.fromkeys(t for t, k in zip(normed, keys) if k not in found))
         if missing:
             if self.embedder is None:

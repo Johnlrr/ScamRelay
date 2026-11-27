@@ -1,0 +1,36 @@
+{
+ "case_id": "D-01",
+ "category": "VARIANT_NEW_TACTIC",
+ "incident_A": {
+  "text": "Người gọi xưng cán bộ chi cục thuế, nói tiệm phải xác thực hồ sơ hộ kinh doanh theo quy định mới, không thì khóa mã số thuế. Họ bắt chuyển 1.500.000đ phí xác minh, ghi nội dung \"cap nhat thue HKD\". Tôi đã chuyển.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-01-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-7731",
+   "amount_vnd": 1200000,
+   "transfer_note": "xac thuc ho so cap nhat thue HKD",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi nộp phí xác minh để cơ quan thuế khỏi khóa mã số thuế của tiệm",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-01-2",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-SHOP",
+   "amount_vnd": 450000,
+   "transfer_note": "tien hang phu tung",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền phụ tùng cho shop quen",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

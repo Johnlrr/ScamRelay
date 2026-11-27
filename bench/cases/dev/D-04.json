@@ -1,0 +1,36 @@
+{
+ "case_id": "D-04",
+ "category": "VARIANT_NEW_TACTIC",
+ "incident_A": {
+  "text": "Người xưng cán bộ thuế nói hồ sơ thuế khoán của tiệm bị sai, phải nộp phí điều chỉnh qua tài khoản cá nhân trong hôm nay. Tôi đã nộp 1 triệu.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-04-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-NEW-02",
+   "amount_vnd": 1000000,
+   "transfer_note": "phi dieu chinh ho so thue khoan",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi nộp phí điều chỉnh hồ sơ thuế khoán theo yêu cầu của cán bộ",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-04-2",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-TAX-GOV",
+   "amount_vnd": 1000000,
+   "transfer_note": "nop thue mon bai 2026",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi nộp thuế môn bài qua kênh chính thức",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

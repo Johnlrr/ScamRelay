@@ -22,7 +22,7 @@ from app.ai.llm_client import LLMError, get_llm
 from app.core._contract_draft import AnalyzeResult, Fact, IncidentAnalysis, IncidentAnalysisLLM
 from app.core.preprocess import norm_match
 
-PROMPT_VERSION = "incident_extract.v1"
+PROMPT_VERSION = "incident_extract.v2"
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 FALLBACK_PATH = Path(__file__).resolve().parents[2] / "data" / "fallback_tactics.json"
 TIMEOUT_S = 25

@@ -1,0 +1,36 @@
+{
+ "case_id": "D-11",
+ "category": "LEGIT_HARD",
+ "incident_A": {
+  "text": "Người xưng công an nói tôi liên quan vụ án rửa tiền, bắt chuyển tiền vào tài khoản tạm giữ để xác minh. Tôi đã chuyển 10 triệu.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "IMPERSONATE_AUTHORITY"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-11-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-NEW-03",
+   "amount_vnd": 10000000,
+   "transfer_note": "chuyen tien xac minh tai khoan tam giu",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi chuyển tiền vào tài khoản tạm giữ để công an xác minh",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-11-2",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-5520",
+   "amount_vnd": 2000000,
+   "transfer_note": "dat coc xe may",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi đặt cọc mua xe máy cũ",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

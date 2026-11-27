@@ -146,3 +146,11 @@ def test_init_matcher_without_key_has_no_embedder(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     m = semantic.init_matcher(cache=InMemoryEmbeddingCache())
     assert m.embedder is None and semantic.get_matcher() is m
+
+
+def test_empty_text_not_sent_to_api():
+    emb = FakeEmbedder()
+    m = SemanticMatcher(emb, dim=64)
+    out = run(m.embed_texts(["", "  !! ", "tien hang"]))
+    assert emb.calls == [["tien hang"]]
+    assert not out[0].any() and not out[1].any()

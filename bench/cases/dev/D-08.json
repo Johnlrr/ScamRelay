@@ -1,0 +1,25 @@
+{
+ "case_id": "D-08",
+ "category": "COACHED",
+ "incident_A": {
+  "text": "Họ yêu cầu hộ kinh doanh nộp phí xác minh thuế 5 triệu và dặn chọn mục đích mua hàng nếu ví hỏi.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-08-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-NEW-02",
+   "amount_vnd": 5000000,
+   "transfer_note": "phi xac minh thue ca nhan kinh doanh",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Người ta dặn chọn mua hàng; tôi đang nộp phí xác minh thuế",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

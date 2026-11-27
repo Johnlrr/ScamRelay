@@ -1,0 +1,36 @@
+{
+ "case_id": "D-02",
+ "category": "VARIANT_NEW_TACTIC",
+ "incident_A": {
+  "text": "Tin nhắn Zalo: hộ kinh doanh chưa định danh điện tử sẽ bị tạm dừng mã số thuế, liên hệ cán bộ để kích hoạt, phí 800.000đ. Tôi đã gửi tiền.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-02-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-NEW-01",
+   "amount_vnd": 800000,
+   "transfer_note": "phi kich hoat dinh danh MST",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi đóng phí kích hoạt định danh mã số thuế theo tin nhắn của cán bộ",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-02-2",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-TUAN",
+   "amount_vnd": 500000,
+   "transfer_note": "gui con tien an",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi gửi tiền ăn cho con trai",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

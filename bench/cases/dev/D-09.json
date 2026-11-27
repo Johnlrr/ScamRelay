@@ -1,0 +1,25 @@
+{
+ "case_id": "D-09",
+ "category": "EMPTY_NOTE",
+ "incident_A": {
+  "text": "Cán bộ thuế bảo tôi chuyển phí xác minh hộ kinh doanh và dặn để trống nội dung chuyển khoản.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-09-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-7731",
+   "amount_vnd": 1500000,
+   "transfer_note": "",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi chuyển phí xác minh hộ kinh doanh, để trống nội dung như được dặn",
+   "dev_outcome": "TACTIC_MATCH"
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "case_id": "D-10",
+ "category": "LEGIT_HARD",
+ "incident_A": {
+  "text": "Người xưng cán bộ thuế đòi phí kích hoạt mã số thuế điện tử cho hộ kinh doanh. Tôi đã chuyển 1 triệu.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-10-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-LANDLORD",
+   "amount_vnd": 4000000,
+   "transfer_note": "tien thue nha thang 12",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền thuê nhà tháng 12",
+   "dev_outcome": "BENIGN"
+  },
+  {
+   "tx_id": "D-10-2",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-5520",
+   "amount_vnd": 800000,
+   "transfer_note": "phi dich vu ke toan thang 11",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả phí dịch vụ kế toán cho cửa hàng",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

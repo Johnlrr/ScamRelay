@@ -1,0 +1,25 @@
+{
+ "case_id": "D-07",
+ "category": "COACHED",
+ "incident_A": {
+  "text": "Cán bộ thuế qua điện thoại bảo tôi đóng phí cập nhật hồ sơ hộ kinh doanh, và dặn nếu ví hỏi mục đích thì chọn trả tiền người quen.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-07-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-7731",
+   "amount_vnd": 1500000,
+   "transfer_note": "cap nhat ho so ho kinh doanh",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Người ta dặn chọn chuyển cho người quen; tôi đang đóng phí cập nhật hồ sơ cho cán bộ thuế",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

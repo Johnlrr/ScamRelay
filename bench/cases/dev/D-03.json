@@ -1,0 +1,36 @@
+{
+ "case_id": "D-03",
+ "category": "VARIANT_NEW_TACTIC",
+ "incident_A": {
+  "text": "Có người nói hộ kinh doanh phải đóng tiền chuẩn hóa dữ liệu thuế năm 2026, nếu không sẽ bị phạt. Tôi chuyển 2 triệu vào tài khoản cá nhân họ đưa.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-03-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-OLD-5520",
+   "amount_vnd": 2000000,
+   "transfer_note": "nop le phi chuan hoa du lieu thue 2026",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi nộp lệ phí chuẩn hóa dữ liệu thuế cho cán bộ",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-03-2",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-LANDLORD",
+   "amount_vnd": 5000000,
+   "transfer_note": "tien thue mat bang thang 12",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền thuê mặt bằng cho chủ nhà",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

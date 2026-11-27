@@ -1,0 +1,36 @@
+{
+ "case_id": "D-05",
+ "category": "RECOVERY",
+ "incident_A": {
+  "text": "Sau khi bị lừa, tôi được một trang tự xưng văn phòng luật hứa lấy lại tiền, yêu cầu đóng trước phí hồ sơ 2 triệu. Tôi đã đóng.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "RECOVERY_FEE_SCAM"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-05-1",
+   "from_wallet": "W-HUNG",
+   "to_account_id": "ACC-NEW-03",
+   "amount_vnd": 2000000,
+   "transfer_note": "phi ho so lay lai tien",
+   "label": "SCAM",
+   "is_variant": true,
+   "victim_belief_vi": "Tôi đóng phí hồ sơ để văn phòng luật lấy lại số tiền bị mất",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-05-2",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-SHOP",
+   "amount_vnd": 300000,
+   "transfer_note": "tien hang online",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền hàng mua online",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

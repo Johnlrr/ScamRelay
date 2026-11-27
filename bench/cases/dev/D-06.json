@@ -1,0 +1,37 @@
+{
+ "case_id": "D-06",
+ "category": "OTP",
+ "incident_A": {
+  "text": "Người tự xưng nhân viên hỗ trợ ví gọi cho mẹ tôi, nói tài khoản bị lỗi cần nâng cấp. Mẹ đã đọc mã OTP cho họ.",
+  "followups": [],
+  "protect_wallet_id": "W-LAN"
+ },
+ "expected_A": {
+  "mode": "COMPROMISE",
+  "tactic_family": "FAKE_SUPPORT_REMOTE_APP"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-06-1",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-NEW-01",
+   "amount_vnd": 3000000,
+   "transfer_note": "chuyen tien",
+   "label": "SCAM",
+   "is_variant": false,
+   "victim_belief_vi": "Người khác đang dùng tài khoản của mẹ để chuyển tiền",
+   "dev_outcome": "TACTIC_MATCH"
+  },
+  {
+   "tx_id": "D-06-2",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-EVN",
+   "amount_vnd": 600000,
+   "transfer_note": "tien dien thang 11",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền điện",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}

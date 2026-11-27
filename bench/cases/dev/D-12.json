@@ -1,0 +1,36 @@
+{
+ "case_id": "D-12",
+ "category": "LEGIT_HARD",
+ "incident_A": {
+  "text": "Cán bộ thuế giả gọi tiệm tạp hóa, yêu cầu nộp phí xác thực hồ sơ hộ kinh doanh. Tôi đã nộp 1,5 triệu.",
+  "followups": []
+ },
+ "expected_A": {
+  "mode": "MANIPULATION",
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION"
+ },
+ "transactions_B": [
+  {
+   "tx_id": "D-12-1",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-SHOP",
+   "amount_vnd": 900000,
+   "transfer_note": "cap nhat phan mem ban hang",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả tiền gia hạn phần mềm bán hàng",
+   "dev_outcome": "BENIGN"
+  },
+  {
+   "tx_id": "D-12-2",
+   "from_wallet": "W-LAN",
+   "to_account_id": "ACC-SHOP",
+   "amount_vnd": 300000,
+   "transfer_note": "hoan tien don hang loi",
+   "label": "LEGIT",
+   "is_variant": false,
+   "victim_belief_vi": "Tôi trả lại shop tiền đơn hàng đã được đổi",
+   "dev_outcome": "BENIGN"
+  }
+ ]
+}
