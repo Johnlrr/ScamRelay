@@ -23,12 +23,11 @@ VALID = {
     "purpose_question": {
         "question_vi": "Khoản chuyển này dùng để làm gì?",
         "options": [
-            {"role": "ALLOW_PURCHASE", "label_vi": "Mua hàng / trả dịch vụ"},
-            {"role": "ALLOW_KNOWN_PERSON", "label_vi": "Trả tiền người quen"},
-            {"role": "SCAM_PURPOSE", "label_vi": "Đóng phí xác minh / cập nhật tài khoản thuế hộ kinh doanh"},
-            {"role": "OTHER", "label_vi": "Mục đích khác"},
+            {"label_vi": "Mua hàng, trả tiền dịch vụ", "outcome": "BENIGN"},
+            {"label_vi": "Trả tiền cho người thân, người quen", "outcome": "BENIGN"},
+            {"label_vi": "Đóng phí để cơ quan hoặc tổ chức xử lý hồ sơ, tài khoản", "outcome": "TACTIC_MATCH"},
         ],
-        "scam_alert_vi": "Cơ quan thuế không yêu cầu chuyển phí vào tài khoản cá nhân để xác minh hộ kinh doanh.",
+        "tactic_alert_vi": "Cơ quan thuế không yêu cầu chuyển phí vào tài khoản cá nhân để xác minh hộ kinh doanh.",
     },
     "variants": [
         {"transfer_note": f"xac thuc ho so thue HKD lan {i}", "amount_vnd": 1_000_000 + i * 100_000,
@@ -53,6 +52,7 @@ def errors_of(d):
 def test_valid_draft_passes():
     r = validate_llm_output(VALID)
     assert r.ok, r.errors
+    assert r.warnings == []
     assert r.sanitized_draft.behavior_hints == []
 
 
@@ -216,33 +216,108 @@ def test_v6_label_banned_word():
     assert "V6" in errors_of(d)
 
 
+def test_v6_label_up_to_100_chars():
+    d = draft()
+    d["purpose_question"]["options"][0]["label_vi"] = "a" * 100
+    assert validate_llm_output(d).ok
+    d["purpose_question"]["options"][0]["label_vi"] = "a" * 101
+    assert "V6" in errors_of(d)
+
+
+def test_v6_label_without_contact():
+    d = draft()
+    d["purpose_question"]["options"][0]["label_vi"] = "Trả tiền theo hướng dẫn tại thue-hkd.vn"
+    assert "V6" in errors_of(d)
+
+
 def test_v6_lua_chon_is_not_banned():
     d = draft()
     d["purpose_question"]["question_vi"] = "Vui lòng lựa chọn mục đích khoản chuyển"
     assert validate_llm_output(d).ok
 
 
-def test_v6_roles_exactly_once():
+@pytest.mark.parametrize(
+    "outcomes",
+    [
+        ["BENIGN", "BENIGN", "BENIGN"],
+        ["BENIGN", "TACTIC_MATCH", "TACTIC_MATCH"],
+        ["BENIGN", "TACTIC_MATCH"],
+        ["BENIGN", "BENIGN", "TACTIC_MATCH", "BENIGN"],
+    ],
+)
+def test_v6_exactly_two_benign_one_tactic(outcomes):
     d = draft()
-    d["purpose_question"]["options"][3]["role"] = "ALLOW_PURCHASE"
-    assert "V6" in errors_of(d)
-    d = draft()
-    d["purpose_question"]["options"].pop()
+    d["purpose_question"]["options"] = [{"label_vi": f"Phương án {i}", "outcome": o} for i, o in enumerate(outcomes)]
     assert "V6" in errors_of(d)
 
 
-def test_v6_scam_alert_may_mention_scam():
+@pytest.mark.parametrize("outcome", ["UNCLEAR", "SCAM_PURPOSE", "ALLOW"])
+def test_v1_llm_cannot_write_unclear_or_other_outcomes(outcome):
+    # UNCLEAR ("Mục đích khác") chỉ do server thêm (assembler)
     d = draft()
-    d["purpose_question"]["scam_alert_vi"] = "Đây là thủ đoạn lừa đảo giả danh cán bộ thuế."
+    d["purpose_question"]["options"][0]["outcome"] = outcome
+    assert "V1" in errors_of(d)
+
+
+def test_v1_old_role_field_rejected():
+    d = draft()
+    d["purpose_question"]["options"][0]["role"] = "ALLOW_PURCHASE"
+    assert "V1" in errors_of(d)
+
+
+def test_v6_option_order_free():
+    d = draft()
+    d["purpose_question"]["options"].reverse()
     assert validate_llm_output(d).ok
 
 
-# --- V7
-def test_v7_alert_without_phone_or_url():
+def test_v6b_tactic_label_quoting_anchor_is_warning_only():
     d = draft()
-    d["purpose_question"]["scam_alert_vi"] = "Gọi 0912345678 để được hỗ trợ"
+    d["purpose_question"]["options"][2]["label_vi"] = "Cập nhật thuế hộ kinh doanh 2026"
+    r = validate_llm_output(d)
+    assert r.ok, r.errors
+    assert any(w.startswith("V6b") for w in r.warnings)
+
+
+def test_v6b_matches_after_abbreviation_expansion():
+    d = draft()
+    d["purpose_question"]["options"][2]["label_vi"] = "Phí kích hoạt MST điện tử"
+    r = validate_llm_output(d)
+    assert r.ok and any(w.startswith("V6b") for w in r.warnings)
+
+
+def test_v6b_not_triggered_by_benign_label():
+    d = draft()
+    d["purpose_question"]["options"][0]["label_vi"] = "Cập nhật thuế hộ kinh doanh 2026"
+    r = validate_llm_output(d)
+    assert r.ok and not any(w.startswith("V6b") for w in r.warnings)
+
+
+def test_v7_tactic_alert_may_mention_scam():
+    d = draft()
+    d["purpose_question"]["tactic_alert_vi"] = "Đây là thủ đoạn lừa đảo giả danh cán bộ thuế."
+    assert validate_llm_output(d).ok
+
+
+def test_v7_tactic_alert_may_mention_amount():
+    d = draft()
+    d["purpose_question"]["tactic_alert_vi"] = "Kẻ gian thường đòi phí 1.500.000đ để 'mở khóa' mã số thuế."
+    assert validate_llm_output(d).ok
+
+
+def test_v7_tactic_alert_length():
+    d = draft()
+    d["purpose_question"]["tactic_alert_vi"] = "x" * 241
     assert "V7" in errors_of(d)
-    d["purpose_question"]["scam_alert_vi"] = "Xem www.thue-hotro.com"
+    d["purpose_question"]["tactic_alert_vi"] = "   "
+    assert "V7" in errors_of(d)
+
+
+# --- V7
+@pytest.mark.parametrize("alert", ["Gọi 0912345678 để được hỗ trợ", "Xem www.thue-hotro.com", "Gửi hotro@thue.vn"])
+def test_v7_alert_without_phone_url_email(alert):
+    d = draft()
+    d["purpose_question"]["tactic_alert_vi"] = alert
     assert "V7" in errors_of(d)
 
 
@@ -257,6 +332,69 @@ def test_v8_authority_fields_stripped_not_applied():
     for key in ("threshold", "stage", "action", "approved_by", "lifecycle"):
         assert f'"{key}"' not in dumped
     assert sum("V8" in w for w in r.warnings) == 6
+
+
+@pytest.mark.parametrize(
+    "key, value",
+    [
+        ("approvals", [{"by": "llm"}]), ("version", 9), ("guard_conditions", []), ("normalize", []),
+        ("anti_coaching_notice_vi", "Chọn phương án 1"), ("benign_regression", {"flagged": 0}),
+        ("variant_coverage", {"triggered": 8}), ("edited_by_human", True), ("ttl_hours", 72),
+        ("corroboration_count", 5), ("rule_id", "RL-X"), ("source_incident_id", "INC-1"),
+        ("target_scope", "TACTIC_PATTERN"),
+    ],
+)
+def test_v8_every_authority_key_stripped(key, value):
+    r = validate_llm_output(draft(**{key: value}))
+    assert r.ok, r.errors
+    assert any("V8" in w and key in w for w in r.warnings)
+
+
+def test_v8_option_id_stripped():
+    # LLM không đặt được option_id (id do assembler gán o1..o4)
+    d = draft()
+    d["purpose_question"]["options"][2]["id"] = "o1"
+    r = validate_llm_output(d)
+    assert r.ok and any("V8" in w for w in r.warnings)
+
+
+def test_v5_empty_list_treated_as_absent():
+    # Gemini đôi khi trả [] cho trường không dùng; không phải lỗi, và bản sạch đặt về None
+    d = draft()
+    d["conditions"][0]["value_str_list"] = []
+    d["conditions"][1]["anchor_phrases"] = []
+    r = validate_llm_output(d)
+    assert r.ok, r.errors
+    assert r.sanitized_draft.conditions[0].value_str_list is None
+    assert r.sanitized_draft.conditions[1].anchor_phrases is None
+
+
+# --- trường mới v2
+def test_v2_new_fields_and_ops():
+    d = draft()
+    d["conditions"].append({"field": "partner_risk_score", "op": "GTE", "value_int": 40})
+    d["conditions"].append({"field": "account_compromise_flag", "op": "EQ", "value_bool": True})
+    r = validate_llm_output(d)
+    assert r.ok, r.errors
+    assert {c.field for c in r.sanitized_draft.behavior_hints} == {"partner_risk_score", "account_compromise_flag"}
+
+
+def test_v2_compromise_flag_only_eq():
+    d = draft()
+    d["conditions"].append({"field": "account_compromise_flag", "op": "LTE", "value_int": 1})
+    assert "V2" in errors_of(d)
+
+
+def test_v5_partner_risk_score_range():
+    d = draft()
+    d["conditions"].append({"field": "partner_risk_score", "op": "GTE", "value_int": 101})
+    assert "V5" in errors_of(d)
+
+
+def test_v4_duplicates_detected_after_abbreviation_expansion():
+    d = draft()
+    d["conditions"][0]["anchor_phrases"] = ["phi xac minh hkd", "phí xác minh hộ kinh doanh", "cap nhat thue"]
+    assert "V4" in errors_of(d)
 
 
 # --- biến thể
