@@ -1,0 +1,1600 @@
+{
+ "version": 1,
+ "note": "Sinh bởi bench/gen_benign.py (seed cố định). Không sửa tay; sửa generator rồi chạy lại.",
+ "counts": {
+  "template": 240,
+  "trap": 25
+ },
+ "samples": [
+  {
+   "transfer_note": "trả tiền thuê nhà tháng 12",
+   "amount_vnd": 4500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền thuê mặt bằng tháng 11",
+   "amount_vnd": 6000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền thuê xe du lịch",
+   "amount_vnd": 2500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí gia hạn hợp đồng thuê",
+   "amount_vnd": 1000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền thuê phòng trọ quý 4",
+   "amount_vnd": 7500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "thuê kho chứa hàng tháng 12",
+   "amount_vnd": 3000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền thuê đất trồng rau",
+   "amount_vnd": 2000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "thue nha T12",
+   "amount_vnd": 4000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "nộp hộ thuế môn bài cho chị Mai",
+   "amount_vnd": 1000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí dịch vụ kế toán hộ kinh doanh",
+   "amount_vnd": 800000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí làm báo cáo thuế cho cửa hàng",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "hoàn tiền đơn hàng lỗi",
+   "amount_vnd": 350000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "cập nhật phần mềm bán hàng",
+   "amount_vnd": 900000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí gia hạn phần mềm quản lý cửa hàng",
+   "amount_vnd": 1500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí công chứng hợp đồng",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền in hóa đơn cho cửa hàng",
+   "amount_vnd": 400000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "đóng học phí lớp kế toán thuế",
+   "amount_vnd": 2000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí duy trì website bán hàng",
+   "amount_vnd": 1000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "tiền làm hồ sơ vay vốn ngân hàng",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí đăng ký mã vạch sản phẩm",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "xác nhận đơn hàng sỉ đợt 2",
+   "amount_vnd": 5000000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "phí kích hoạt sim mới",
+   "amount_vnd": 250000,
+   "is_verified_biller": false,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "nộp thuế môn bài quý 4",
+   "amount_vnd": 300000,
+   "is_verified_biller": true,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "nộp thuế thu nhập cá nhân năm 2026",
+   "amount_vnd": 2000000,
+   "is_verified_biller": true,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "thanh toán tiền điện tháng 11",
+   "amount_vnd": 650000,
+   "is_verified_biller": true,
+   "source": "trap"
+  },
+  {
+   "transfer_note": "chuyển tien nhà T1",
+   "amount_vnd": 3550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien phong tro thang 12 2025",
+   "amount_vnd": 2850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền hàng nước mắm",
+   "amount_vnd": 1800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toan don banh keo",
+   "amount_vnd": 2250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhap hang banh keo dot 2",
+   "amount_vnd": 1400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Hoa",
+   "amount_vnd": 4150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí vẽ tháng 6",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong hoc phi cho be hai",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chia tiền ăn nướng",
+   "amount_vnd": 540000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien an lien hoan hom qua",
+   "amount_vnd": 340000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop tien nuong nhom",
+   "amount_vnd": 270000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra no quynh",
+   "amount_vnd": 2000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra nam tien muon thang truoc",
+   "amount_vnd": 750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gửi lại Hùng tien hôm trước",
+   "amount_vnd": 1850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung cuoi tuan",
+   "amount_vnd": 700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng sinh nhật Tuấn",
+   "amount_vnd": 560000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung tan gia anh bao",
+   "amount_vnd": 1150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dat coc tiec cuoi",
+   "amount_vnd": 9050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "cọc tiền căn hộ",
+   "amount_vnd": 700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thang 9 gui chu nha",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nuoc thang 2",
+   "amount_vnd": 370000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện nước phòng 3",
+   "amount_vnd": 1150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện thoại trả sau tháng 5",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien sua xe",
+   "amount_vnd": 600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien xang di giao hang",
+   "amount_vnd": 210000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gui me tien cho",
+   "amount_vnd": 1500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ tháng 12",
+   "amount_vnd": 1650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyen tien cho con di hoc",
+   "amount_vnd": 2400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien thuoc cho quynh",
+   "amount_vnd": 1500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "phí ship đơn hàng",
+   "amount_vnd": 70000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "vé xe về quê",
+   "amount_vnd": 480000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong quy lop",
+   "amount_vnd": 310000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien di du lich nha trang",
+   "amount_vnd": 1400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "lương tháng 4 cho Trang",
+   "amount_vnd": 8850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien dai ly sua",
+   "amount_vnd": 14550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua mì gói online",
+   "amount_vnd": 1750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien cong tho sua nha",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Tuấn",
+   "amount_vnd": 1300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop von ban hang voi tuan",
+   "amount_vnd": 5000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nhà tháng 1",
+   "amount_vnd": 7850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyen tien nha t5",
+   "amount_vnd": 2700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien phòng trọ T 6/2025",
+   "amount_vnd": 1400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien hang dien thoai",
+   "amount_vnd": 1050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toán đơn bột giặt",
+   "amount_vnd": 2000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhập hàng dầu ăn đợt 4",
+   "amount_vnd": 8850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Linh",
+   "amount_vnd": 3450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "hoc phi tin hoc thang 12",
+   "amount_vnd": 2500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "đóng học phí cho bé Dũng",
+   "amount_vnd": 4250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chia tien an toi",
+   "amount_vnd": 480000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "góp tiền lẩu nhóm",
+   "amount_vnd": 260000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra no mai",
+   "amount_vnd": 3150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra hai tien muon thang truoc",
+   "amount_vnd": 2450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gửi lại Dũng tiền hôm trước",
+   "amount_vnd": 1300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng cưới Phương",
+   "amount_vnd": 850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat mai",
+   "amount_vnd": 640000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Hải",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dat coc phong tro",
+   "amount_vnd": 9050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "coc tien tour da lat",
+   "amount_vnd": 9050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thang 11 gui chu nha",
+   "amount_vnd": 1300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nuoc thang 1",
+   "amount_vnd": 100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện nước phòng 4",
+   "amount_vnd": 350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền gas tháng 11",
+   "amount_vnd": 270000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ tháng 2",
+   "amount_vnd": 3000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien thuoc cho minh",
+   "amount_vnd": 150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền đi du lịch Phú Quốc",
+   "amount_vnd": 4350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 5 cho hoa",
+   "amount_vnd": 8650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien dai ly vai",
+   "amount_vnd": 14350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Hoa",
+   "amount_vnd": 450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "góp vốn bán hàng với Mai",
+   "amount_vnd": 15800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nha t 2",
+   "amount_vnd": 6350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyển tiền nhà T10",
+   "amount_vnd": 1800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien phòng trọ T 2/2026",
+   "amount_vnd": 1900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien hang gao",
+   "amount_vnd": 1050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tt don bot giat",
+   "amount_vnd": 3000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhập hàng áo khoác đợt 5",
+   "amount_vnd": 11350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien hang cho quynh",
+   "amount_vnd": 3600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "hoc phi lai xe t 12",
+   "amount_vnd": 1700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong hoc phi cho be trang",
+   "amount_vnd": 4900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chia tien an trua",
+   "amount_vnd": 290000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền ăn tối hôm qua",
+   "amount_vnd": 100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả nợ Tuấn",
+   "amount_vnd": 4400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả Dũng tien mượn T trước",
+   "amount_vnd": 1100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gui lai bao tien hom truoc",
+   "amount_vnd": 1450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung cuoi nam",
+   "amount_vnd": 2000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat dung",
+   "amount_vnd": 820000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Mai",
+   "amount_vnd": 550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "cọc tiền phòng trọ",
+   "amount_vnd": 900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện tháng 7 gửi chủ nhà",
+   "amount_vnd": 750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nước tháng 3",
+   "amount_vnd": 390000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện nước phòng 1",
+   "amount_vnd": 600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien rac thang 4",
+   "amount_vnd": 110000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ tháng 9",
+   "amount_vnd": 4900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền thuốc cho Linh",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien di du lich vung tau",
+   "amount_vnd": 5700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 12 cho lan",
+   "amount_vnd": 5350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien dai ly nuoc mam",
+   "amount_vnd": 12850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua vai online",
+   "amount_vnd": 1150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien may dong phuc cho lan",
+   "amount_vnd": 300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop von ban hang voi hoa",
+   "amount_vnd": 18750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "ck nhà T3",
+   "amount_vnd": 1600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền phòng trọ T 10/2026",
+   "amount_vnd": 1250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền hàng dầu ăn",
+   "amount_vnd": 250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toán đơn bia",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhập hàng điện thoại đợt 8",
+   "amount_vnd": 5500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Hải",
+   "amount_vnd": 3000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "hoc phi toan thang 8",
+   "amount_vnd": 1400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong hoc phi cho be bao",
+   "amount_vnd": 4100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien an trua hom qua",
+   "amount_vnd": 370000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả nợ Hoa",
+   "amount_vnd": 2600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra dung tien muon thang truoc",
+   "amount_vnd": 2850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gui lai lan tien hom truoc",
+   "amount_vnd": 650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng cưới Bảo",
+   "amount_vnd": 1700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat nam",
+   "amount_vnd": 360000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thang 1 gui chu nha",
+   "amount_vnd": 650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien điện nước phòng 2",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thoai tra sau t 9",
+   "amount_vnd": 520000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ T 3",
+   "amount_vnd": 2550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền thuốc cho Nam",
+   "amount_vnd": 600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 9 cho nam",
+   "amount_vnd": 3750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien dai ly mi goi",
+   "amount_vnd": 3350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua thuoc la online",
+   "amount_vnd": 1350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Nam",
+   "amount_vnd": 950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop von ban hang voi lan",
+   "amount_vnd": 14050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nhà tháng 4",
+   "amount_vnd": 6150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "ck nha t8",
+   "amount_vnd": 6250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền phòng trọ tháng 7/2026",
+   "amount_vnd": 3150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toan don trung",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhap hang bot giat dot 4",
+   "amount_vnd": 3650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí vẽ tháng 8",
+   "amount_vnd": 2050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "đóng học phí cho bé Tuấn",
+   "amount_vnd": 4150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop tien sinh nhat nhom",
+   "amount_vnd": 100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả nợ Dũng",
+   "amount_vnd": 200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả Linh tien mượn tháng trước",
+   "amount_vnd": 2400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gửi lại Quỳnh tien hôm trước",
+   "amount_vnd": 1350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng cưới Dũng",
+   "amount_vnd": 600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Tuấn",
+   "amount_vnd": 1550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dat coc ban ghe",
+   "amount_vnd": 1000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien điện T 4 gửi chủ nhà",
+   "amount_vnd": 300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nuoc thang 4",
+   "amount_vnd": 190000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien nuoc phong 5",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền gas tháng 10",
+   "amount_vnd": 360000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "bieu bo me t 7",
+   "amount_vnd": 4450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền đi du lịch Đà Lạt",
+   "amount_vnd": 1900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "lương tháng 10 cho Tuấn",
+   "amount_vnd": 5500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tien đại lý bánh kẹo",
+   "amount_vnd": 12750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua dau an online",
+   "amount_vnd": 1600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Hải",
+   "amount_vnd": 1200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "góp vốn bán hàng với Dũng",
+   "amount_vnd": 6950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nhà tháng 5",
+   "amount_vnd": 6200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyen tien nha t3",
+   "amount_vnd": 7550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền phòng trọ tháng 10/2025",
+   "amount_vnd": 2100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toán đơn gạo",
+   "amount_vnd": 350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhap hang phu tung xe dot 6",
+   "amount_vnd": 1850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Bảo",
+   "amount_vnd": 2650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí đàn tháng 11",
+   "amount_vnd": 1500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop tien trua nhom",
+   "amount_vnd": 210000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra no lan",
+   "amount_vnd": 350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gửi lại Hoa tiền hôm trước",
+   "amount_vnd": 200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng cưới Minh",
+   "amount_vnd": 1850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat hung",
+   "amount_vnd": 360000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Hoa",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dat coc lo hang",
+   "amount_vnd": 1550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "coc tien ban ghe",
+   "amount_vnd": 3600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thang 3 gui chu nha",
+   "amount_vnd": 950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nước tháng 11",
+   "amount_vnd": 280000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền gửi xe tháng 8",
+   "amount_vnd": 520000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "bieu bo me thang 3",
+   "amount_vnd": 4800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien thuoc cho trang",
+   "amount_vnd": 300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 6 cho dung",
+   "amount_vnd": 4200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua bot giat online",
+   "amount_vnd": 400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "góp vốn bán hàng với Quỳnh",
+   "amount_vnd": 15300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nhà tháng 12",
+   "amount_vnd": 1850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "ck nhà T12",
+   "amount_vnd": 6750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien phong tro thang 2 2026",
+   "amount_vnd": 4000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toan don nuoc mam",
+   "amount_vnd": 2850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhập hàng dầu ăn đợt 9",
+   "amount_vnd": 7600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Lan",
+   "amount_vnd": 4650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí vẽ tháng 10",
+   "amount_vnd": 1550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong hoc phi cho be linh",
+   "amount_vnd": 2350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chia tiền ăn sinh nhật",
+   "amount_vnd": 560000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien an lau hom qua",
+   "amount_vnd": 280000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gop tien toi nhom",
+   "amount_vnd": 270000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra no bao",
+   "amount_vnd": 4250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gửi lại Tuấn tiền hôm trước",
+   "amount_vnd": 300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng sinh nhật Bảo",
+   "amount_vnd": 340000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Nam",
+   "amount_vnd": 1600000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "coc tien lo hang",
+   "amount_vnd": 9650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien dien thang 4 gui chu nha",
+   "amount_vnd": 550000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ tháng 4",
+   "amount_vnd": 1800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "ck cho con di hoc",
+   "amount_vnd": 3950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "lương tháng 2 cho Hoa",
+   "amount_vnd": 3500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tien dai ly nuoc ngot",
+   "amount_vnd": 1800000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua nước mắm online",
+   "amount_vnd": 1700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nha thang 3",
+   "amount_vnd": 6200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyển tiền nhà T7",
+   "amount_vnd": 6150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tt đơn mì gói",
+   "amount_vnd": 1950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhap hang giay dot 9",
+   "amount_vnd": 8200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Hùng",
+   "amount_vnd": 4050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "dong hoc phi cho be minh",
+   "amount_vnd": 4700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả Minh tiền mượn tháng trước",
+   "amount_vnd": 900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "gui lai trang tien hom truoc",
+   "amount_vnd": 1150000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat hai",
+   "amount_vnd": 670000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung tan gia anh linh",
+   "amount_vnd": 1300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền điện tháng 2 gửi chủ nhà",
+   "amount_vnd": 650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền nước tháng 10",
+   "amount_vnd": 380000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien điện nước phòng 7",
+   "amount_vnd": 900000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền gửi xe tháng 10",
+   "amount_vnd": 290000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "biếu bố mẹ tháng 11",
+   "amount_vnd": 3400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền thuốc cho Mai",
+   "amount_vnd": 850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien di du lich sapa",
+   "amount_vnd": 5650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 11 cho lan",
+   "amount_vnd": 3100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Trang",
+   "amount_vnd": 1450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chuyển tien nhà T11",
+   "amount_vnd": 5000000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toan don tai nghe",
+   "amount_vnd": 1050000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhap hang phu tung xe dot 4",
+   "amount_vnd": 3950000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí toán tháng 5",
+   "amount_vnd": 2700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "chia tiền ăn lẩu",
+   "amount_vnd": 390000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien an nuong hom qua",
+   "amount_vnd": 100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra no hung",
+   "amount_vnd": 650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tra tuan tien muon thang truoc",
+   "amount_vnd": 2750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung cuoi lan",
+   "amount_vnd": 750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat phuong",
+   "amount_vnd": 610000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mừng tân gia anh Lan",
+   "amount_vnd": 1750000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "đặt cọc tour Đà Lạt",
+   "amount_vnd": 6500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nuoc thang 6",
+   "amount_vnd": 300000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền gửi xe T 7",
+   "amount_vnd": 480000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "luong thang 2 cho phuong",
+   "amount_vnd": 7650000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mua phu tung xe online",
+   "amount_vnd": 400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tiền may đồng phục cho Minh",
+   "amount_vnd": 400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "góp vốn bán hàng với Hùng",
+   "amount_vnd": 18450000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien nha thang 6",
+   "amount_vnd": 5700000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien phong tro thang 10 2026",
+   "amount_vnd": 2200000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "tien hang sua",
+   "amount_vnd": 500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "thanh toan don rau cu",
+   "amount_vnd": 1250000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "nhập hàng bia đợt 7",
+   "amount_vnd": 5100000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "trả tiền hàng cho Mai",
+   "amount_vnd": 5400000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "học phí toán tháng 6",
+   "amount_vnd": 1850000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "đóng học phí cho bé Hoa",
+   "amount_vnd": 2500000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung cuoi trang",
+   "amount_vnd": 1350000,
+   "is_verified_biller": false,
+   "source": "template"
+  },
+  {
+   "transfer_note": "mung sinh nhat trang",
+   "amount_vnd": 430000,
+   "is_verified_biller": false,
+   "source": "template"
+  }
+ ]
+}
