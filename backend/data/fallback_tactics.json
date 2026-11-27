@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "note": "keywords + summary_vi: người viết, dùng cho classifier dự phòng của analyze (SPEC §7.1.4). compile_output: CHỈ là output LLM THẬT do bench/save_fallback.py ghi (SPEC D7, AGENTS §6) — không sửa tay.",
+  "tactics": {
+    "FAKE_HKD_TAX_VERIFICATION": {
+      "summary_vi": "Giả danh cơ quan thuế, yêu cầu hộ kinh doanh chuyển phí để xác minh hoặc cập nhật hồ sơ thuế.",
+      "keywords": ["ho kinh doanh", "ma so thue", "can bo thue", "chi cuc thue", "cuc thue", "xac minh ho so", "cap nhat ho so thue", "kich hoat ma so thue", "khoa ma so thue", "thue dien tu"],
+      "compile_output": null,
+      "compile_meta": null
+    },
+    "RECOVERY_FEE_SCAM": {
+      "summary_vi": "Hứa giúp lấy lại tiền đã bị chiếm đoạt, rồi đòi nạn nhân chuyển phí dịch vụ hoặc phí hồ sơ.",
+      "keywords": ["lay lai tien", "thu hoi tien", "hoan lai tien bi lua", "phi thu hoi", "luat su ho tro", "dich vu thu hoi", "lay lai so tien"],
+      "compile_output": null,
+      "compile_meta": null
+    },
+    "IMPERSONATE_AUTHORITY": {
+      "summary_vi": "Giả danh công an, viện kiểm sát hoặc tòa án, đe dọa liên quan vụ án và yêu cầu chuyển tiền để xác minh.",
+      "keywords": ["cong an", "vien kiem sat", "toa an", "vu an", "lenh bat", "dieu tra", "rua tien", "tam giu tien", "tai khoan tam giu"],
+      "compile_output": null,
+      "compile_meta": null
+    },
+    "FAKE_SUPPORT_REMOTE_APP": {
+      "summary_vi": "Giả nhân viên hỗ trợ của ngân hàng hoặc ví, hướng dẫn cài ứng dụng lạ để điều khiển máy và chiếm tài khoản.",
+      "keywords": ["nhan vien ho tro", "cai ung dung", "tai ung dung", "cai app", "dieu khien tu xa", "nang cap tai khoan", "cap nhat ung dung ngan hang"],
+      "compile_output": null,
+      "compile_meta": null
+    },
+    "JOB_TASK_SCAM": {
+      "summary_vi": "Mời làm việc nhẹ lương cao, giao nhiệm vụ và yêu cầu nạp tiền để nhận hoa hồng.",
+      "keywords": ["lam nhiem vu", "viec nhe luong cao", "hoa hong", "nap tien nhan thuong", "cong tac vien", "like video", "don hang ao"],
+      "compile_output": null,
+      "compile_meta": null
+    }
+  }
+}

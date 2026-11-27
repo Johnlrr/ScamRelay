@@ -73,3 +73,33 @@ class FakeEmbedder:
             for g, n in trigrams(t).items():
                 m[i, sum(map(ord, g)) * 2654435761 % self.dim] += n
         return l2_normalize(m)
+
+
+class FakeLLM:
+    """Thay LLMClient trong test: trả `responses` lần lượt; phần tử là Exception thì ném ra."""
+
+    def __init__(self, *responses):
+        self.responses = list(responses)
+        self.prompts: list[str] = []
+
+    async def generate_json(self, prompt, schema, **kw):
+        from app.ai.llm_client import LLMResponse
+
+        self.prompts.append(prompt)
+        r = self.responses.pop(0)
+        if isinstance(r, Exception):
+            raise r
+        return LLMResponse(data=r, seconds=0.5, model="fake")
+
+
+HKD_ANALYSIS = {
+    "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+    "tactic_slug": None,
+    "tactic_summary_vi": "Giả danh cán bộ thuế, đòi phí xác minh hồ sơ hộ kinh doanh.",
+    "money_lost_vnd": 1_500_000,
+    "money_requested_vnd": None,
+    "otp_or_password_disclosed": "NO",
+    "remote_app_installed": "UNKNOWN",
+    "facts": [{"text": "Người gọi xưng là cán bộ chi cục thuế.", "provenance": "OBSERVED_IN_EVIDENCE"}],
+    "manipulation_cues": ["đe dọa khóa mã số thuế"],
+}

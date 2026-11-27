@@ -1,1 +1,6 @@
 pytest>=8
+python-dotenv>=1.0        # chỉ script bench/ nạp backend/.env
+# Runtime của module bao (core/semantic, ai/*). TODO(linh): chuyển 3 dòng dưới sang requirements.txt khi Contract Drop có file đó.
+pydantic>=2.7
+numpy>=1.26
+google-genai>=1.0
