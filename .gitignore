@@ -10,3 +10,6 @@ frontend/dist/
 !.env.example
 # Held-out ở máy quynh tới lượt chạy chính thức (PLAN §9); khi đó dùng git add -f
 bench/heldout.json
+
+# cache embedding cục bộ của script bench
+bench/.cache/
