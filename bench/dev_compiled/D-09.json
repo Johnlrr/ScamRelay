@@ -1,0 +1,124 @@
+{
+ "case_id": "D-09",
+ "generated_at": "2026-11-27T16:57:25+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế yêu cầu nạn nhân chuyển phí xác minh hộ kinh doanh và dặn để trống nội dung chuyển khoản.",
+  "money_lost_vnd": null,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Kẻ giả danh cán bộ thuế yêu cầu chuyển phí xác minh hộ kinh doanh.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Kẻ gian dặn để trống nội dung chuyển khoản.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "giả danh cán bộ thuế",
+   "yêu cầu để trống nội dung chuyển khoản"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh ho kinh doanh",
+     "dong phi check ho kinh doanh",
+     "ho tro xac thuc ho kinh doanh",
+     "phi cap nhat ho so ho kinh doanh",
+     "chi phi xac minh thue ho kinh doanh",
+     "nop phi xac nhan ho kinh doanh"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue dat"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Khoản chuyển tiền này nhằm phục vụ cho mục đích nào sau đây của bạn?",
+   "options": [
+    {
+     "label_vi": "Thanh toán tiền mua hàng hóa hoặc dịch vụ tiêu dùng thông thường",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc bạn bè quen biết để giải quyết việc cá nhân",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Đóng phí theo yêu cầu để cơ quan hoặc tổ chức xử lý hồ sơ hoặc tài khoản",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan thuế hoặc cơ quan nhà nước không yêu cầu người dân chuyển khoản đóng phí xác minh qua tài khoản cá nhân. Đây là dấu hiệu lừa đảo chiếm đoạt tài sản."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop phi xac minh hkd",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Gia danh can bo thue yeu cau nop phi xac minh"
+   },
+   {
+    "transfer_note": "phi xac thuc ho kinh doanh",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "Dung danh nghia co quan thue de thu phi"
+   },
+   {
+    "transfer_note": "ho tro phi xac minh hkd",
+    "amount_vnd": 2500000,
+    "manipulation_intent": "Thuyet phuc nan nhan chuyen tien lam thu tuc"
+   },
+   {
+    "transfer_note": "chi phi kiem tra ho kinh doanh",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Tao ap luc ve thoi han xu ly ho so thue"
+   },
+   {
+    "transfer_note": "phi cap nhat thong tin hkd",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Yeu cau hoan tat nghia vu tai chinh gia mao"
+   },
+   {
+    "transfer_note": "nop tien xac nhan ho kinh doanh",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Loi dung su thieu hieu biet ve thu tuc thue"
+   }
+  ]
+ },
+ "compile_seconds": 2.87,
+ "total_seconds": 4.27,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

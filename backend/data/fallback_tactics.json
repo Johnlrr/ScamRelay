@@ -4,31 +4,358 @@
   "tactics": {
     "FAKE_HKD_TAX_VERIFICATION": {
       "summary_vi": "Giả danh cơ quan thuế, yêu cầu hộ kinh doanh chuyển phí để xác minh hoặc cập nhật hồ sơ thuế.",
-      "keywords": ["ho kinh doanh", "ma so thue", "can bo thue", "chi cuc thue", "cuc thue", "xac minh ho so", "cap nhat ho so thue", "kich hoat ma so thue", "khoa ma so thue", "thue dien tu"],
-      "compile_output": null,
-      "compile_meta": null
+      "keywords": [
+        "ho kinh doanh",
+        "ma so thue",
+        "can bo thue",
+        "chi cuc thue",
+        "cuc thue",
+        "xac minh ho so",
+        "cap nhat ho so thue",
+        "kich hoat ma so thue",
+        "khoa ma so thue",
+        "thue dien tu"
+      ],
+      "compile_output": {
+        "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+        "conditions": [
+          {
+            "field": "transfer_note",
+            "op": "SEMANTIC_MATCH",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": null,
+            "anchor_phrases": [
+              "nop phi xac minh ho kinh doanh",
+              "thanh toan phi cap nhat thue",
+              "xac thuc ho so ho kinh doanh",
+              "chi phi ho tro xu ly ma thue",
+              "phi xac minh thong tin ho kinh doanh",
+              "nop tien cap nhat ma so thue",
+              "thanh toanphi xac thuc thue hkd"
+            ]
+          },
+          {
+            "field": "transfer_note",
+            "op": "NOT_CONTAINS_ANY",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": [
+              "thue nha",
+              "thue phong",
+              "thue mat bang",
+              "thue xe",
+              "thue lao dong"
+            ],
+            "anchor_phrases": null
+          }
+        ],
+        "purpose_question": {
+          "question_vi": "Bạn chuyển khoản này cho mục đích cụ thể nào dưới đây?",
+          "options": [
+            {
+              "label_vi": "Thanh toán mua hàng, dịch vụ hoặc trả tiền thuê nhà, mặt bằng, xe",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc người quen biết",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Nộp phí hoặc tiền xử lý thủ tục liên quan đến cơ quan nhà nước hay tổ chức",
+              "outcome": "TACTIC_MATCH"
+            }
+          ],
+          "tactic_alert_vi": "Cảnh báo: Cơ quan thuế không yêu cầu chuyển tiền qua tài khoản cá nhân hoặc nộp phí xác minh qua ví điện tử để mở khóa mã số thuế."
+        },
+        "variants": [
+          {
+            "transfer_note": "nop phi xac thuc thue",
+            "amount_vnd": 1500000,
+            "manipulation_intent": "Gia danh can bo thue yeu cau nop phi xac minh"
+          },
+          {
+            "transfer_note": "phi cap nhat ho so hkd",
+            "amount_vnd": 2000000,
+            "manipulation_intent": "De doa khoa ma so thue de ep chuyen tien"
+          },
+          {
+            "transfer_note": "chi phi xac minh ho kinh doanh",
+            "amount_vnd": 1000000,
+            "manipulation_intent": "Yeu cau nop phi de ho tro ho so thue"
+          },
+          {
+            "transfer_note": "nop tien xac minh thue",
+            "amount_vnd": 500000,
+            "manipulation_intent": "Thuyet phuc nop tien de tranh bi khoa tai khoan thue"
+          },
+          {
+            "transfer_note": "thanh toan phi xac thuc ho so thue",
+            "amount_vnd": 3000000,
+            "manipulation_intent": "Gia mao thong bao xac thuc ho so kinh doanh"
+          },
+          {
+            "transfer_note": "phi ho tro cap nhat ma thue",
+            "amount_vnd": 1500000,
+            "manipulation_intent": "Loi dung quy dinh moi de buoc nop phi"
+          }
+        ]
+      },
+      "compile_meta": {
+        "case_id": "D-01",
+        "model": "gemini-3.5-flash-lite",
+        "prompts": [
+          "incident_extract.v2",
+          "rule_compile.v3"
+        ],
+        "generated_at": "2026-11-27T16:55:44+00:00",
+        "validator_warnings": []
+      }
     },
     "RECOVERY_FEE_SCAM": {
       "summary_vi": "Hứa giúp lấy lại tiền đã bị chiếm đoạt, rồi đòi nạn nhân chuyển phí dịch vụ hoặc phí hồ sơ.",
-      "keywords": ["lay lai tien", "thu hoi tien", "hoan lai tien bi lua", "phi thu hoi", "luat su ho tro", "dich vu thu hoi", "lay lai so tien"],
-      "compile_output": null,
-      "compile_meta": null
+      "keywords": [
+        "lay lai tien",
+        "thu hoi tien",
+        "hoan lai tien bi lua",
+        "phi thu hoi",
+        "luat su ho tro",
+        "dich vu thu hoi",
+        "lay lai so tien"
+      ],
+      "compile_output": {
+        "tactic_family": "RECOVERY_FEE_SCAM",
+        "conditions": [
+          {
+            "field": "transfer_note",
+            "op": "SEMANTIC_MATCH",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": null,
+            "anchor_phrases": [
+              "nop phi ho so lay lai tien",
+              "thanh toan phi ho tro thu hoi von",
+              "chuyen tien phi giam dinh ho so",
+              "dong phi xu ly don khieu nai",
+              "chi phi ho tro phap ly thu hoi",
+              "nop tien phi trich xuat ho so",
+              "chi phi xac minh ho so bi mat",
+              "thanh toan tien phi ho so khieu kien"
+            ]
+          },
+          {
+            "field": "transfer_note",
+            "op": "NOT_CONTAINS_ANY",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": [
+              "thue nha",
+              "thue phong",
+              "thue mat bang",
+              "thue xe",
+              "thue bao",
+              "thue vat ly"
+            ],
+            "anchor_phrases": null
+          }
+        ],
+        "purpose_question": {
+          "question_vi": "Ban dang chuyen khoan nay cho muc dich gi?",
+          "options": [
+            {
+              "label_vi": "Thanh toan tien mua hang hoa hoac dich vu thuong mai",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Chuyen tien cho nguoi than hoac ban be",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Dong cac khoan phi de duoc ho tro thu hoi hoac xu ly ho so",
+              "outcome": "TACTIC_MATCH"
+            }
+          ],
+          "tactic_alert_vi": "Canh bao: Cac co quan chuc nang hoac van phong luat su uy tin khong yeu thuong xuyen thu truoc phi ho so hay phi ho tro qua tai khoan ca nhan de lay lai tien."
+        },
+        "variants": [
+          {
+            "transfer_note": "nop phi ho so",
+            "amount_vnd": 500000,
+            "manipulation_intent": "Dung tu viet tat ngan gon de qua mat he thong"
+          },
+          {
+            "transfer_note": "phi ho tro thu hoi tien bi mat",
+            "amount_vnd": 2000000,
+            "manipulation_intent": "Loi dung long tin de thuyet phuc dong phi ho so"
+          },
+          {
+            "transfer_note": "chi phi giam dinh ho so vu viec",
+            "amount_vnd": 1500000,
+            "manipulation_intent": "Ngụy trang duoi dang chi phi phap ly"
+          },
+          {
+            "transfer_note": "nop tien phi xac minh don",
+            "amount_vnd": 800000,
+            "manipulation_intent": "Tao cam giac thu tuc hanh chinh hop phap"
+          },
+          {
+            "transfer_note": "chuyen phi xu ly ho so khieu nai",
+            "amount_vnd": 3000000,
+            "manipulation_intent": "Huong dan nan nhan ghi dung noi dung yeu cau"
+          },
+          {
+            "transfer_note": "phi ho tro phap ly thang 5",
+            "amount_vnd": 1000000,
+            "manipulation_intent": "Ghi them moc thoi gian de ngụy trang giao dịch"
+          }
+        ]
+      },
+      "compile_meta": {
+        "case_id": "D-05",
+        "model": "gemini-3.5-flash-lite",
+        "prompts": [
+          "incident_extract.v2",
+          "rule_compile.v3"
+        ],
+        "generated_at": "2026-11-27T16:56:34+00:00",
+        "validator_warnings": []
+      }
     },
     "IMPERSONATE_AUTHORITY": {
       "summary_vi": "Giả danh công an, viện kiểm sát hoặc tòa án, đe dọa liên quan vụ án và yêu cầu chuyển tiền để xác minh.",
-      "keywords": ["cong an", "vien kiem sat", "toa an", "vu an", "lenh bat", "dieu tra", "rua tien", "tam giu tien", "tai khoan tam giu"],
-      "compile_output": null,
-      "compile_meta": null
+      "keywords": [
+        "cong an",
+        "vien kiem sat",
+        "toa an",
+        "vu an",
+        "lenh bat",
+        "dieu tra",
+        "rua tien",
+        "tam giu tien",
+        "tai khoan tam giu"
+      ],
+      "compile_output": {
+        "tactic_family": "IMPERSONATE_AUTHORITY",
+        "conditions": [
+          {
+            "field": "transfer_note",
+            "op": "SEMANTIC_MATCH",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": null,
+            "anchor_phrases": [
+              "chuyen tien vao tai khoan tam giu",
+              "nop tien vao tai khoan xac minh",
+              "chuyen tien giam dinh dieu tra vu an",
+              "chuyen tien de co quan dieu tra xac minh",
+              "nop tien vao tai khoan phong chong toi pham",
+              "chuyen khoan de co quan cong an phong toa",
+              "gui tien vao tai khoan tam giu cua cong an",
+              "chuyen tien vao tai khoan dieu tra"
+            ]
+          },
+          {
+            "field": "transfer_note",
+            "op": "NOT_CONTAINS_ANY",
+            "value_int": null,
+            "value_bool": null,
+            "value_str_list": [
+              "thue nha",
+              "thue phong",
+              "thue mat bang",
+              "thue xe",
+              "tra tien hang"
+            ],
+            "anchor_phrases": null
+          }
+        ],
+        "purpose_question": {
+          "question_vi": "Khoản chuyển tiền này nhằm phục vụ cho mục đích nào sau đây?",
+          "options": [
+            {
+              "label_vi": "Thanh toán mua sắm hàng hóa hoặc trả tiền dịch vụ thông thường",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc trả nợ cá nhân",
+              "outcome": "BENIGN"
+            },
+            {
+              "label_vi": "Chuyển tiền theo yêu cầu của cơ quan chức năng để phục vụ điều tra",
+              "outcome": "TACTIC_MATCH"
+            }
+          ],
+          "tactic_alert_vi": "Cảnh giác: Cơ quan công an và các cơ quan nhà nước không bao giờ yêu cầu người dân chuyển tiền vào tài khoản cá nhân hoặc tài khoản tạm giữ để xác minh hay điều tra qua điện thoại."
+        },
+        "variants": [
+          {
+            "transfer_note": "nop tien vao tk tam giu",
+            "amount_vnd": 5000000,
+            "manipulation_intent": "Gia danh cong an de doa nan nhan chuyen tien vao tai khoan tam giu"
+          },
+          {
+            "transfer_note": "chuyen tien vao tai khoan dieu tra",
+            "amount_vnd": 10000000,
+            "manipulation_intent": "Buoc toi lien quan vu an de yeu cau chuyen tien xac minh"
+          },
+          {
+            "transfer_note": "gui tien cho cong an phong toa",
+            "amount_vnd": 2000000,
+            "manipulation_intent": "Tao ap luc so hai de nan nhan tu nguyen nop tien"
+          },
+          {
+            "transfer_note": "nop tien xac minh vu an",
+            "amount_vnd": 15000000,
+            "manipulation_intent": "Gia mao lenh cua co quan cong an"
+          },
+          {
+            "transfer_note": "chuyen khoan cho co quan dieu tra",
+            "amount_vnd": 8000000,
+            "manipulation_intent": "Thuyet phuc chuyen tien de chung minh trong sach"
+          },
+          {
+            "transfer_note": "chuyen tien vao tk phong chong toi pham",
+            "amount_vnd": 3000000,
+            "manipulation_intent": "Loi dung uy tin cua co quan chuc nang de chiem đoat tai san"
+          }
+        ]
+      },
+      "compile_meta": {
+        "case_id": "D-11",
+        "model": "gemini-3.5-flash-lite",
+        "prompts": [
+          "incident_extract.v2",
+          "rule_compile.v3"
+        ],
+        "generated_at": "2026-11-27T16:57:51+00:00",
+        "validator_warnings": []
+      }
     },
     "FAKE_SUPPORT_REMOTE_APP": {
       "summary_vi": "Giả nhân viên hỗ trợ của ngân hàng hoặc ví, hướng dẫn cài ứng dụng lạ để điều khiển máy và chiếm tài khoản.",
-      "keywords": ["nhan vien ho tro", "cai ung dung", "tai ung dung", "cai app", "dieu khien tu xa", "nang cap tai khoan", "cap nhat ung dung ngan hang"],
+      "keywords": [
+        "nhan vien ho tro",
+        "cai ung dung",
+        "tai ung dung",
+        "cai app",
+        "dieu khien tu xa",
+        "nang cap tai khoan",
+        "cap nhat ung dung ngan hang"
+      ],
       "compile_output": null,
       "compile_meta": null
     },
     "JOB_TASK_SCAM": {
       "summary_vi": "Mời làm việc nhẹ lương cao, giao nhiệm vụ và yêu cầu nạp tiền để nhận hoa hồng.",
-      "keywords": ["lam nhiem vu", "viec nhe luong cao", "hoa hong", "nap tien nhan thuong", "cong tac vien", "like video", "don hang ao"],
+      "keywords": [
+        "lam nhiem vu",
+        "viec nhe luong cao",
+        "hoa hong",
+        "nap tien nhan thuong",
+        "cong tac vien",
+        "like video",
+        "don hang ao"
+      ],
       "compile_output": null,
       "compile_meta": null
     }

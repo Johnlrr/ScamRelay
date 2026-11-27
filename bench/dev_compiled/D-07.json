@@ -1,0 +1,128 @@
+{
+ "case_id": "D-07",
+ "generated_at": "2026-11-27T16:57:00+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế gọi điện yêu cầu đóng phí cập nhật hồ sơ hộ kinh doanh và hướng dẫn cách khai báo giao dịch để qua mặt hệ thống.",
+  "money_lost_vnd": null,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Kẻ gian mạo danh cán bộ thuế liên hệ qua điện thoại.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Yêu cầu nạn nhân đóng phí cập nhật hồ sơ hộ kinh doanh.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Dặn nạn nhân chọn mục đích thanh toán là trả tiền người quen nếu ví điện tử hỏi.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "giả danh cơ quan nhà nước",
+   "hướng dẫn né tránh kiểm tra của ví điện tử"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh ho kinh doanh",
+     "dong phi cap nhat ho so thue",
+     "phi ho so dang ky kinh doanh",
+     "nop tien xac thuc ho kinh doanh",
+     "phi cap nhat thong tin ho thue",
+     "phi ho tro ho so ho kinh doanh"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue dat"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Ban chuyen khoan nay voi muc dich gi?",
+   "options": [
+    {
+     "label_vi": "Thanh toan tien mua hang hoa hoac dich vu",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyen tien cho nguoi than, ban be hoac nguoi quen",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Dong phi de co quan hoac to chuc xu ly ho so, tai khoan",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cac co quan nha nuoc khong yeu cau chuyen tien qua tai khoan ca nhan hoac thong qua vi dien tu de nop phi. Day la dau hiệu gia mao de chiem doat tai san."
+  },
+  "variants": [
+   {
+    "transfer_note": "phi xac thuc ho kinh doanh",
+    "amount_vnd": 500000,
+    "manipulation_intent": "gia danh can bo thue yeu cau nop phi cap nhat ho so"
+   },
+   {
+    "transfer_note": "nop tien cap nhat ho so hkd",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "gia danh co quan thue huong dan nop phi xac minh"
+   },
+   {
+    "transfer_note": "phi ho so dang ky kinh doanh thang 5",
+    "amount_vnd": 800000,
+    "manipulation_intent": "doi tuong goi dien ep buoc hoan tat thu tuc thue"
+   },
+   {
+    "transfer_note": "phi ho tro ho so ho thue",
+    "amount_vnd": 2500000,
+    "manipulation_intent": "tao ap luc ve thoi han cap nhat thong tin kinh doanh"
+   },
+   {
+    "transfer_note": "dong tien xac minh ho kinh doanh",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "gia mao quy trinh xac thuc thue truc tuyen"
+   },
+   {
+    "transfer_note": "phi cap nhat thong tin ho kinh doanh",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "yeu cau chuyen khoan de tranh bi phat vi pham"
+   }
+  ]
+ },
+ "compile_seconds": 3.26,
+ "total_seconds": 4.76,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

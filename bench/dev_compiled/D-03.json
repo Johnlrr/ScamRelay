@@ -1,0 +1,124 @@
+{
+ "case_id": "D-03",
+ "generated_at": "2026-11-27T16:56:08+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian mạo danh cơ quan thuế yêu cầu đóng tiền chuẩn hóa dữ liệu thuế hộ kinh doanh năm 2026 và đe dọa bị phạt để lừa nạn nhân chuyển tiền.",
+  "money_lost_vnd": 2000000,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Nạn nhân được thông báo hộ kinh doanh phải đóng tiền chuẩn hóa dữ liệu thuế năm 2026 hoặc sẽ bị phạt.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nạn nhân đã chuyển số tiền 2 triệu đồng vào tài khoản cá nhân do kẻ gian cung cấp.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "đe dọa bị phạt nếu không đóng tiền",
+   "yêu cầu chuyển tiền vào tài khoản cá nhân"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh thue ho kinh doanh",
+     "dong phi chuan hoa du lieu thue",
+     "nop tien cap nhat ma so thue hkd",
+     "phi xu ly ho so thue nam 2026",
+     "nop phi ho tro ho kinh doanh",
+     "phi dieu chinh thue thu nhap"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue nhan vien"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Khoản tiền này dùng cho mục đích gì?",
+   "options": [
+    {
+     "label_vi": "Thanh toán tiền mua hàng hóa hoặc dịch vụ thông thường",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc người quen",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Đóng phí chuẩn hóa hoặc cập nhật dữ liệu hộ kinh doanh",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cơ quan thuế không yêu cầu hộ kinh doanh chuyển tiền vào tài khoản cá nhân qua mạng để chuẩn hóa dữ liệu. Đây là thủ đoạn mạo danh nhằm chiếm đoạt tài sản."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop tien phi thue hkd 2026",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "Gây sức ép về thời hạn đóng thuế hộ kinh doanh"
+   },
+   {
+    "transfer_note": "phi chuan hoa thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Đe dọa phạt tiền nếu không cập nhật hồ sơ"
+   },
+   {
+    "transfer_note": "chuyen tien nop phi thue",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Yêu cầu hoàn tất nghĩa vụ thuế nhanh chóng"
+   },
+   {
+    "transfer_note": "phi cap nhat du lieu thue",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Giả mạo cơ quan nhà nước yêu cầu nộp phí"
+   },
+   {
+    "transfer_note": "nop phi ho so thue",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "Đưa ra mức phạt giả để ép nạn nhân chuyển tiền"
+   },
+   {
+    "transfer_note": "chuyen phi thue hkd",
+    "amount_vnd": 2500000,
+    "manipulation_intent": "Hướng dẫn nộp tiền qua tài khoản cá nhân"
+   }
+  ]
+ },
+ "compile_seconds": 2.77,
+ "total_seconds": 4.16,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

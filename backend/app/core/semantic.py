@@ -181,14 +181,15 @@ class SemanticMatcher:
         if empty_key in keys:                      # chuỗi rỗng: vector 0 (cosine 0), không gửi API
             found[empty_key] = np.zeros(self.dim, np.float32)
         missing = list(dict.fromkeys(t for t, k in zip(normed, keys) if k not in found))
-        if missing:
-            if self.embedder is None:
-                return None
+        if missing and self.embedder is None:
+            return None
+        for i in range(0, len(missing), EMBED_BATCH):
+            chunk = missing[i : i + EMBED_BATCH]
             try:
-                vecs = await self.embedder.embed_batch(missing)
+                vecs = await self.embedder.embed_batch(chunk)
             except EmbeddingError:
-                return None
-            new = {cache_key(t, self.model, self.dim): v for t, v in zip(missing, vecs)}
+                return None                        # các lô trước đã vào cache, lần sau không phải gọi lại
+            new = {cache_key(t, self.model, self.dim): v for t, v in zip(chunk, vecs)}
             self.cache.put_many(new)
             found.update(new)
         if not keys:

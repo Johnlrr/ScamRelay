@@ -1,0 +1,128 @@
+{
+ "case_id": "D-08",
+ "generated_at": "2026-11-27T16:57:12+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh yêu cầu hộ kinh doanh nộp phí xác minh thuế và hướng dẫn chọn sai mục đích giao dịch.",
+  "money_lost_vnd": null,
+  "money_requested_vnd": 5000000,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Kẻ gian yêu cầu hộ kinh doanh nộp phí xác minh thuế 5 triệu đồng.",
+    "provenance": "OBSERVED_IN_EVIDENCE"
+   },
+   {
+    "text": "Kẻ gian dặn chọn mục đích mua hàng nếu ví hỏi.",
+    "provenance": "OBSERVED_IN_EVIDENCE"
+   }
+  ],
+  "manipulation_cues": [
+   "yêu cầu nộp phí xác minh thuế",
+   "hướng dẫn che giấu bản chất giao dịch"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh thue ho kinh doanh",
+     "dong tien xac thuc ho kinh doanh",
+     "nop phi kiem tra thue hkd",
+     "thanh toan tien xac nhan thue",
+     "phi hoan tat thu tục thue",
+     "nop phi cap nhat ma so thue",
+     "phi xac minh thue ca the",
+     "phi tham dinh ho so thue hkd"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue ao",
+     "thue may",
+     "thue nhan cong"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Bạn chuyển khoản này cho ai và với mục đích gì?",
+   "options": [
+    {
+     "label_vi": "Mua hàng hóa hoặc thanh toán dịch vụ cá nhân thông thường",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc bạn bè quen biết",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Đóng phí để cơ quan nhà nước xử lý hồ sơ hoặc xác minh thủ tục",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan thuế không yêu cầu nộp phí xác minh qua tài khoản cá nhân. Việc đóng phí theo yêu cầu có nguy cơ mất tiền."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop phi xac minh thue hkd thang 8",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "gia danh can bo thue yeu cau nop phi xac thuc ho kinh doanh"
+   },
+   {
+    "transfer_note": "phi xac thuc thue ho kinh doanh ca the",
+    "amount_vnd": 500000,
+    "manipulation_intent": "thuyet phuc dong tien de hoan tat thu tuc thue"
+   },
+   {
+    "transfer_note": "nop tien kiem tra ma so thue hkd",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "huong dan nop phi kiem tra thue de tranh bi phat"
+   },
+   {
+    "transfer_note": "thanh toan phi xac minh ho so thue",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "yeu cau chuyen tien de xac minh thong tin ho kinh doanh"
+   },
+   {
+    "transfer_note": "phi hoan thien thu tuc thue hkd",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "yeu cau nop phi nhanh de ho tro giai quyet ho so"
+   },
+   {
+    "transfer_note": "phi tham dinh thue ho kinh doanh",
+    "amount_vnd": 2500000,
+    "manipulation_intent": "gia danh co quan thue yeu cau chuyen phi tham dinh"
+   }
+  ]
+ },
+ "compile_seconds": 3.08,
+ "total_seconds": 4.5,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

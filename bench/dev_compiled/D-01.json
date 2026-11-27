@@ -1,0 +1,138 @@
+{
+ "case_id": "D-01",
+ "generated_at": "2026-11-27T16:55:44+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế gọi điện yêu cầu xác thực hồ sơ hộ kinh doanh và đe dọa khóa mã số thuế, sau đó ép nạn nhân chuyển tiền phí xác minh.",
+  "money_lost_vnd": 1500000,
+  "money_requested_vnd": 1500000,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Người gọi xưng là cán bộ chi cục thuế.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Kẻ gian yêu cầu tiệm phải xác thực hồ sơ hộ kinh doanh theo quy định mới.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Kẻ gian đe dọa sẽ khóa mã số thuế nếu không làm theo.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Kẻ gian yêu cầu chuyển 1.500.000đ phí xác minh với nội dung chuyển khoản là 'cap nhat thue HKD'.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nạn nhân đã chuyển số tiền 1.500.000đ theo yêu cầu.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "giả danh cán bộ chi cục thuế",
+   "đe dọa khóa mã số thuế",
+   "yêu cầu nộp phí xác minh"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "nop phi xac minh ho kinh doanh",
+     "thanh toan phi cap nhat thue",
+     "xac thuc ho so ho kinh doanh",
+     "chi phi ho tro xu ly ma thue",
+     "phi xac minh thong tin ho kinh doanh",
+     "nop tien cap nhat ma so thue",
+     "thanh toanphi xac thuc thue hkd"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue lao dong"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Bạn chuyển khoản này cho mục đích cụ thể nào dưới đây?",
+   "options": [
+    {
+     "label_vi": "Thanh toán mua hàng, dịch vụ hoặc trả tiền thuê nhà, mặt bằng, xe",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc người quen biết",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Nộp phí hoặc tiền xử lý thủ tục liên quan đến cơ quan nhà nước hay tổ chức",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan thuế không yêu cầu chuyển tiền qua tài khoản cá nhân hoặc nộp phí xác minh qua ví điện tử để mở khóa mã số thuế."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop phi xac thuc thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Gia danh can bo thue yeu cau nop phi xac minh"
+   },
+   {
+    "transfer_note": "phi cap nhat ho so hkd",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "De doa khoa ma so thue de ep chuyen tien"
+   },
+   {
+    "transfer_note": "chi phi xac minh ho kinh doanh",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "Yeu cau nop phi de ho tro ho so thue"
+   },
+   {
+    "transfer_note": "nop tien xac minh thue",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Thuyet phuc nop tien de tranh bi khoa tai khoan thue"
+   },
+   {
+    "transfer_note": "thanh toan phi xac thuc ho so thue",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Gia mao thong bao xac thuc ho so kinh doanh"
+   },
+   {
+    "transfer_note": "phi ho tro cap nhat ma thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Loi dung quy dinh moi de buoc nop phi"
+   }
+  ]
+ },
+ "compile_seconds": 3.02,
+ "total_seconds": 4.74,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

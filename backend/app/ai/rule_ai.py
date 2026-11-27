@@ -21,7 +21,7 @@ from app.ai.incident_ai import load_fallback_tactics
 from app.ai.llm_client import LLMError, get_llm
 from app.core._contract_draft import CompileResult, IncidentAnalysis, RelayRuleDraftLLM
 
-PROMPT_VERSION = "rule_compile.v2"
+PROMPT_VERSION = "rule_compile.v3"
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 TIMEOUT_S = 30
 

@@ -1,0 +1,131 @@
+{
+ "case_id": "D-11",
+ "generated_at": "2026-11-27T16:57:51+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "IMPERSONATE_AUTHORITY",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Ke gian gia danh cong an thong bao nan nhan lien quan den vu an rua tien va yeu cau chuyen tien vao tai khoan tam giu de xac minh.",
+  "money_lost_vnd": 10000000,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Ke xung danh cong an thong bao nan nhan lien quan vu an rua tien.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Doi tuong yeu cau chuyen tien vao tai khoan tam giu de xac minh.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nan nhan da chuyen 10 trieu dong.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "Gia danh cong an",
+   "Buoc toi lien quan vu an rua tien",
+   "Yeu cau chuyen tien vao tai khoan tam giu"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "IMPERSONATE_AUTHORITY",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "chuyen tien vao tai khoan tam giu",
+     "nop tien vao tai khoan xac minh",
+     "chuyen tien giam dinh dieu tra vu an",
+     "chuyen tien de co quan dieu tra xac minh",
+     "nop tien vao tai khoan phong chong toi pham",
+     "chuyen khoan de co quan cong an phong toa",
+     "gui tien vao tai khoan tam giu cua cong an",
+     "chuyen tien vao tai khoan dieu tra"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "tra tien hang"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Khoản chuyển tiền này nhằm phục vụ cho mục đích nào sau đây?",
+   "options": [
+    {
+     "label_vi": "Thanh toán mua sắm hàng hóa hoặc trả tiền dịch vụ thông thường",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc trả nợ cá nhân",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền theo yêu cầu của cơ quan chức năng để phục vụ điều tra",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh giác: Cơ quan công an và các cơ quan nhà nước không bao giờ yêu cầu người dân chuyển tiền vào tài khoản cá nhân hoặc tài khoản tạm giữ để xác minh hay điều tra qua điện thoại."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop tien vao tk tam giu",
+    "amount_vnd": 5000000,
+    "manipulation_intent": "Gia danh cong an de doa nan nhan chuyen tien vao tai khoan tam giu"
+   },
+   {
+    "transfer_note": "chuyen tien vao tai khoan dieu tra",
+    "amount_vnd": 10000000,
+    "manipulation_intent": "Buoc toi lien quan vu an de yeu cau chuyen tien xac minh"
+   },
+   {
+    "transfer_note": "gui tien cho cong an phong toa",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "Tao ap luc so hai de nan nhan tu nguyen nop tien"
+   },
+   {
+    "transfer_note": "nop tien xac minh vu an",
+    "amount_vnd": 15000000,
+    "manipulation_intent": "Gia mao lenh cua co quan cong an"
+   },
+   {
+    "transfer_note": "chuyen khoan cho co quan dieu tra",
+    "amount_vnd": 8000000,
+    "manipulation_intent": "Thuyet phuc chuyen tien de chung minh trong sach"
+   },
+   {
+    "transfer_note": "chuyen tien vao tk phong chong toi pham",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Loi dung uy tin cua co quan chuc nang de chiem đoat tai san"
+   }
+  ]
+ },
+ "compile_seconds": 3.19,
+ "total_seconds": 4.69,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

@@ -154,3 +154,22 @@ def test_empty_text_not_sent_to_api():
     out = run(m.embed_texts(["", "  !! ", "tien hang"]))
     assert emb.calls == [["tien hang"]]
     assert not out[0].any() and not out[1].any()
+
+
+def test_partial_progress_is_cached_when_later_batch_fails(monkeypatch):
+    monkeypatch.setattr(semantic, "EMBED_BATCH", 2)
+
+    class FailSecond(FakeEmbedder):
+        async def embed_batch(self, texts):
+            if len(self.calls) == 1:
+                self.calls.append(list(texts))
+                raise semantic.EmbeddingError("429")
+            return await super().embed_batch(texts)
+
+    emb = FailSecond()
+    cache = InMemoryEmbeddingCache()
+    m = SemanticMatcher(emb, cache, dim=64)
+    assert run(m.embed_texts(["mot hai", "ba bon", "nam sau", "bay tam"])) is None
+    assert len(cache) == 2                                  # lô đầu được giữ
+    out = run(m.embed_texts(["mot hai", "ba bon", "nam sau", "bay tam"]))
+    assert out.shape == (4, 64) and emb.calls[-1] == ["nam sau", "bay tam"]

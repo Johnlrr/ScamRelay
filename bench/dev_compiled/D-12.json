@@ -1,0 +1,131 @@
+{
+ "case_id": "D-12",
+ "generated_at": "2026-11-27T16:58:03+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế gọi điện yêu cầu tiệm tạp hóa nộp phí xác thực hồ sơ hộ kinh doanh và chiếm đoạt tiền.",
+  "money_lost_vnd": 1500000,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Kẻ giả danh cán bộ thuế gọi điện cho tiệm tạp hóa.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Yêu cầu nộp phí xác thực hồ sơ hộ kinh doanh.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nạn nhân đã nộp số tiền 1,5 triệu đồng.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "Giả danh cơ quan thuế",
+   "Đòi phí xác thực hồ sơ"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac thuc ho so hkd",
+     "dong phi ho so ho kinh doanh",
+     "phi cap nhat thue ho kinh doanh",
+     "phi xac minh dang ky kinh doanh",
+     "nop phi ho so thue",
+     "le phi xac thuc thue",
+     "phi ho so thue",
+     "xac thuc ho so thue"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue lai",
+     "thue nhan vien"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Khoản chuyển tiền này dùng cho mục đích gì?",
+   "options": [
+    {
+     "label_vi": "Thanh toán tiền mua hàng hóa hoặc dịch vụ tiêu dùng",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc bạn bè quen biết",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Nộp phí xác thực hồ sơ hoặc thủ tục với cơ quan nhà nước",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cơ quan thuế không yêu cầu người dân chuyển khoản nộp phí xác thực hồ sơ qua tài khoản cá nhân. Đây là dấu hiệu giả mạo nhằm chiếm đoạt tài sản."
+  },
+  "variants": [
+   {
+    "transfer_note": "phi xac thuc hkd thang 10",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Gia danh can bo thue yeu cau nop phi xac thuc ho so"
+   },
+   {
+    "transfer_note": "dong phi ho so ho kinh doanh moi",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "Thuyet phuc nan nhan dong tien phi ho so"
+   },
+   {
+    "transfer_note": "nop phi xac minh thue",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "Tao ap luc can xac minh thue ho kinh doanh"
+   },
+   {
+    "transfer_note": "le phi cap nhat thong tin hkd",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Yeu cau ho tro phi cap nhat thong tin"
+   },
+   {
+    "transfer_note": "phi ho so thue ho kinh doanh",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Doi nop phi giai quyết ho so thue"
+   },
+   {
+    "transfer_note": "xac thuc ho so dang ky thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Giai thich la tien phi xac thuc bat buoc"
+   }
+  ]
+ },
+ "compile_seconds": 3.02,
+ "total_seconds": 4.45,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "case_id": "D-10",
+ "generated_at": "2026-11-27T16:57:38+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế yêu cầu nộp phí để kích hoạt mã số thuế điện tử cho hộ kinh doanh.",
+  "money_lost_vnd": 1000000,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Người xưng cán bộ thuế đòi phí kích hoạt mã số thuế điện tử cho hộ kinh doanh.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nạn nhân đã chuyển số tiền 1 triệu đồng.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "Giả danh cơ quan thuế",
+   "Yêu cầu đóng phí kích hoạt"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "nop phi kich hoat ma so thue",
+     "dong tien xac thuc ho kinh doanh",
+     "phi ho tro dang ky thue dien tu",
+     "thanh toan tien ho so thue hkd",
+     "chi phi xac minh thong tin thue",
+     "nop tien cap nhat ma so thue",
+     "le phi kich hoat he thong thue"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue nhan vien",
+     "thue may moc"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Bạn chuyển khoản này cho mục đích gì?",
+   "options": [
+    {
+     "label_vi": "Thanh toán mua hàng, dịch vụ thông thường",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc bạn bè",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Đóng phí để cơ quan nhà nước xử lý thủ tục thuế",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan thuế không yêu cầu chuyển tiền qua tài khoản cá nhân để kích hoạt mã số thuế. Đây là thủ đoạn giả mạo để chiếm đoạt tài sản."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop phi kich hoat thue hkd",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Gia danh can bo yeu cau dong phi kich hoat ma thue"
+   },
+   {
+    "transfer_note": "phi xac thuc ma so thue dien tu",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "Thuyet phuc nop tien de hoan tat ho so kinh doanh"
+   },
+   {
+    "transfer_note": "nop tien ho so thue ho kinh doanh",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "Tao ap luc ve thoi han de nan nhan chuyen tien"
+   },
+   {
+    "transfer_note": "dong phi ho tro dang ky thue",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Huong dan nop phi qua tai khoan ca nhan chi dinh"
+   },
+   {
+    "transfer_note": "le phi xac minh thong tin thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Gia mao quy trinh xac minh truc tuyen"
+   },
+   {
+    "transfer_note": "chi phi cap nhat ma so thue",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "Yeu cau thanh toan de tranh bi phat vi pham"
+   }
+  ]
+ },
+ "compile_seconds": 3.28,
+ "total_seconds": 4.61,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

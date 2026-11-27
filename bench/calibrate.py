@@ -87,7 +87,7 @@ async def main() -> int:
     if not compiled:
         print("chưa có bench/dev_compiled/*.json — chạy compile_dev.py trước")
         return 2
-    matcher = SemanticMatcher(GeminiEmbedder(), NpzEmbeddingCache(_common.CACHE_PATH))
+    matcher = SemanticMatcher(_common.PatientEmbedder(GeminiEmbedder()), NpzEmbeddingCache(_common.CACHE_PATH))
     corpus = load_benign_corpus()
     corpus_vecs = await matcher.embed_texts([s["transfer_note"] for s in corpus])
     if corpus_vecs is None:

@@ -1,0 +1,127 @@
+{
+ "case_id": "D-06",
+ "generated_at": "2026-11-27T16:56:46+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_SUPPORT_REMOTE_APP",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh nhân viên hỗ trợ gọi điện cho nạn nhân, thông báo tài khoản bị lỗi và yêu cầu nâng cấp, sau đó lừa nạn nhân đọc mã OTP.",
+  "money_lost_vnd": null,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "YES",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Kẻ tự xưng là nhân viên hỗ trợ ví đã gọi điện cho mẹ của người dùng.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Đối tượng thông báo tài khoản bị lỗi và cần phải nâng cấp.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Mẹ của người dùng đã đọc mã OTP cho đối tượng.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "mạo danh nhân viên hỗ trợ",
+   "báo lỗi tài khoản để tạo sự hoang mang"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_SUPPORT_REMOTE_APP",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi nang cap tai khoan",
+     "dong phi sua loi he thong",
+     "phi xu ly loi vi dien tu",
+     "phi kich hoat lai tai khoan",
+     "phi xac thuc nang cap he thong",
+     "phihoan tat cap nhat tai khoan"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Khoản chuyển tiền này dùng để làm gì?",
+   "options": [
+    {
+     "label_vi": "Mua sắm hàng hóa hoặc thanh toán dịch vụ cá nhân",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân hoặc bạn bè quen biết",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Nộp phí nâng cấp hoặc khắc phục sự cố hệ thống theo yêu cầu",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan chức năng hoặc bộ phận hỗ trợ chính thức không yêu cầu chuyển tiền qua tài khoản cá nhân để xử lý lỗi hay nâng cấp hệ thống. Đây là dấu hiệu thủ đoạn mạo danh."
+  },
+  "variants": [
+   {
+    "transfer_note": "phi nang cap he thong",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Goi dien bao loi tai khoan va yeu cau nop phi nang cap"
+   },
+   {
+    "transfer_note": "nop phi sua loi vi",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "Gia danh ho tro vien thong bao tai khoan bi loi"
+   },
+   {
+    "transfer_note": "phi xu ly su co tai khoan",
+    "amount_vnd": 2500000,
+    "manipulation_intent": "Tao ap luc tai khoan bi loi de nan nhan chuyen tien"
+   },
+   {
+    "transfer_note": "phi kich hoat lai vi",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Huong dan nop phi de mo khoa tai khoan"
+   },
+   {
+    "transfer_note": "phi xac thuc nang cap vi",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Thong bao loi he thong va bat nop phi xac thuc"
+   },
+   {
+    "transfer_note": "phi hoan tat cap nhat",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Gia danh nhan vien yeu cau nop phi ho tat cap nhat"
+   }
+  ]
+ },
+ "compile_seconds": 2.91,
+ "total_seconds": 4.34,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

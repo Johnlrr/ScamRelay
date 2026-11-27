@@ -1,0 +1,129 @@
+{
+ "case_id": "D-02",
+ "generated_at": "2026-11-27T16:55:56+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian mạo danh cơ quan thuế gửi tin nhắn yêu cầu kích hoạt mã số thuế hộ kinh doanh và thu phí, nạn nhân đã chuyển tiền.",
+  "money_lost_vnd": 800000,
+  "money_requested_vnd": 800000,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Tin nhắn Zalo thông báo hộ kinh doanh chưa định danh điện tử sẽ bị tạm dừng mã số thuế.",
+    "provenance": "OBSERVED_IN_EVIDENCE"
+   },
+   {
+    "text": "Yêu cầu liên hệ cán bộ để kích hoạt với mức phí 800.000 đồng.",
+    "provenance": "OBSERVED_IN_EVIDENCE"
+   },
+   {
+    "text": "Nạn nhân đã gửi tiền theo yêu cầu.",
+    "provenance": "OBSERVED_IN_EVIDENCE"
+   }
+  ],
+  "manipulation_cues": [
+   "đe dọa tạm dừng mã số thuế",
+   "yêu cầu đóng phí kích hoạt"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh ma so thue",
+     "kich hoat ho kinh doanh",
+     "dong tien cap nhat thue",
+     "nop phi xac thuc ho so",
+     "phi xu ly ma so thue",
+     "xac nhan dang ky ho kinh doanh"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe",
+     "thue trang phuc",
+     "thue khan phong"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Bạn chuyển khoản này cho ai và với mục đích cụ thể nào?",
+   "options": [
+    {
+     "label_vi": "Mua hàng hóa, thanh toán dịch vụ thương mại hoặc hóa đơn sinh hoạt",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc đồng nghiệp quen biết",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Đóng phí để cơ quan nhà nước xử lý hồ sơ hoặc kích hoạt tài khoản",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cảnh báo: Cơ quan thuế không yêu cầu chuyển tiền qua tài khoản cá nhân để xử lý hồ sơ hay kích hoạt mã số thuế. Đây là thủ đoạn giả mạo để chiếm đoạt tài sản."
+  },
+  "variants": [
+   {
+    "transfer_note": "nop phi kich hoat mst hkd",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Dọa khóa mã số thuế để ép đóng phí"
+   },
+   {
+    "transfer_note": "phi xac thuc ho so ho kinh doanh",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Yêu cầu thanh toán chi phí qua tài khoản cá nhân"
+   },
+   {
+    "transfer_note": "dong tien cap nhat ma thue",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "Giả danh cán bộ thuế yêu cầu nộp tiền"
+   },
+   {
+    "transfer_note": "xac minh ho so thue thang nay",
+    "amount_vnd": 600000,
+    "manipulation_intent": "Tạo áp lực thời hạn để nạn nhân vội vàng chuyển tiền"
+   },
+   {
+    "transfer_note": "phi ho tro mo khoa mst",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Dùng từ ngữ hành chính tạo lòng tin giả mạo"
+   },
+   {
+    "transfer_note": "tien phi xac minh thue hkd",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Mạo danh cơ quan nhà nước thu phí trực tuyến"
+   }
+  ]
+ },
+ "compile_seconds": 2.72,
+ "total_seconds": 4.23,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "case_id": "D-04",
+ "generated_at": "2026-11-27T16:56:21+00:00",
+ "model": "gemini-3.5-flash-lite",
+ "prompts": [
+  "incident_extract.v2",
+  "rule_compile.v3"
+ ],
+ "source": "LLM",
+ "analysis": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "tactic_slug": null,
+  "tactic_summary_vi": "Kẻ gian giả danh cán bộ thuế thông báo hồ sơ thuế khoán bị sai và yêu cầu nộp phí điều chỉnh qua tài khoản cá nhân, khiến nạn nhân chuyển tiền.",
+  "money_lost_vnd": 1000000,
+  "money_requested_vnd": null,
+  "otp_or_password_disclosed": "UNKNOWN",
+  "remote_app_installed": "UNKNOWN",
+  "facts": [
+   {
+    "text": "Người xưng cán bộ thuế nói hồ sơ thuế khoán của tiệm bị sai.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Yêu cầu nộp phí điều chỉnh qua tài khoản cá nhân trong hôm nay.",
+    "provenance": "USER_REPORTED"
+   },
+   {
+    "text": "Nạn nhân đã nộp 1 triệu đồng.",
+    "provenance": "USER_REPORTED"
+   }
+  ],
+  "manipulation_cues": [
+   "giả danh cán bộ thuế",
+   "đòi nộp phí điều chỉnh qua tài khoản cá nhân",
+   "gấp gáp trong thời hạn trong ngày"
+  ]
+ },
+ "compile_raw": {
+  "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+  "conditions": [
+   {
+    "field": "transfer_note",
+    "op": "SEMANTIC_MATCH",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": null,
+    "anchor_phrases": [
+     "phi xac minh ho so thue",
+     "nop phi dieu chinh thue",
+     "phi cap nhat thue khoán",
+     "nop tien dieu chinh thue",
+     "phi xu ly ho so thue",
+     "nop phi ho so thue"
+    ]
+   },
+   {
+    "field": "transfer_note",
+    "op": "NOT_CONTAINS_ANY",
+    "value_int": null,
+    "value_bool": null,
+    "value_str_list": [
+     "thue nha",
+     "thue phong",
+     "thue mat bang",
+     "thue xe"
+    ],
+    "anchor_phrases": null
+   }
+  ],
+  "purpose_question": {
+   "question_vi": "Bạn chuyển khoản với nội dung thuế này nhằm mục đích gì?",
+   "options": [
+    {
+     "label_vi": "Thanh toán tiền thuê nhà, thuê mặt bằng hoặc thuê tài sản",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc giao dịch cá nhân khác",
+     "outcome": "BENIGN"
+    },
+    {
+     "label_vi": "Nộp phí xử lý hoặc điều chỉnh hồ sơ theo yêu cầu của cơ quan thuế",
+     "outcome": "TACTIC_MATCH"
+    }
+   ],
+   "tactic_alert_vi": "Cơ quan thuế không yêu cầu người dân nộp phí điều chỉnh hay xác minh hồ sơ qua tài khoản cá nhân. Việc này có nguy cơ mất tiền."
+  },
+  "variants": [
+   {
+    "transfer_note": "phi xac minh thue khoang",
+    "amount_vnd": 500000,
+    "manipulation_intent": "Gia danh can bo thue yeu cau nop phi xac minh"
+   },
+   {
+    "transfer_note": "nop tien phi dieu chinh ho so thue",
+    "amount_vnd": 1000000,
+    "manipulation_intent": "Thuc giuc nop phi sua ho so trong ngay"
+   },
+   {
+    "transfer_note": "phi cap nhat thue hkd",
+    "amount_vnd": 2000000,
+    "manipulation_intent": "Thong bao sai ho so va bat chuyen tien"
+   },
+   {
+    "transfer_note": "nop phi xu ly thue",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "De doa phat neu khong nop phi dieu chinh"
+   },
+   {
+    "transfer_note": "nop tien xac minh thue",
+    "amount_vnd": 800000,
+    "manipulation_intent": "Yeu cau chuyen khoan vao tai khoan ca nhan"
+   },
+   {
+    "transfer_note": "phi dieu chinh thue khoán",
+    "amount_vnd": 1200000,
+    "manipulation_intent": "Gia mao co quan thue de thu phi"
+   }
+  ]
+ },
+ "compile_seconds": 3.0,
+ "total_seconds": 4.38,
+ "validation": {
+  "ok": true,
+  "errors": [],
+  "warnings": []
+ }
+}
