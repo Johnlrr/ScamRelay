@@ -17,14 +17,15 @@
 | S5 | Chuẩn hóa cố định: bỏ dấu và **mở rộng viết tắt** (HKD, MST…). Bỏ chế độ B; bước hiệu chỉnh chỉ còn quét ngưỡng | §8 |
 | S6 | Luật qua validator thì tự vào `SHADOW_LOG`. **Chuyên viên sửa được bản nháp** (endpoint mới), sau đó validator và kiểm thử hồi quy chạy lại. Tập sạch **≥ 200 mẫu**. **Approve bị khóa khi `flagged > 0`**, trừ khi có lý do ghi đè | §7.2 |
 | S7 | Đồng hồ kích hoạt ghi **2 mốc**: thời gian máy (biên dịch + kiểm thử) và thời gian con người | §7.2f |
-| S8 | Bảng theo dõi luật và nút "Báo nhầm" (nên có); chống dò đáp án (có thể có) | §7.2h, §7.3 |
+| S8 | Bảng theo dõi luật, nút "Báo nhầm", chống dò đáp án (đều là "có thể có") | §7.2h, §7.3 |
 | S9 | Kích hoạt hộ **chỉ làm tài khoản an toàn hơn**: thông báo cho chủ ví, người thân không thấy số dư. Khoanh vùng `MANIPULATION` dùng `HOLD_UNTIL_VERIFIED` | §7.1 |
-| S10 | Màn hình đồng ý chia sẻ (endpoint riêng); hồ sơ tự xóa theo TTL | §7.1c |
-| S11 | Khôi phục `GET …/export-pack`, nhưng chỉ trả **Markdown** dựng bằng Python, không dùng Jinja2. PDF do trình duyệt in (có thể có) | §7.1b |
-| S12 | Held-out gồm **12 ca, viết xong trước 12:00 ngày 28/11**, mã hóa rồi commit kèm hash. Câu trả lời của nạn nhân viết bằng lời tự do; **linh ánh xạ** sang phương án khi chạy. Chỉ chạy **1 lượt**. Thêm ablation với luật từ khóa | §13 |
+| S10 | Đồng ý chia sẻ là cờ `consent_handoff` gửi kèm `analyze`, sau phần giải thích 3 điểm | §7.1c |
+| S11 | Gói hồ sơ "Kể 1 lần" dựng **ở frontend** thành Markdown, tải bằng Blob; PDF do trình duyệt in (có thể có). Không có endpoint export-pack | §7.1b |
+| S12 | Held-out **10–12 ca**, quynh viết tối 30/11 trên máy riêng, bao không xem. Câu trả lời của nạn nhân viết bằng lời tự do; **linh ánh xạ** sang phương án khi chạy. Chỉ chạy **1 lượt** sau freeze | §13 |
 | S13 | `ENFORCE_HOLD` cần `corroboration_count ≥ 2` và một lần duyệt thứ hai | §7.2f |
 | S14 | Đọc ảnh hạ xuống "có thể có" | §1 |
 | S15 | Bỏ hẳn: `usage_counter` / `DAILY_*_CAP`, `REGISTRY_STRICT`, endpoint `unlock` và `merge-incident`, workflow deploy / WIF, Jinja2, `SEMANTIC_MODE` | — |
+| S16 | **Cắt cho hackathon (27/11, 23:20):** bỏ mã hóa và hash held-out; bỏ bảng `notification`, endpoint `consent` và xóa theo TTL; bỏ endpoint export-pack; dự phòng biên dịch còn 2 tầng; dừng mềm 30 phút, bảng theo dõi luật, "Báo nhầm", chống dò đáp án và ablation chỉ làm nếu 30/11 còn dư giờ | — |
 
 ---
 
@@ -38,7 +39,7 @@
 | D4 | **LLM chỉ sinh nội dung và nhãn ý nghĩa, không sinh quyền.** `threshold`, điều kiện sàn, hành động, `stage` và `option_id` đều do server gán | Separation of Authority thật sự |
 | D5 | **Không có message queue hay worker nền.** Mọi request chạy đồng bộ, có timeout | Ít thành phần, ít điểm hỏng |
 | D6 | **Không render PDF ở server.** Export-pack trả Markdown; PDF do trình duyệt in | Không cần thư viện hệ thống |
-| D7 | **Ba tầng dự phòng khi biên dịch:** gọi LLM → dùng output LLM *thật* đã lưu sẵn cho ca demo → dùng luật dựng sẵn theo thủ đoạn. Response ghi rõ `source` | Demo không chết, và không giả làm output trực tiếp |
+| D7 | **Hai tầng dự phòng khi biên dịch:** gọi LLM → nếu lỗi hoặc 429 thì đọc output LLM *thật* đã lưu sẵn cho 3 thủ đoạn mẫu (`fallback_tactics.json`), gắn `source="CACHED_FALLBACK"` và `degraded: true` | Demo không chết, và không giả làm output trực tiếp |
 | D8 | **Cô lập theo workspace.** Mỗi tài khoản giám khảo có ví, luật, sự cố riêng, kèm nút Reset | Giám khảo X không ảnh hưởng giám khảo Y |
 | D9 | **ScamRelay là lớp nằm trên hệ thống của ví.** Quyết định cuối = mức nghiêm nhất của (lớp đối tác, khoanh vùng, luật tiếp sức) | ScamRelay không bao giờ yếu hơn hệ thống sẵn có |
 | D10 | **Gateway không gọi LLM.** Mỗi giao dịch chỉ tốn tối đa 1 lần embed, có cache | Latency và quota ổn định khi giám khảo dùng |
@@ -54,9 +55,9 @@
 
 | Mức (ABOUT §8.1) | Hạng mục kỹ thuật |
 |---|---|
-| **Bắt buộc có** | `analyze` (văn bản) + containment; `compile` + validator + assembler; kiểm thử hồi quy trên ≥ 200 ca sạch, có khóa Approve; sửa bản nháp; approve và rollback; gateway `evaluate` / `submit` theo StagePolicy và lớp đối tác; `/wallet` so sánh trước và sau; `/docs`; `run_bench.py`; deploy public cùng dự phòng 3 tầng (D7) |
-| **Nên có** | Kích hoạt hộ đủ các giới hạn ở §7.1; nâng khóa khi lộ OTP; export-pack Markdown; bảng theo dõi luật và "Báo nhầm"; `ALLOW_WITH_WARNING` (nếu cắt thì `BENIGN` → `ALLOW` và chỉ mất dòng cảnh báo trên màn kết quả); ablation từ khóa |
-| **Có thể có** | PDF; đọc ảnh chụp màn hình; biến thể do LLM sinh (nếu cắt, dùng 5 biến thể cố định cho mỗi thủ đoạn trong `fallback_tactics.json`); chống dò đáp án |
+| **Bắt buộc có** | `analyze` (văn bản) + containment; `compile` + validator + assembler; kiểm thử hồi quy trên ≥ 200 ca sạch, có khóa Approve; sửa bản nháp; approve và rollback; gateway `evaluate` / `submit` theo StagePolicy và lớp đối tác; `/wallet` so sánh trước và sau; `/docs`; `run_bench.py`; deploy public cùng dự phòng (D7) |
+| **Nên có** | Kích hoạt hộ đủ các giới hạn ở §7.1; nâng khóa khi lộ OTP; gói hồ sơ `.md` dựng ở frontend; `ALLOW_WITH_WARNING` (nếu cắt thì `BENIGN` → `ALLOW` và chỉ mất dòng cảnh báo trên màn kết quả) |
+| **Có thể có** (chỉ làm nếu 30/11 còn dư giờ) | Dừng mềm 30 phút (`STOP_COOLDOWN`); bảng theo dõi luật và "Báo nhầm"; ablation từ khóa; chống dò đáp án; PDF; đọc ảnh chụp màn hình; biến thể do LLM sinh (nếu cắt, dùng 5 biến thể cố định cho mỗi thủ đoạn) |
 | **Ngoài phạm vi** (ghi rõ trong README và slide) | Ví hoặc ngân hàng thật; API MoMo; đọc SMS hay tin nhắn của người B; xác thực danh tính thật; thu thập OTP, CCCD hay mật khẩu. Luồng `/help` công khai **không** chuyển hồ sơ cho đội vận hành thật (chỉ chuyển trong workspace demo) |
 
 ---
@@ -69,7 +70,7 @@ Browser ──HTTPS──►  FastAPI (uvicorn, 1 worker)                       
                  │   ├─ /            → SPA tĩnh (React build)                                    │
                  │   ├─ /docs        → Swagger                                                   │
                  │   └─ /v1/*                                                                    │
-                 │        ├─ incidents/  (Luồng 1) preprocess → LLM extract → containment → pack │
+                 │        ├─ incidents/  (Luồng 1) preprocess → LLM extract → containment        │
                  │        ├─ fraudops/   (Luồng 2) LLM compile → validator → assembler           │
                  │        │                         → regression → [chuyên viên sửa] → approve   │
                  │        ├─ gateway/    (Luồng 3) derive → lớp đối tác → khoanh vùng           │
@@ -87,8 +88,7 @@ Browser ──HTTPS──►  FastAPI (uvicorn, 1 worker)                       
 |---|---|---|
 | `preprocess` | `clean_input`, che PII bằng regex, `norm`, `norm_match` (bỏ dấu + mở rộng viết tắt) | Không |
 | `incident_ai` | Trích xuất sự cố từ đoạn chat (ảnh nếu kịp), có nhãn nguồn gốc | **Có** |
-| `containment` | Tính tất định `mode`, 3 việc cần làm, tạm giữ bảo vệ, thông báo cho chủ ví | Không |
-| `export_pack` | Dựng Markdown 3 mục từ `analysis_json` đã che | Không |
+| `containment` | Tính tất định `mode`, 3 việc cần làm, tạm giữ bảo vệ | Không |
 | `rule_ai` | Sinh bản nháp RelayRule: anchor, câu hỏi kèm nhãn ý nghĩa, biến thể | **Có** |
 | `validator` | V1–V8, chuyển điều kiện hành vi sang `behavior_hints` | Không |
 | `assembler` | Gắn các trường do server quyết định: id, điều kiện sàn, ngưỡng, phương án `UNCLEAR`, dòng chống dặn trước, stage | Không |
@@ -98,7 +98,7 @@ Browser ──HTTPS──►  FastAPI (uvicorn, 1 worker)                       
 | `baseline` | Lớp đối tác mô phỏng: điểm 0–100 và quyết định | Không |
 | `stage_policy` | Bảng nhãn ý nghĩa × giai đoạn → hành động; thứ tự mức nghiêm | Không |
 | `gateway`, `ledger` | Ra quyết định, cấp challenge, ghi sổ, tạo biên lai | Không |
-| `stats` | Thống kê theo luật, phản hồi báo nhầm | Không |
+| `stats` (có thể có) | Thống kê theo luật, phản hồi báo nhầm | Không |
 
 ---
 
@@ -132,7 +132,7 @@ scamrelay/
 │  │  ├─ schemas/          # incident.py, rule.py, gateway.py, llm_incident.py, llm_rule.py
 │  │  ├─ routers/          # incidents.py, fraudops.py, gateway.py, aux.py
 │  │  ├─ core/             # preprocess, validator, assembler, layer1, semantic, regression, baseline,
-│  │  │                    # stage_policy, gateway, ledger, containment, export_pack, stats
+│  │  │                    # stage_policy, gateway, ledger, containment, stats
 │  │  └─ ai/               # interfaces.py, llm_client.py, incident_ai.py, rule_ai.py, prompts/
 │  ├─ data/
 │  │  ├─ action_registry.json       # hotline/link ĐÃ KIỂM CHỨNG (có source_url, verified_at)
@@ -140,15 +140,13 @@ scamrelay/
 │  │  ├─ abbreviations.json         # bảng mở rộng viết tắt (§8)
 │  │  ├─ benign_corpus.json         # ≥ 200 mẫu sinh bằng template + ≥ 20 ca bẫy viết tay
 │  │  ├─ static_scam_keywords.json  # từ khóa thủ đoạn ĐÃ BIẾT, cho baseline (không có thủ đoạn HKD)
-│  │  ├─ fallback_tactics.json      # luật dựng sẵn + 5 biến thể cố định cho mỗi thủ đoạn
-│  │  └─ demo_compile_cache/        # output LLM THẬT đã lưu của các ca demo (D7)
+│  │  └─ fallback_tactics.json      # 3 thủ đoạn mẫu: từ khóa (fallback analyze) + output compile THẬT đã lưu (D7)
 │  ├─ tests/
 │  └─ requirements.txt, requirements-dev.txt, pytest.ini
 ├─ frontend/                        # /, /help, /ops, /wallet
 ├─ bench/
 │  ├─ cases/dev/*.json
-│  ├─ heldout.json.gpg, heldout.sha256   # commit trước 12:00 ngày 28/11 (§13.2)
-│  ├─ gen_benign.py, calibrate.py, check_demo.py, run_bench.py, ablation.py
+│  ├─ gen_benign.py, calibrate.py, check_demo.py, run_bench.py
 │  └─ results/
 ├─ scripts/deploy.sh, smoke.sh
 ├─ .github/workflows/test.yml
@@ -170,9 +168,8 @@ Mọi bảng đều có `workspace_id` (D8) và `created_at`.
 | `wallet` | `id`, `label`, `owner_name`, `balance_vnd`, `compromise_locked: bool`, `known_contacts: list[account_id]` (JSON) |
 | `account` | `id` (mã sandbox), `display_name`, `age_days`, `is_verified_biller` |
 | `transaction` | `id`, `wallet_id`, `to_account_id`, `amount_vnd`, `transfer_note`, `status` (`COMMITTED/HELD/STOPPED/BLOCKED/PENDING_CHALLENGE/EXPIRED`), `decision`, `reason_codes`, `partner_decision`, `partner_risk_score`, `matched_rule_id`, `matched_rule_version`, `receipt_id`, `release_at?`, `retry_after?` |
-| `incident` | `id`, `submitted_at`, `is_proxy`, `protected_wallet_id?`, `analysis_json` (đã che PII), `mode` (`MANIPULATION/COMPROMISE/UNCLEAR`), `degraded`, `consent_at?`, `share_expires_at?`, `purged: bool` |
+| `incident` | `id`, `submitted_at`, `is_proxy`, `protected_wallet_id?`, `analysis_json` (đã che PII), `mode` (`MANIPULATION/COMPROMISE/UNCLEAR`), `degraded`, `consent_handoff: bool` |
 | `containment_policy` | `id`, `incident_id`, `wallet_id`, `mode`, `active`, `version`, `requested_by_proxy` |
-| `notification` | `id`, `wallet_id`, `kind` (`PROXY_PROTECTIVE_HOLD/CONTAINMENT_UPGRADED`), `message_vi`, `read` |
 | `external_action` | `id`, `incident_id`, `action_id`, `status` (`OPEN/USER_REPORTED_DONE/PENDING_EXTERNAL_CONFIRMATION`). **Không bao giờ có trạng thái "đã khóa"** cho tổ chức bên ngoài |
 | `relay_rule` | `id`, `source_incident_id`, `version`, `stage` (`DRAFT_INVALID/SHADOW_LOG/ASK_ONLY/ENFORCE_HOLD/ROLLED_BACK/EXPIRED`), `draft_json`, `rule_json`, `validation_json`, `regression_json`, `regression_version`, `edited_by_human`, `ttl_hours`, `expires_at`, `activated_at?`, `corroboration_count`, `approvals` (JSON), `compile_requested_at`, `ai_seconds` |
 | `rule_event` | Audit log: `rule_id`, `version`, `event` (`COMPILED/VALIDATED/EDITED/TESTED/APPROVED/OVERRIDE/ROLLED_BACK/EXPIRED/SHADOW_HIT/CHALLENGE_ISSUED/ANSWERED/FP_REPORTED`), `actor`, `payload` |
@@ -182,7 +179,7 @@ Mọi bảng đều có `workspace_id` (D8) và `created_at`.
 
 ### 5.2 Seed workspace (hợp đồng cho người viết ca benchmark)
 
-Danh sách id này **chốt cùng Contract Drop tối 27/11**, vì quynh viết held-out sáng 28/11 dựa trên nó. Muốn thêm id thì chỉ được thêm, không đổi hay xóa id cũ.
+Danh sách id này **chốt cùng Contract Drop**; quynh dùng nó khi viết held-out. Muốn thêm id thì chỉ được thêm, không đổi hay xóa id cũ.
 
 | Ví | Chủ | Số dư | `known_contacts` |
 |---|---|---|---|
@@ -373,7 +370,7 @@ class AnalyzeResult(BaseModel):
 
 class CompileResult(BaseModel):
     raw: dict                                    # JSON thô; router đưa vào validate_llm_output
-    source: Literal["LLM","CACHED_LLM_OUTPUT","STATIC_FALLBACK"]
+    source: Literal["LLM","CACHED_FALLBACK"]
     degraded: bool = False
     llm_seconds: float
 
@@ -486,6 +483,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
    - `image_base64` (có thể có; ảnh gốc ≤ 4MB, JPEG/PNG, frontend resize về ≤ 1600px).
    - `is_proxy` ("Tôi là người thân kích hoạt hộ").
    - `protect_wallet_id?`: yêu cầu tạm giữ bảo vệ ví này, chỉ dùng được trong workspace demo.
+   - `consent_handoff` (mặc định `false`): đồng ý chuyển hồ sơ sang FraudOps (§7.1c).
    - `followup_text?` + `incident_id?` khi bổ sung tình tiết.
 2. **Preprocess (tất định):**
    - Chuẩn hóa Unicode NFC, bỏ ký tự điều khiển và ký tự vô hình.
@@ -503,36 +501,34 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
    - Tạo hoặc **nâng** `containment_policy`. Chỉ được nâng theo chiều không có → `MANIPULATION` → `COMPROMISE`, không bao giờ hạ.
    - `MANIPULATION`: giao dịch đi tới tài khoản **không** phải biller đã xác minh và **không** nằm trong `known_contacts` → `HOLD_UNTIL_VERIFIED`. Biller và người quen không bị khoanh vùng chặn (lớp đối tác vẫn áp dụng).
    - `COMPROMISE`: mọi giao dịch đi đều `BLOCK`, kể cả biller; đặt `wallet.compromise_locked = true`.
-   - Tạo `notification` cho chủ ví: *"Người thân đã yêu cầu tạm giữ bảo vệ ví của bạn lúc HH:MM. Chỉ bạn mới gỡ được, bằng cách xác minh qua kênh chính thức."*
+   - Chủ ví thấy thông báo ngay trên `/wallet`: `GET /v1/wallets` trả trường `protective_hold_notice`, đọc thẳng từ `containment_policy` đang bật, ví dụ *"Người thân đã yêu cầu tạm giữ bảo vệ ví của bạn lúc HH:MM. Chỉ bạn mới gỡ được, bằng cách xác minh qua kênh chính thức."* Không có bảng thông báo riêng.
    - **Gỡ tạm giữ:** sandbox không có endpoint gỡ (bản thật: chủ ví xác minh qua kênh chính thức). Demo dùng Reset.
    - **Giới hạn của kích hoạt hộ (INV-11):** response không bao giờ chứa số dư hay lịch sử giao dịch; `/help` không có chức năng chuyển tiền; không tham số nào cho phép hạ mức.
-6. **Follow-up** (ví dụ "Mẹ lỡ đọc OTP"): chạy lại bước 3 với lịch sử sự cố, rồi merge theo quy tắc **chỉ nâng mức** (`UNKNOWN` → `YES` thì được, `YES` → `NO` thì không). Nếu `mode` nâng lên `COMPROMISE` thì nâng policy và gửi thông báo `CONTAINMENT_UPGRADED`.
-7. **Response:** `incident_id`, `mode`, `actions[3]`, `facts` (có nhãn nguồn gốc), `policy_summary_vi`, `protective_hold` (`{wallet_label, mode}` hoặc `null`), `degraded`.
+6. **Follow-up** (ví dụ "Mẹ lỡ đọc OTP"): chạy lại bước 3 với lịch sử sự cố, rồi merge theo quy tắc **chỉ nâng mức** (`UNKNOWN` → `YES` thì được, `YES` → `NO` thì không). Nếu `mode` nâng lên `COMPROMISE` thì nâng policy; thông báo trên ví tự cập nhật theo policy. Follow-up cũng có thể bật `consent_handoff` (chỉ bật, không tắt).
+7. **Response:** `incident_id`, `mode`, `actions[3]`, `analysis` (`IncidentAnalysis` đã che PII, gồm `facts` có nhãn nguồn gốc; frontend dùng để dựng gói hồ sơ), `policy_summary_vi`, `protective_hold` (`{wallet_label, mode}` hoặc `null`), `degraded`.
 
-**7.1b Export-pack (`GET /v1/incidents/{id}/export-pack`)**
-- Trả `text/markdown`, dựng từ `analysis_json` (đã che PII) và registry. Không chứa ảnh.
+**7.1b Gói hồ sơ "Kể 1 lần, dùng mọi nơi" (frontend, không có endpoint)**
+- Frontend dựng chuỗi Markdown từ response của `analyze` (đã che PII) và registry, tải bằng Blob `.md`. Không chứa ảnh.
 - Gồm 3 mục:
   1. Tóm tắt có dẫn chiếu bằng chứng, dành cho CSKH/ngân hàng.
   2. Dòng thời gian để trình báo công an.
   3. Danh mục chứng từ để đối chiếu bảo hiểm, ghi rõ *"chỉ hỗ trợ chuẩn bị hồ sơ, không kết luận quyền bồi thường"*.
-- Chỉ phiên đã tạo sự cố hoặc JWT của workspace mới tải được.
-- PDF (có thể có): frontend render Markdown rồi gọi `window.print()`.
+- PDF (có thể có): render Markdown rồi gọi `window.print()`.
 
-**7.1c Đồng ý chia sẻ (`POST /v1/incidents/{id}/consent` với body `{share: true}`)**
-- Màn hình đồng ý ghi rõ 3 điều:
+**7.1c Đồng ý chia sẻ (cờ `consent_handoff` trong `analyze`)**
+- Cạnh ô đồng ý, UI ghi rõ 3 điều:
   1. **Chia sẻ những gì:** tóm tắt thủ đoạn và các trường giao dịch đã che định danh.
   2. **Dùng để làm gì:** tạo luật bảo vệ người khác.
-  3. **Lưu trong bao lâu:** theo TTL của luật, sau đó xóa.
-- Server ghi `consent_at` và đặt `share_expires_at = now + DEFAULT_SHARE_TTL_HOURS` (72). Khi một luật sinh từ sự cố này được duyệt, `share_expires_at = max(share_expires_at, rule.expires_at)`.
-- **Xóa theo TTL (lazy):** mỗi lần đọc `/fraudops/*`, sự cố có `share_expires_at < now` bị thay `analysis_json` bằng `{"purged": true}` và rời khỏi hàng đợi. Luật chỉ chứa nội dung cấp thủ đoạn (không có PII), nên được giữ lại.
-- Sự cố chưa có đồng ý thì không hiện ở hàng đợi, và `compile` trả `403 CONSENT_REQUIRED`.
+  3. **Lưu trong bao lâu:** bản thử nghiệm chỉ lưu trong workspace demo và xóa khi Reset; bản thật xóa theo TTL của luật.
+- Sự cố chưa đồng ý thì không hiện ở hàng đợi `/ops`, và `compile` trả `403 CONSENT_REQUIRED`.
+- Sandbox không cài xóa tự động theo TTL. Slide và README nói đúng như vậy.
 
 ### 7.2 Luồng 2: Tiếp sức
 
 **a) Compile (`POST /v1/fraudops/rules/compile`, body `{incident_id}`)**
 1. Yêu cầu đã có đồng ý. Ghi `compile_requested_at`.
 2. `rule_ai.compile_rule(analysis)` dùng prompt `rule_compile.vN.txt`, timeout 30 giây.
-   - Nếu lỗi hoặc 429: lấy `demo_compile_cache` của thủ đoạn tương ứng (`CACHED_LLM_OUTPUT`). Không có cache thì dùng `fallback_tactics.json` (`STATIC_FALLBACK`).
+   - Nếu lỗi hoặc 429: đọc output đã lưu của thủ đoạn tương ứng trong `fallback_tactics.json` (`CACHED_FALLBACK`, `degraded: true`). Thủ đoạn không có trong file (`OTHER_NEW`) thì trả lỗi kèm nút "Biên dịch lại".
 3. `validate_llm_output(raw)`:
    - Không đạt: lưu luật ở stage `DRAFT_INVALID` kèm lỗi; UI hiện lỗi và nút "Biên dịch lại".
    - Đạt: assembler dựng `RelayRule` version 1, stage `SHADOW_LOG` (chỉ ghi log, không hỏi), `ttl_hours` mặc định 24.
@@ -540,7 +536,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 5. Cộng thời gian xử lý vào `ai_seconds`.
 6. **Response:** `rule`, `validation` (lỗi và cảnh báo), `source`, `degraded`. UI tự gọi regression ngay sau đó.
 
-> **Tính trung thực của demo:** cảnh "kiểm thử hồi quy bắt được câu mẫu quá rộng" (ABOUT §7) chỉ được dùng output LLM **thật** lưu trong `demo_compile_cache`. UI ghi rõ nguồn (`LLM` / `kết quả đã lưu` / `luật dựng sẵn`). Nếu không có lượt chạy thật nào sinh ra câu mẫu quá rộng, thì đổi kịch bản: chị Mai tự xóa một câu mẫu chị cho là rộng rồi chạy lại. **Không** tự chèn lỗi vào output rồi gọi đó là lỗi của AI.
+> **Tính trung thực của demo:** cảnh "kiểm thử hồi quy bắt được câu mẫu quá rộng" (ABOUT §7) chỉ được dùng output LLM **thật** (gọi trực tiếp, hoặc đã lưu trong `fallback_tactics.json`). UI ghi rõ nguồn (`LLM` / `kết quả đã lưu`). Nếu không có lượt chạy thật nào sinh ra câu mẫu quá rộng, thì đổi kịch bản: chị Mai tự xóa một câu mẫu chị cho là rộng rồi chạy lại. **Không** tự chèn lỗi vào output rồi gọi đó là lỗi của AI.
 
 **b) DeterministicValidator**
 
@@ -587,7 +583,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 - `ENFORCE_HOLD`: là **lần duyệt thứ hai**, chỉ duyệt được từ `ASK_ONLY`, và cần `corroboration_count ≥ 2`, nếu không thì trả `409 CORROBORATION_REQUIRED`.
   - `corroboration_count` là số báo cáo độc lập đến từ các tài khoản đã xác minh khác nhau. Trong sandbox, server tính tự động theo §5.2; không có UI gộp sự cố.
   - Bản thật cần người duyệt lần hai khác người duyệt lần một. Sandbox mỗi giám khảo có một workspace riêng, nên chỉ ghi log người duyệt.
-- Ghi `approvals += {by, stage, at, override_reason}`, `activated_at` (lần đầu luật có hiệu lực) và `expires_at = now + ttl`. Gia hạn `incident.share_expires_at`.
+- Ghi `approvals += {by, stage, at, override_reason}`, `activated_at` (lần đầu luật có hiệu lực) và `expires_at = now + ttl`.
 - **Đồng hồ 2 mốc** (trả trong response, UI hiển thị chữ lớn):
   - `ai_seconds` = tổng thời gian máy chạy compile và mọi lượt regression của luật.
   - `human_seconds` = (`approved_at` − `compile_requested_at`) − `ai_seconds`.
@@ -597,7 +593,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 - `POST …/rollback` chuyển luật sang `ROLLED_BACK` ngay lập tức. Challenge đã cấp từ luật đó, khi được trả lời, sẽ nhận quyết định bằng mức sàn (§7.3).
 - **Hết hạn kiểu lazy:** mỗi request tới gateway hoặc `/fraudops` chuyển các luật có `expires_at < now` sang `EXPIRED`, không cần cron.
 
-**h) Bảng theo dõi luật (nên có)**
+**h) Bảng theo dõi luật (có thể có, chỉ làm nếu 30/11 còn dư giờ)**
 - `GET /v1/fraudops/rules/{id}/stats` trả về: `asked`, `answered` (`TACTIC_MATCH` / `BENIGN` / `UNCLEAR`), `shadow_hits`, `fp_reports`, `last_hit_at`.
 - `suggest_upgrade = (answered.TACTIC_MATCH ≥ 2 và stage == ASK_ONLY)`. Đây chỉ là gợi ý cho chuyên viên, **không tự nâng giai đoạn**.
 - `POST /v1/gateway/feedback` (body `{tx_id, kind: "FALSE_POSITIVE", note?}`) do nút "Báo nhầm" trên màn kết quả gọi, ghi `rule_event FP_REPORTED`.
@@ -629,7 +625,7 @@ def evaluate(req, ws):
         if r.stage == "SHADOW_LOG": log_event(r, "SHADOW_HIT", tx)
     live = [(r, s) for r, s in hits if r.stage in ("ASK_ONLY", "ENFORCE_HOLD")]
 
-    # 3) Dừng mềm còn hiệu lực: trong 30 phút sau STOP_AND_EXPLAIN cùng người nhận hoặc cùng luật
+    # 3) (có thể có) Dừng mềm còn hiệu lực: trong 30 phút sau STOP_AND_EXPLAIN cùng người nhận hoặc cùng luật
     if stop_cooldown_active(tx, [r for r, _ in live]):
         floor.raise_to("STOP_AND_EXPLAIN", "STOP_COOLDOWN")
 
@@ -697,7 +693,7 @@ Vì quyết định cuối luôn lấy `max` với mức sàn, chọn `BENIGN` k
    - Model `gemini-embedding-001`, `task_type="SEMANTIC_SIMILARITY"`, `output_dimensionality=768`, chuẩn hóa L2 sau khi nhận vector.
    - Anchor được embed theo lô, một request mỗi lần compile hoặc sửa.
    - Mỗi giao dịch tốn tối đa 1 lần embed. Cache theo `sha256(model|dim|norm_match(text))` và lưu trong DB.
-   - Khi khởi động, seed cache cho tập sạch và các câu demo; chỉ tính phần còn thiếu.
+   - Khi khởi động, seed cache cho tập sạch và các câu demo; chỉ tính phần còn thiếu, và **gửi theo lô 50–100 câu/request** (gói miễn phí chỉ có khoảng 1.000 request/ngày).
 3. **Ngưỡng `SEMANTIC_THRESHOLD`:**
    - Hiệu chỉnh **chỉ trên tập dev**, bằng `bench/calibrate.py`: quét 0,60–0,95 với bước 0,01, mỗi ngưỡng in ra tỷ lệ biến thể lừa của dev bật câu hỏi và số mẫu sạch bị khớp.
    - Cách chọn: trong các ngưỡng có `flagged = 0` trên tập sạch, lấy ngưỡng có tỷ lệ bật câu hỏi cao nhất. Ghi vào `config.py` kèm ngày giờ.
@@ -745,13 +741,13 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 | INV-02 | Bằng chứng là dữ liệu không tin cậy | LLM không có tool; trường quyền bị gỡ (V8) | `test_injection_cannot_set_stage_threshold_action` |
 | INV-03 | Fail-safe | LLM lỗi thì chuyển fallback; không có code path nào trả "an toàn" | `test_llm_timeout_returns_safe_defaults` |
 | INV-04 | Không xác nhận khống | Trạng thái của tổ chức bên ngoài tối đa là `PENDING_EXTERNAL_CONFIRMATION` | `test_no_external_locked_status` |
-| INV-05 | Riêng tư | Che PII trước khi gọi LLM; ảnh không ghi đĩa; phiên công khai tự xóa sau 24 giờ; hồ sơ đã chia sẻ tự xóa theo TTL | `test_pii_masking`, `test_image_not_persisted`, `test_incident_purged_after_share_ttl` |
+| INV-05 | Riêng tư | Che PII trước khi gọi LLM; ảnh không ghi đĩa; phiên công khai tự xóa sau 24 giờ | `test_pii_masking`, `test_image_not_persisted` |
 | INV-06 | Luật không nhắm vào tài khoản hay cá nhân | V4 | `test_rule_rejects_account_numbers` |
 | INV-07 | Hành động do server quyết định | Chỉ lấy từ StagePolicy và mức sàn | `test_action_from_stage_policy_only` |
 | INV-08 | Không bỏ qua được challenge; câu trả lời cũ không vượt được khóa mới | Claim nguyên tử, có hạn; kiểm tra lại ví trong cùng transaction | `test_challenge_replay_and_skip_rejected`, `test_challenge_after_compromise_lock_blocked` |
 | INV-09 | Cô lập workspace | Mọi query đều lọc theo `workspace_id` | `test_workspace_isolation` |
 | INV-10 | Khoanh vùng chỉ nâng, không tự hạ | Merge một chiều | `test_containment_monotonic` |
-| INV-11 | Kích hoạt hộ chỉ làm an toàn hơn | Không có đường nào cho người thân chuyển tiền, hạ mức hay xem số dư; chủ ví luôn nhận thông báo | `test_proxy_cannot_downgrade_or_read_balance`, `test_proxy_hold_notifies_owner` |
+| INV-11 | Kích hoạt hộ chỉ làm an toàn hơn | Không có đường nào cho người thân chuyển tiền, hạ mức hay xem số dư; ví luôn hiện `protective_hold_notice` | `test_proxy_cannot_downgrade_or_read_balance`, `test_proxy_hold_visible_to_owner` |
 | INV-12 | Client không thấy nhãn ý nghĩa | `ChallengeOut` không có `outcome`; submit nhận `option_id` | `test_challenge_out_hides_outcome` |
 | INV-13 | ScamRelay không yếu hơn lớp đối tác | `final = max(mức sàn, …)` | `test_final_never_below_partner` |
 | INV-14 | Cổng Approve | Regression phải đúng version hiện tại; `flagged > 0` thì cần lý do ghi đè; sửa bản nháp làm hủy regression | `test_approve_locked_when_flagged`, `test_approve_requires_current_regression`, `test_edit_invalidates_regression` |
@@ -782,12 +778,11 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 
 ## 11. API
 
-**8 endpoint lõi** (đúng như ABOUT §5.2):
+**7 endpoint lõi** (ABOUT §5.2 trừ `export-pack`; gói hồ sơ dựng ở frontend):
 
 | Method & path | Auth | Ghi chú |
 |---|---|---|
-| `POST /v1/incidents/analyze` | phiên | Chỉ nhận JSON; follow-up qua `incident_id`; `protect_wallet_id` chỉ dùng trong workspace demo |
-| `GET /v1/incidents/{id}/export-pack` | phiên sở hữu / JWT | Trả `text/markdown` |
+| `POST /v1/incidents/analyze` | phiên | Chỉ nhận JSON; follow-up qua `incident_id`; `protect_wallet_id` chỉ dùng trong workspace demo; `consent_handoff` |
 | `POST /v1/fraudops/rules/compile` | JWT | `{incident_id}` → `RelayRule` (`SHADOW_LOG` hoặc `DRAFT_INVALID`) + `validation` + `source` |
 | `POST /v1/fraudops/rules/{id}/regression-test` | JWT | → `RegressionResult` |
 | `POST /v1/fraudops/rules/{id}/approve` | JWT | `{stage, ttl_hours, override_reason?}` → luật + đồng hồ 2 mốc |
@@ -795,9 +790,9 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 | `POST /v1/gateway/evaluate-transfer` | phiên / JWT | `TransferRequest` → `EvaluateResponse` |
 | `POST /v1/gateway/submit-challenge` | phiên / JWT | `{challenge_id, option_id}` → `SubmitChallengeResponse` |
 
-**Nên có:** `GET /v1/fraudops/rules/{id}/stats` · `POST /v1/gateway/feedback`
+**Có thể có:** `GET /v1/fraudops/rules/{id}/stats` · `POST /v1/gateway/feedback`
 
-**Phụ trợ:** `POST /v1/auth/login` · `POST /v1/incidents/{id}/consent` · `GET /v1/fraudops/incidents` · `GET /v1/fraudops/rules` · `GET /v1/fraudops/rules/{id}` · `PUT /v1/fraudops/rules/{id}/draft` · `GET /v1/wallets` · `GET /v1/wallets/{id}/transactions` · `GET /v1/wallets/{id}/notifications` · `POST /v1/demo/reset` · `POST /v1/demo/fast-forward-holds` · `GET /healthz`
+**Phụ trợ:** `POST /v1/auth/login` · `GET /v1/fraudops/incidents` · `GET /v1/fraudops/rules` · `GET /v1/fraudops/rules/{id}` · `PUT /v1/fraudops/rules/{id}/draft` · `GET /v1/wallets` (kèm `protective_hold_notice`) · `GET /v1/wallets/{id}/transactions` · `POST /v1/demo/reset` · `POST /v1/demo/fast-forward-holds` · `GET /healthz`
 
 **Mã lỗi thống nhất:** `{ "error": { "code": "APPROVE_LOCKED", "message_vi": "...", "details": [...] } }`
 
@@ -810,9 +805,9 @@ Một SPA gồm 4 route, giao diện tiếng Việt. `/help` và `/wallet` thi�
 | Route | Màn hình và thành phần |
 |---|---|
 | `/` | Landing: 4 nhân vật, 3 thẻ (Khoanh vùng / Tiếp sức / Chặn đúng), link `/docs`, hướng dẫn 5 bước cho giám khảo |
-| `/help` | **Bước 1:**<br>• Ô dán chat; nút tải ảnh (có thể có).<br>• Công tắc "Tôi là người thân kích hoạt hộ".<br>• Khi đã đăng nhập workspace: ô "Yêu cầu tạm giữ bảo vệ ví của…", kèm giải thích người thân được làm gì và không được làm gì.<br>• Thông báo quyền riêng tư.<br>**Bước 2:**<br>• Nhãn chế độ (màu, chữ to); **3 thẻ hành động** với nút lớn (`tel:` hoặc link lấy từ registry).<br>• Ô "Thêm tình tiết".<br>• Nút "Kể 1 lần, dùng mọi nơi": tải `.md`, in PDF nếu kịp.<br>• **Màn hình đồng ý chia sẻ** với 3 điểm (chia sẻ gì, để làm gì, lưu bao lâu).<br>• Chân trang ghi dành cho người từ 18 tuổi.<br>Không có đồ thị, không có thuật ngữ kỹ thuật |
+| `/help` | **Bước 1:**<br>• Ô dán chat; nút tải ảnh (có thể có).<br>• Công tắc "Tôi là người thân kích hoạt hộ".<br>• Khi đã đăng nhập workspace: ô "Yêu cầu tạm giữ bảo vệ ví của…", kèm giải thích người thân được làm gì và không được làm gì.<br>• Thông báo quyền riêng tư.<br>**Bước 2:**<br>• Nhãn chế độ (màu, chữ to); **3 thẻ hành động** với nút lớn (`tel:` hoặc link lấy từ registry).<br>• Ô "Thêm tình tiết".<br>• Nút "Kể 1 lần, dùng mọi nơi": dựng Markdown ở frontend, tải `.md`, in PDF nếu kịp.<br>• **Ô đồng ý chia sẻ** kèm 3 điểm giải thích (chia sẻ gì, để làm gì, lưu bao lâu).<br>• Chân trang ghi dành cho người từ 18 tuổi.<br>Không có đồ thị, không có thuật ngữ kỹ thuật |
 | `/ops` | Đăng nhập → **Hàng đợi** (chỉ sự cố đã đồng ý) → **Chi tiết** (tóm tắt, sự kiện có nhãn nguồn gốc, thẻ phạm vi: đã mất / đang bị đòi / lộ OTP) → **Biên dịch**:<br>• Nhãn nguồn: LLM / kết quả đã lưu / luật dựng sẵn.<br>• **Danh sách anchor sửa được** (xóa, thêm).<br>• *Xem trước câu hỏi đúng như chú Hùng sẽ thấy*, kèm dòng chống dặn trước.<br>• Bảng biến thể; `behavior_hints`; cảnh báo của validator.<br>→ **Kiểm thử:** `flagged/checked`, ví dụ khớp nhầm, **anchor gây khớp nhầm được tô đậm**, `triggered/checked` của biến thể; **nút Approve bị khóa** kèm ô lý do ghi đè.<br>→ **Approve:** chọn stage; `ENFORCE_HOLD` bị vô hiệu kèm lý do nếu chưa đủ điều kiện.<br>→ **Đồng hồ 2 mốc** chữ lớn: *"AI: X giây · Con người xem xét: Y giây"*.<br>**Danh sách luật:** stage, TTL đếm ngược, thống kê (nếu kịp), nút Rollback |
-| `/wallet` | VietWallet Sandbox, màu trung tính, không dùng nhận diện MoMo:<br>• Chuyển qua lại ví cô Lan / chú Hùng; số dư; **dải thông báo** khi có kích hoạt hộ.<br>• Form chuyển tiền: chọn người nhận seed, số tiền, nội dung.<br>• **Modal câu hỏi mục đích:** 4 phương án, dòng chống dặn trước **luôn hiển thị**.<br>• Màn kết quả riêng cho từng hành động (§7.3), có mã biên lai và nút "Báo nhầm" (nên có).<br>• Công tắc **"So sánh: Bộ chấm hành vi vs ScamRelay"** hiển thị song song 2 quyết định.<br>• Nút **"Chạy lại giao dịch vừa rồi"**; dải "Luật mới có hiệu lực X phút trước" |
+| `/wallet` | VietWallet Sandbox, màu trung tính, không dùng nhận diện MoMo:<br>• Chuyển qua lại ví cô Lan / chú Hùng; số dư; **dải thông báo** khi có kích hoạt hộ.<br>• Form chuyển tiền: chọn người nhận seed, số tiền, nội dung.<br>• **Modal câu hỏi mục đích:** 4 phương án, dòng chống dặn trước **luôn hiển thị**.<br>• Màn kết quả riêng cho từng hành động (§7.3), có mã biên lai và nút "Báo nhầm" (có thể có).<br>• Công tắc **"So sánh: Bộ chấm hành vi vs ScamRelay"** hiển thị song song 2 quyết định.<br>• Nút **"Chạy lại giao dịch vừa rồi"**; dải "Luật mới có hiệu lực X phút trước" |
 
 **Quy tắc UX bắt buộc:**
 - Mỗi màn hình ở `/help` và `/wallet` chỉ có một hành động chính.
@@ -850,7 +845,7 @@ Một SPA gồm 4 route, giao diện tiếng Việt. `/help` và `/wallet` thi�
 - Ca dev có thể thêm `dev_outcome` (`BENIGN` / `TACTIC_MATCH` / `UNCLEAR`) để chạy tự động. **Held-out không được có trường này.**
 - Chỉ dùng id trong §5.2.
 
-### 13.2 Held-out: cơ cấu và niêm phong
+### 13.2 Held-out
 
 | Loại ca | Số ca |
 |---|---|
@@ -861,17 +856,18 @@ Một SPA gồm 4 route, giao diện tiếng Việt. `/help` và `/wallet` thi�
 | Nội dung chuyển khoản trống hoặc vô hại | 1 |
 | Giao dịch hợp lệ dễ nhầm (nộp thuế thật, tiền cọc, hoàn tiền) | 3 |
 
-**Niêm phong:**
-1. quynh viết đủ 12 ca **xong trước 12:00 ngày 28/11**, trên máy riêng; bao không xem. Không dùng LLM để sinh ca. Nếu kịp, nhờ thêm 1–2 người ngoài đội viết vài ca.
-2. `sha256sum heldout.json > bench/heldout.sha256` và `gpg --symmetric --cipher-algo AES256 heldout.json` → commit `bench/heldout.json.gpg` cùng `bench/heldout.sha256`. Passphrase do quynh giữ.
-3. bao **chỉ bắt đầu tinh chỉnh prompt trên dev sau khi hash đã lên `main`**.
-4. Sau freeze 18:00 ngày 01/12: quynh đưa passphrase, giải mã, chạy `sha256sum -c` để khớp hash, rồi chạy **đúng 1 lượt** (§13.3).
+Bảng trên cho 12 ca; nếu chỉ viết 10 ca thì bớt 1 ca biến thể và 1 ca hợp lệ.
+
+**Quy tắc (giữ tối giản):**
+1. quynh viết vào tối 30/11, trên máy riêng, không dùng LLM để sinh ca. File **không commit** cho tới lượt chạy chính thức.
+2. bao không xem held-out; chỉ tinh chỉnh prompt và ngưỡng trên dev.
+3. Sau freeze 18:00 ngày 01/12: quynh đưa file, chạy **đúng 1 lượt** (§13.3), rồi commit file cùng kết quả.
 
 ### 13.3 Runner (`bench/run_bench.py`)
 
 - Runner chạy bằng tài khoản `bench_runner` trên workspace riêng, và gọi **đúng các endpoint thật** (không có nhánh `dry_run`).
 - Với mỗi ca:
-  1. `reset` → `analyze(A)` → `consent` → `compile` → `regression`.
+  1. `reset` → `analyze(A)` với `consent_handoff=true` → `compile` → `regression`.
   2. `approve ASK_ONLY`. Nếu `flagged > 0`, runner duyệt với `override_reason = "bench: ghi đè tự động, xem results"` và **ghi việc này vào kết quả**.
   3. Với mỗi giao dịch B, gọi `evaluate`. Nếu nhận `CHALLENGE_JIT`, chọn phương án theo một trong hai chế độ:
      - **Dev (`--auto`):** chọn phương án có outcome = `dev_outcome`.
@@ -896,9 +892,9 @@ Tập quyết định "được dừng" **S** = {`HOLD_15M`, `STOP_AND_EXPLAIN`,
 
 Báo cáo riêng: các ca `COACHED` (x/2) và `EMPTY_NOTE` (x/1), ghi rõ đây là giới hạn đã biết.
 
-### 13.5 Ablation (nên có, `bench/ablation.py`)
+### 13.5 Ablation (có thể có, chỉ làm nếu tối 01/12 còn thời gian)
 
-- Với mỗi ca held-out, **trước khi thấy giao dịch B**, linh đọc đoạn chat của cô Lan và nhập một luật `CONTAINS_ANY` (≤ 8 cụm). Runner hỏi bước này trước bước chọn phương án.
+- Với mỗi ca held-out, **trước khi thấy giao dịch B**, linh viết một luật `CONTAINS_ANY` (≤ 8 cụm) chỉ dựa vào đoạn chat của cô Lan.
 - Chạy offline `layer1_match` của luật từ khóa đó trên các giao dịch biến thể, rồi so Variant Trigger Rate với `SEMANTIC_MATCH`.
 - Kèm **bảng quét ngưỡng** từ `calibrate.py` (dữ liệu dev).
 
@@ -961,7 +957,7 @@ engine = create_engine(
     --max-instances=2 --memory=512Mi --timeout=60 \
     --set-secrets=GEMINI_API_KEY=gemini-api-key:latest,DATABASE_URL=database-url:latest,JWT_SECRET=jwt-secret:latest,JUDGE_ACCOUNTS=judge-accounts:latest
   ```
-- `scripts/smoke.sh` chạy sau mỗi lần deploy: đăng nhập `smoke` → healthz → analyze → consent → compile → regression → approve → evaluate → submit → `reset`.
+- `scripts/smoke.sh` chạy sau mỗi lần deploy: đăng nhập `smoke` → healthz → analyze (có `consent_handoff`) → compile → regression → approve → evaluate → submit → `reset`.
 
 ### 14.5 Biến môi trường
 
@@ -976,7 +972,7 @@ engine = create_engine(
 | `MIN_ASK_AMOUNT_VND` | `200000` |
 | `PARTNER_WARN_SCORE` | `50` |
 | `HOLD_MINUTES`, `STOP_COOLDOWN_MINUTES`, `CHALLENGE_TTL_MINUTES` | `15`, `30`, `5` |
-| `DEFAULT_RULE_TTL_HOURS`, `DEFAULT_SHARE_TTL_HOURS`, `PUBLIC_SESSION_TTL_HOURS` | `24`, `72`, `24` |
+| `DEFAULT_RULE_TTL_HOURS`, `PUBLIC_SESSION_TTL_HOURS` | `24`, `24` |
 
 ### 14.6 Quota Gemini
 
@@ -1006,7 +1002,7 @@ engine = create_engine(
   1. Chú Hùng trước khi có luật → `ALLOW`.
   2. Compile → regression có `flagged > 0` → Approve bị khóa → sửa anchor → regression `0/N` → approve `ASK_ONLY`.
   3. Chú Hùng sau khi có luật → `CHALLENGE_JIT` → `TACTIC_MATCH` → `STOP_AND_EXPLAIN`.
-  4. Tạo lại ngay → `STOP_COOLDOWN`.
+  4. (nếu đã làm dừng mềm) Tạo lại ngay → `STOP_COOLDOWN`.
   5. Giao dịch mua hàng sạch → `ALLOW`; hóa đơn điện của ví đang `MANIPULATION` → qua; sau "lỡ đọc OTP" → `BLOCK`.
 - **Bất biến:** mỗi INV-01…16 có ít nhất 1 test (§10).
 - **Smoke trên bản public:** `scripts/smoke.sh` (§14.4).
@@ -1018,13 +1014,12 @@ engine = create_engine(
 Lịch chi tiết theo ngày nằm trong `PLAN.md`.
 
 **Cắt theo thứ tự (từ trên xuống) nếu trễ:**
-1. Mục "Có thể có": PDF → đọc ảnh → biến thể do LLM sinh (thay bằng 5 biến thể cố định) → chống dò đáp án.
-2. Ablation từ khóa (vẫn giữ bảng quét ngưỡng).
-3. Bảng theo dõi luật và nút "Báo nhầm".
-4. UI `ENFORCE_HOLD` (giữ trong code và test, chỉ ẩn trên giao diện).
-5. Kích hoạt hộ rút gọn thành nhãn trên hồ sơ cộng thông báo cho chủ ví.
+1. Mục "Có thể có" (§1) mặc định chưa làm; chỉ làm khi 30/11 còn dư giờ.
+2. Biến thể do LLM sinh → thay bằng 5 biến thể cố định.
+3. UI `ENFORCE_HOLD` (giữ trong code và test, chỉ ẩn trên giao diện).
+4. Kích hoạt hộ rút gọn thành nhãn trên hồ sơ cộng thông báo trên ví.
 
-**Không bao giờ cắt:** vertical slice; validator; regression với khóa Approve; **sửa anchor** (đây là khoảnh khắc Future Workspace trong demo); StagePolicy cùng mức sàn của lớp đối tác; challenge nguyên tử kèm kiểm tra lại ví; held-out niêm phong và chạy 1 lần; dự phòng 3 tầng; deploy public; nút Reset; `pytest` trước khi merge.
+**Không bao giờ cắt:** vertical slice; validator; regression với khóa Approve; **sửa anchor** (đây là khoảnh khắc Future Workspace trong demo); StagePolicy cùng mức sàn của lớp đối tác; challenge nguyên tử kèm kiểm tra lại ví; held-out do người khác viết và chạy 1 lần; dự phòng LLM; deploy public; nút Reset; `pytest` trước khi merge.
 
 ---
 
@@ -1039,5 +1034,5 @@ Lịch chi tiết theo ngày nằm trong `PLAN.md`.
 4. **"thuế" và "thuê" trùng nhau sau khi bỏ dấu:** xử lý bằng `NOT_CONTAINS_ANY` và regression, nhưng không triệt để.
 5. **Sandbox và dữ liệu tổng hợp:** số liệu chứng minh cơ chế, không đại diện cho tỷ lệ ngoài thực tế. Held-out chỉ có 12 ca, tập sạch có ≥ 200 mẫu sinh bằng template.
 6. **Ngưỡng hiệu chỉnh trên tập dev nhỏ.**
-7. **Phụ thuộc Gemini API:** chất lượng, quota và điều khoản dữ liệu. Có dự phòng 3 tầng và trigram, nhưng chất lượng giảm khi chạy dự phòng.
+7. **Phụ thuộc Gemini API:** chất lượng, quota và điều khoản dữ liệu. Có dự phòng output đã lưu và trigram, nhưng chất lượng giảm khi chạy dự phòng.
 8. **Duyệt hai người cho `ENFORCE_HOLD`** mới chỉ ghi log trong sandbox, chưa bắt buộc hai người khác nhau.

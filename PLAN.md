@@ -11,18 +11,19 @@
 | # | Thay đổi | Ảnh hưởng |
 |---|---|---|
 | P1 | **Contract Drop dời sang 23:30** và theo schema v2 (`outcome`, StagePolicy, `ChallengeOut` không có outcome, `RelayRule` do server dựng) | linh |
-| P2 | **Held-out 12 ca, khóa trước 12:00 ngày 28/11** (file mã hóa + hash). quynh dành buổi sáng 28/11 để viết held-out | quynh; bao chỉ tinh chỉnh prompt sau mốc này |
-| P3 | Việc mới cho linh: StagePolicy + mức sàn của lớp đối tác, dừng mềm 30 phút, sửa bản nháp, khóa Approve, đồng hồ 2 mốc, đồng ý chia sẻ + TTL, thông báo cho chủ ví, export-pack Markdown, ánh xạ câu trả lời held-out | linh |
-| P4 | Việc mới cho bao: chuẩn hóa viết tắt, **kiểm tra câu demo ngay đêm nay**, `layer1_match` dùng chung, assembler, tập sạch ≥ 200 mẫu, quy khớp nhầm về anchor, lưu sẵn output thật cho ca demo, ablation | bao |
-| P5 | Gói hồ sơ chuyển từ frontend (quynh) sang endpoint Markdown (linh) để giảm tải cho quynh | quynh nhẹ hơn |
+| P2 | Held-out 10–12 ca, quynh viết tối 30/11 trên máy riêng; không mã hóa, không hash | quynh |
+| P3 | Việc mới cho linh: StagePolicy + mức sàn của lớp đối tác, sửa bản nháp, khóa Approve, đồng hồ 2 mốc, cờ `consent_handoff`, `protective_hold_notice` trên ví, ánh xạ câu trả lời held-out | linh |
+| P4 | Việc mới cho bao: chuẩn hóa viết tắt, **kiểm tra câu demo ngay đêm nay**, `layer1_match` dùng chung, assembler, tập sạch ≥ 200 mẫu, quy khớp nhầm về anchor, lưu output thật của 3 thủ đoạn mẫu làm dự phòng | bao |
+| P5 | Gói hồ sơ vẫn dựng ở frontend (Markdown + Blob), không có endpoint | quynh |
 | P6 | **Giữ nguyên phân vai của PLAN v2** (validator, baseline, regression thuộc bao) dù ABOUT §8.2 giao các việc này cho Member 2. Lý do: validator đã viết xong tối 27/11; regression và baseline gắn chặt với semantic và benchmark; Member 2 trong ABOUT đang quá tải | ABOUT §8.2 cần sửa cho khớp trước khi làm slide |
 | P7 | `preprocess.py` và `validator.py` viết tối 27/11 theo SPEC v1 **cần cập nhật lên v2** (bao, tối nay) | bao |
+| P8 | **Cắt cho hackathon (27/11, 23:20):** bỏ mã hóa và hash held-out; bỏ bảng `notification`, endpoint `consent` + xóa theo TTL, endpoint export-pack; dự phòng còn 2 tầng; dừng mềm 30 phút, bảng theo dõi, "Báo nhầm", chống dò đáp án, ablation chỉ làm nếu 30/11 dư giờ; Contract Drop nới tới 00:30 | cả nhóm |
 
 ---
 
 ## 1. Bốn nguyên tắc
 
-1. **Chốt hợp đồng trước 23:30 tối nay, rồi ai làm việc nấy.** Sau mốc đó không ai phải chờ ai.
+1. **Chốt hợp đồng trước 00:30 đêm nay (muộn nhất sáng sớm 28/11), rồi ai làm việc nấy.** Sau mốc đó không ai phải chờ ai.
 2. **Xong việc nào, merge việc đó.** Không có giờ gộp cố định, không chờ review.
 3. **`main` luôn chạy được:** `pytest` phải xanh trước khi merge. Đó là luật duy nhất về chất lượng.
 4. **Cắt mọi thứ không xuất hiện trong demo 3 phút hay phần hỏi đáp** (§8).
@@ -59,15 +60,15 @@ git checkout <ten-minh>
 
 | Người | Sở hữu | Tóm tắt |
 |---|---|---|
-| **bao** | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression}.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `backend/data/demo_compile_cache/**`, `bench/**` (trừ `heldout.*`) | *AI, luật, đo lường:* prompt, chuẩn hóa, embedding, validator, Lớp 1, tập sạch, baseline, ngưỡng, benchmark, ablation |
-| **linh** | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**`, `core/{gateway,stage_policy,ledger,containment,export_pack,stats}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` | *API, DB, auth, gateway, deploy, vận hành.* Ngày chạy held-out: **ánh xạ câu trả lời và nhập luật từ khóa cho ablation** |
+| **bao** | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression}.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) | *AI, luật, đo lường:* prompt, chuẩn hóa, embedding, validator, Lớp 1, tập sạch, baseline, ngưỡng, benchmark, ablation |
+| **linh** | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**`, `core/{gateway,stage_policy,ledger,containment,stats}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` | *API, DB, auth, gateway, deploy, vận hành.* Ngày chạy held-out: **ánh xạ câu trả lời** |
 | **quynh** | `frontend/**`, `backend/data/action_registry.json`, `bench/heldout.*`, `docs/**` | *Giao diện, held-out, slide, hướng dẫn A4.* Quay video cùng bao |
 
 `README.md`: linh giữ khung; bao viết mục AI và dữ liệu; quynh viết mục hướng dẫn dùng.
 
 ---
 
-## 4. Contract Drop v2 — linh, xong trước **23:30 tối nay**
+## 4. Contract Drop v2 — linh, xong trước **00:30 đêm nay** (muộn nhất sáng sớm 28/11)
 
 Commit lên `main` đúng 4 thứ:
 
@@ -77,7 +78,7 @@ Commit lên `main` đúng 4 thứ:
    - `gateway.py`: `Decision`, `TransferRequest`, `ChallengeOut` **không có `outcome`**, `EvaluateResponse`, `SubmitChallengeRequest/Response`.
    - `llm_*.py`.
 2. **`backend/app/ai/interfaces.py`**: chữ ký hàm bên dưới, thân hàm trả fixture.
-3. **`backend/data/seed_workspace.json`** đúng danh sách id ở SPEC §5.2. quynh cần file này **lúc 08:00 ngày 28/11** để viết held-out.
+3. **`backend/data/seed_workspace.json`** đúng danh sách id ở SPEC §5.2.
 4. **FastAPI chạy được với 4 route lõi trả JSON cứng theo hình dạng v2**: `analyze`, `compile`, `evaluate-transfer`, `submit-challenge`. Kèm `core/stage_policy.py` (bảng `STAGE_POLICY`, `SEVERITY`, `max_severity`), vì cả frontend lẫn test đều cần.
 
 ```python
@@ -108,12 +109,11 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 | Mốc | Khi nào | Đạt khi |
 |---|---|---|
-| **Contract Drop v2** | 27/11, 23:30 | §4 đã lên `main` |
+| **Contract Drop v2** | 28/11, 00:30 (muộn nhất sáng sớm) | §4 đã lên `main` |
 | **Kiểm tra câu demo** | 27/11, trước khi ngủ | `check_demo.py` cho thấy "xac thuc ho so cap nhat thue HKD" vượt ngưỡng placeholder với biên rõ (SPEC §8.6) |
-| **Held-out khóa** | 28/11, 12:00 | `bench/heldout.json.gpg` và `bench/heldout.sha256` đã lên `main` |
 | **M1 – Vertical slice public** | 28/11, 21:00 | URL Cloud Run chạy được: chat cô Lan → compile → validator → regression → approve `ASK_ONLY` → chú Hùng bị hỏi → `TACTIC_MATCH` → `STOP_AND_EXPLAIN`; chọn `BENIGN` → `ALLOW_WITH_WARNING`. UI ví tối thiểu |
 | **M2 – Đủ 3 luồng** | 29/11, 21:00 | `/help`, `/ops` (sửa anchor, khóa Approve, đồng hồ 2 mốc, rollback), `/wallet` (so sánh, chạy lại) nối API thật; semantic thật; tập sạch ≥ 200; ngưỡng đã hiệu chỉnh |
-| **M3 – Đủ tính năng** | 30/11, 22:00 | Kích hoạt hộ đủ giới hạn, nâng khóa khi lộ OTP, export `.md`, đồng ý chia sẻ + TTL, rate limit, test INV, output demo đã lưu, bảng theo dõi (nếu kịp); đã deploy |
+| **M3 – Đủ tính năng** | 30/11, 22:00 | Kích hoạt hộ đủ giới hạn, nâng khóa khi lộ OTP, gói hồ sơ `.md`, ô đồng ý chia sẻ, rate limit, test INV, output dự phòng đã lưu; đã deploy; quynh viết xong held-out |
 | **Freeze** | 01/12, 18:00 | Chỉ còn sửa lỗi; 18:30 chạy held-out (§9) |
 | **Nộp** | 03/12, trước 18:00 | Đủ 4 thành phần |
 
@@ -125,18 +125,18 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 | bao | linh | quynh |
 |---|---|---|
-| Tạo **2 project Gemini** (deploy và bench), lấy key, chọn model Flash ổn định. **Chốt chuyện bật billing** cho project deploy (SPEC §10) | **Contract Drop v2 trước 23:30** (§4) | Khởi tạo Vite + React + TS + Tailwind, router 4 trang, nhận diện VietWallet trung tính |
-| Cập nhật `preprocess.py` lên v2: `norm_match` + `abbreviations.json`, kèm test | Sau 23:30: `models.py`, `db.py` (SQLite trước; Neon để mai) | `/wallet` bằng mock: form chuyển tiền, **modal 4 phương án có dòng chống dặn trước**, màn kết quả cho 6 loại hành động |
-| Cập nhật `validator.py` lên v2: `outcome`, 3 phương án, nhãn ≤ 100 ký tự, `tactic_alert_vi`, V6b, trường mới, `validate_llm_output(dict)`, kèm test | Seed workspace, `reset` | Đọc SPEC §5.2 và §13 để chuẩn bị viết held-out sáng mai |
+| Tạo **2 project Gemini** (deploy và bench), lấy key, chọn model Flash ổn định. **Chốt chuyện bật billing** cho project deploy (SPEC §10) | **Contract Drop v2 trước 00:30** (§4) | Khởi tạo Vite + React + TS + Tailwind, router 4 trang, nhận diện VietWallet trung tính |
+| Cập nhật `preprocess.py` lên v2: `norm_match` + `abbreviations.json`, kèm test | Sau Contract Drop: `models.py`, `db.py` (SQLite trước; Neon để mai) | `/wallet` bằng mock: form chuyển tiền, **modal 4 phương án có dòng chống dặn trước**, màn kết quả cho 6 loại hành động |
+| Cập nhật `validator.py` lên v2: `outcome`, 3 phương án, nhãn ≤ 100 ký tự, `tactic_alert_vi`, V6b, trường mới, `validate_llm_output(dict)`, kèm test | Seed workspace, `reset` | |
 | **`bench/check_demo.py`**: embed câu demo và 3 câu sạch dễ nhầm với anchor HKD mẫu, in cosine. Không đạt thì sửa chuẩn hóa ngay | | `npm run gen:types` sau Contract Drop |
 
 ### 28/11
 
 | bao | linh | quynh |
 |---|---|---|
-| **Sáng (chưa tinh chỉnh prompt trước 12:00):** `llm_client.py` (structured output, timeout, **429 → fallback**), `semantic.py` (embedding 768 chiều, L2, cache, trigram), `layer1.py`, `assembler.py`, `baseline.py` + `static_scam_keywords.json` | Auth JWT + workspace (`judge_01..05`, `bench_runner`, `smoke`) | **08:00–12:00: viết 12 ca held-out** (SPEC §13.2), mã hóa, commit hash **trước 12:00** |
-| **Chiều:** prompt `analyze_incident` và `compile_rule` (`<untrusted_evidence>`), `fallback_tactics.json` (3 thủ đoạn, mỗi thủ đoạn 5 biến thể cố định), **12 ca dev** (có `dev_outcome`) | Gateway: `evaluate` (lớp đối tác → khoanh vùng → layer1 → challenge), `submit` (**claim nguyên tử + kiểm tra lại ví**, StagePolicy, `max_severity`, dừng mềm 30 phút), ledger, receipt | **Chiều:** `/help` bước 1 và 2 bằng mock (nhãn chế độ, 3 thẻ, công tắc người thân, ô tạm giữ bảo vệ, **màn đồng ý chia sẻ**) |
-| | Containment (`MANIPULATION` → `HOLD_UNTIL_VERIFIED`, `COMPROMISE` → `BLOCK`, chỉ nâng, **thông báo chủ ví**); endpoint `consent` | **Điền `action_registry.json`** (≤ 45 phút): 4–5 hotline và link chính thức, có `source_url` và `verified_at` |
+| **Sáng:** `llm_client.py` (structured output, timeout, **429 → fallback**), `semantic.py` (embedding 768 chiều, L2, cache, trigram), `layer1.py`, `assembler.py`, `baseline.py` + `static_scam_keywords.json` | Auth JWT + workspace (`judge_01..05`, `bench_runner`, `smoke`) | **Sáng:** hoàn thiện `/wallet` bằng mock (6 màn kết quả, công tắc so sánh); landing tối thiểu |
+| **Chiều:** prompt `analyze_incident` và `compile_rule` (`<untrusted_evidence>`), `fallback_tactics.json` (3 thủ đoạn: từ khóa cho analyze + output compile thật đã lưu), **12 ca dev** (có `dev_outcome`) | Gateway: `evaluate` (lớp đối tác → khoanh vùng → layer1 → challenge), `submit` (**claim nguyên tử + kiểm tra lại ví**, StagePolicy, `max_severity`), ledger, receipt | **Chiều:** `/help` bước 1 và 2 bằng mock (nhãn chế độ, 3 thẻ, công tắc người thân, ô tạm giữ bảo vệ, **ô đồng ý chia sẻ**) |
+| | Containment (`MANIPULATION` → `HOLD_UNTIL_VERIFIED`, `COMPROMISE` → `BLOCK`, chỉ nâng); `protective_hold_notice` trong `GET /v1/wallets`; cờ `consent_handoff` | **Điền `action_registry.json`** (≤ 45 phút): 4–5 hotline và link chính thức, có `source_url` và `verified_at` |
 | | **Chiều:** GCP + Neon + Secret Manager + budget alert, `scripts/deploy.sh`, deploy lần đầu | |
 | **18:00–21:00:** ghép M1 cùng nhóm | **18:00–21:00:** ghép M1, deploy | **18:00–21:00:** nối `/wallet` vào API thật |
 
@@ -144,18 +144,18 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 | bao | linh | quynh |
 |---|---|---|
-| `regression.py` (flagged/checked, `flags_by_anchor`, biến thể) | Route `/ops`: danh sách sự cố (xóa lazy theo TTL), `GET rule`, **`PUT draft`** (validator, version, hủy regression), `regression-test`, **`approve`** (khóa khi flagged, override, cổng `ENFORCE_HOLD`, **đồng hồ 2 mốc**, gia hạn TTL hồ sơ), `rollback`, hết hạn lazy | `/ops` đầy đủ: đăng nhập, hàng đợi, chi tiết, biên dịch (**sửa anchor**, xem trước câu hỏi như chú Hùng thấy, nhãn nguồn), thẻ kiểm thử (**tô anchor gây khớp nhầm**, Approve bị khóa, ô lý do ghi đè), Approve, **đồng hồ 2 mốc**, danh sách luật + Rollback |
-| `bench/gen_benign.py` → **≥ 200 mẫu + ≥ 20 ca bẫy** (bắt buộc nhóm "thuê"); seed cache embedding | `export_pack.py` (Markdown 3 mục) | `/wallet`: công tắc so sánh baseline vs ScamRelay, nút "Chạy lại giao dịch", dải "Luật có hiệu lực X phút trước", dải thông báo kích hoạt hộ |
+| `regression.py` (flagged/checked, `flags_by_anchor`, biến thể) | Route `/ops`: danh sách sự cố, `GET rule`, **`PUT draft`** (validator, version, hủy regression), `regression-test`, **`approve`** (khóa khi flagged, override, cổng `ENFORCE_HOLD`, **đồng hồ 2 mốc**), `rollback`, hết hạn lazy | `/ops` đầy đủ: đăng nhập, hàng đợi, chi tiết, biên dịch (**sửa anchor**, xem trước câu hỏi như chú Hùng thấy, nhãn nguồn), thẻ kiểm thử (**tô anchor gây khớp nhầm**, Approve bị khóa, ô lý do ghi đè), Approve, **đồng hồ 2 mốc**, danh sách luật + Rollback |
+| `bench/gen_benign.py` → **≥ 200 mẫu + ≥ 20 ca bẫy** (bắt buộc nhóm "thuê"); seed cache embedding (theo lô 50–100 câu/request) | Hỗ trợ quynh nối `/ops`; sửa lỗi M1 | `/wallet`: công tắc so sánh baseline vs ScamRelay, nút "Chạy lại giao dịch", dải "Luật có hiệu lực X phút trước", dải thông báo kích hoạt hộ |
 | `bench/calibrate.py` (quét ngưỡng trên dev) → `SEMANTIC_THRESHOLD`; tinh chỉnh prompt trên dev | Rate limit (`slowapi`); CI `pytest` + Postgres service | Landing `/` (4 nhân vật, hướng dẫn 5 bước) |
-| `bench/run_bench.py` (`--auto` cho dev, `--interactive` cho held-out); bắt đầu lưu **output thật** của các câu demo vào `demo_compile_cache/` | | |
+| `bench/run_bench.py` (`--auto` cho dev, `--interactive` cho held-out); lưu **output thật** của 3 thủ đoạn mẫu vào `fallback_tactics.json` | | |
 
 ### 30/11
 
 | bao | linh | quynh |
 |---|---|---|
-| Test prompt injection; kiểm tra các nhánh degraded (LLM lỗi, embedding lỗi, 429) | Thống kê luật + `feedback` (nên có); chống dò đáp án (có thể có) | `/help`: người thân, "Thêm tình tiết", tải `.md`, đồng ý chia sẻ, thông báo quyền riêng tư, dòng 18+ |
-| `bench/ablation.py`; chạy bench dev để thử toàn bộ pipeline đo | Test INV 02, 04, 06, 07, 08, 10–16; `/healthz` | Trạng thái chờ và lỗi, banner degraded, responsive mobile |
-| Hoàn tất `demo_compile_cache` (mỗi câu trong kịch bản có ít nhất 1 lượt chạy thật); prompt ảnh (có thể có) | Deploy bản đủ tính năng; giới hạn chi tiêu Gemini đủ dùng tới 11/12 | Bảng theo dõi luật ở `/ops` (nếu API sẵn sàng); nút "Báo nhầm" |
+| Test prompt injection; kiểm tra các nhánh degraded (LLM lỗi, embedding lỗi, 429) | Nếu dư giờ: dừng mềm 30 phút, thống kê luật + `feedback`, chống dò đáp án | `/help`: người thân, "Thêm tình tiết", gói hồ sơ `.md` (dựng ở frontend), ô đồng ý chia sẻ, thông báo quyền riêng tư, dòng 18+ |
+| Chạy bench dev để thử toàn bộ pipeline đo | Test INV 02, 04, 06, 07, 08, 10–16; `/healthz` | Trạng thái chờ và lỗi, banner degraded, responsive mobile |
+| Chạy thử mọi câu trong kịch bản demo trên bản deploy; prompt ảnh (có thể có) | Deploy bản đủ tính năng; giới hạn chi tiêu Gemini đủ dùng tới 11/12 | **Tối: viết 10–12 ca held-out** (SPEC §13.2) trên máy riêng, không commit |
 
 ### 01/12 — Freeze
 
@@ -163,7 +163,7 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 |---|---|
 | 09:00–12:00 | **Bug bash chéo** trên URL public: bao thử `/ops`, linh thử `/help`, quynh thử `/docs` và các ca biên |
 | 12:00–18:00 | Sửa lỗi phần mình |
-| **18:00** | **FREEZE**, tag `freeze-0112`. Từ đây chỉ hotfix khi cả 3 đồng ý |
+| **18:00** | **FREEZE**. Từ đây chỉ hotfix khi cả 3 đồng ý |
 | 18:30 | Chạy held-out theo §9 |
 | Tối | bao viết slide AI và số liệu; linh viết slide kiến trúc và an toàn; quynh dựng bản nháp 10 slide |
 
@@ -187,13 +187,12 @@ Không thêm tính năng. Xoay vòng **bao (04, 07, 10) · linh (05, 08, 11) · 
 ## 7. Phụ thuộc còn lại
 
 ```
-Contract Drop v2 + seed ids (linh, 23:30 27/11) ─► cả 3 làm song song; quynh viết held-out sáng 28/11
+Contract Drop v2 + seed ids (linh, 00:30 28/11) ─► cả 3 làm song song
 check_demo (bao, đêm 27/11) ─► nếu không đạt thì sửa chuẩn hóa trước khi viết prompt compile
-held-out hash (quynh, 12:00 28/11) ─► bao mới bắt đầu tinh chỉnh prompt trên dev
 layer1_match / assembler / baseline (bao, 28/11) ─► gateway của linh; trước khi bao merge thì linh dùng stub
 regression.py (bao, 29/11) ─► route regression-test + khóa Approve (linh)
 calibrate (bao, 29/11) ─► SEMANTIC_THRESHOLD vào config
-demo_compile_cache (bao, 29–30/11) ─► kịch bản và video (quynh + bao, 02/12)
+output dự phòng đã lưu (bao, 29/11) ─► demo không chết khi LLM lỗi; kịch bản video (02/12)
 ```
 **Nếu linh trễ M1:** bao nhận phần route `/ops`, vì phía sau là `regression.py` và `assembler.py` của bao.
 
@@ -206,12 +205,12 @@ demo_compile_cache (bao, 29–30/11) ─► kịch bản và video (quynh + bao,
 | Mức | Hạng mục |
 |---|---|
 | **Bắt buộc có** | Vòng lặp xuyên suốt: chat cô Lan → biên dịch → regression → **sửa** → Approve → câu hỏi cho chú Hùng → StagePolicy → quyết định (cả 3 người). FraudOps có Approve và Rollback (linh, quynh). VietWallet trước/sau (quynh). `/docs` (linh). `run_bench.py` (bao). Deploy ổn định kèm dự phòng không phụ thuộc LLM (linh, bao) |
-| **Nên có** | Kích hoạt hộ đủ giới hạn, nâng khóa khi lộ OTP (linh, quynh). Export `.md` (linh). Bảng theo dõi luật (linh, quynh). `ALLOW_WITH_WARNING`. Ablation từ khóa (bao) |
-| **Có thể có** | PDF. Đọc ảnh. Biến thể do LLM sinh (5 biến thể cố định là đủ). Chống dò đáp án |
+| **Nên có** | Kích hoạt hộ đủ giới hạn, nâng khóa khi lộ OTP (linh, quynh). Gói hồ sơ `.md` ở frontend (quynh). `ALLOW_WITH_WARNING` |
+| **Có thể có** (chỉ làm nếu 30/11 dư giờ) | Dừng mềm 30 phút. Bảng theo dõi luật + "Báo nhầm". Ablation từ khóa. Chống dò đáp án. PDF. Đọc ảnh. Biến thể do LLM sinh (5 biến thể cố định là đủ) |
 
-**Nếu trễ, cắt theo thứ tự:** mục "Có thể có" (PDF → ảnh → biến thể LLM → chống dò) → ablation → bảng theo dõi + "Báo nhầm" → UI `ENFORCE_HOLD` → kích hoạt hộ rút gọn thành một nhãn kèm thông báo.
+**Nếu trễ, cắt theo thứ tự:** biến thể LLM → UI `ENFORCE_HOLD` → kích hoạt hộ rút gọn thành một nhãn kèm thông báo trên ví.
 
-**Không bao giờ cắt:** M1 public; validator; regression với khóa Approve; **sửa anchor**; StagePolicy cùng mức sàn của lớp đối tác; challenge nguyên tử kèm kiểm tra lại ví; held-out niêm phong và chạy 1 lần; dự phòng 3 tầng; nút Reset; `pytest` trước khi merge.
+**Không bao giờ cắt:** M1 public; validator; regression với khóa Approve; **sửa anchor**; StagePolicy cùng mức sàn của lớp đối tác; challenge nguyên tử kèm kiểm tra lại ví; held-out do người khác viết và chạy 1 lần; dự phòng LLM; nút Reset; `pytest` trước khi merge.
 
 **Vẫn giữ nguyên quyết định cắt từ trước:**
 
@@ -224,15 +223,18 @@ demo_compile_cache (bao, 29–30/11) ─► kịch bản và video (quynh + bao,
 | CI/CD deploy tự động, WIF, nightly smoke | `scripts/deploy.sh` chạy tay; CI chỉ chạy `pytest`; trực tay mỗi ngày |
 | Jinja2, render PDF ở server | Prompt dạng `.txt` + `string.Template`; export Markdown; PDF do trình duyệt in |
 | Chế độ semantic B, chạy bench 3 lượt | Chế độ A cố định + mở rộng viết tắt; held-out chạy 1 lượt, temperature 0 |
+| Mã hóa GPG + hash held-out, khóa held-out sáng 28/11 | quynh giữ file trên máy riêng tới lượt chạy; bao không xem |
+| Bảng `notification` | `protective_hold_notice` đọc từ `containment_policy`, trả trong `GET /v1/wallets` |
+| Endpoint `consent` + xóa theo TTL | Cờ `consent_handoff` trong `analyze`; dữ liệu demo xóa khi Reset |
+| Endpoint export-pack | Frontend dựng Markdown, tải bằng Blob |
+| Dự phòng 3 tầng | 2 tầng: LLM → output thật đã lưu của 3 thủ đoạn mẫu |
 
 ---
 
 ## 9. Quy trình chạy held-out (01/12, 18:30, cả nhóm cùng ngồi)
 
-1. Kiểm tra `main` đang ở tag `freeze-0112` và bản deploy khớp với tag đó.
-2. quynh đưa passphrase: `gpg -d bench/heldout.json.gpg > bench/heldout.json && sha256sum -c bench/heldout.sha256`. Hash phải khớp.
+1. Bản deploy đang chạy đúng code đã freeze.
+2. quynh chép `heldout.json` vào `bench/`.
 3. bao chạy `python bench/run_bench.py --split heldout --interactive` trên URL public, bằng tài khoản `bench_runner`.
-4. **linh ngồi trước terminal:**
-   - Với mỗi ca, **trước khi thấy giao dịch B**, nhập luật từ khóa cho ablation (≤ 8 cụm), chỉ dựa vào đoạn chat của cô Lan.
-   - Mỗi khi câu hỏi bật lên, đọc `victim_belief_vi` và chọn phương án khớp nhất. Terminal không hiện nhãn ý nghĩa.
-5. Commit `bench/results/heldout_*.json`, `heldout_mapping.json` và bảng Markdown cho slide. **Không sửa prompt hay ngưỡng sau bước này**; kết quả xấu thì báo cáo trung thực dạng x/n kèm phân tích ca bỏ lọt.
+4. **linh ngồi trước terminal:** mỗi khi câu hỏi bật lên, đọc `victim_belief_vi` và chọn phương án khớp nhất (terminal không hiện nhãn ý nghĩa). Lựa chọn tự lưu vào `heldout_mapping.json`.
+5. Commit `bench/heldout.json` (dùng `git add -f`, vì `.gitignore` chặn file này để tránh lỡ commit sớm), `bench/results/heldout_*.json`, `heldout_mapping.json` và bảng Markdown cho slide. **Không sửa prompt hay ngưỡng sau bước này**; kết quả xấu thì báo cáo trung thực dạng x/n kèm phân tích ca bỏ lọt.

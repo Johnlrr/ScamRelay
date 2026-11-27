@@ -23,8 +23,8 @@ Nhóm có 3 người. Mỗi người làm trên nhánh mang tên mình (`bao`, `
 
 | Thành viên | Vai trò | File được sửa (chi tiết ở PLAN §3) |
 |---|---|---|
-| **bao** | AI, luật, đo lường | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression}.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `backend/data/demo_compile_cache/**`, `bench/**` (trừ `heldout.*`) |
-| **linh** | API, DB, gateway, deploy | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**`, `core/{gateway,stage_policy,ledger,containment,export_pack,stats}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` |
+| **bao** | AI, luật, đo lường | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression}.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) |
+| **linh** | API, DB, gateway, deploy | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**`, `core/{gateway,stage_policy,ledger,containment,stats}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` |
 | **quynh** | Frontend, held-out, pitch | `frontend/**`, `backend/data/action_registry.json`, `bench/heldout.*`, `docs/**` |
 
 - **Chỉ sửa file thuộc thành viên đang làm việc với bạn.** Cần đổi file của người khác thì dừng lại, mô tả chính xác cần đổi gì, để người dùng nhắn chủ file.
@@ -100,12 +100,12 @@ npm run gen:types        # sinh lại type từ /openapi.json mỗi khi schema b
 ## 6. Trung thực trong đo lường và demo
 
 - **Held-out (`bench/heldout.*`):**
-  - Agent **không mở, không giải mã, không đọc, không tóm tắt** held-out.
+  - Held-out nằm trên máy quynh, chỉ vào repo sau lượt chạy chính thức. Agent **không mở, không đọc, không tóm tắt** held-out.
   - Không viết ca held-out bằng LLM, cũng không gợi ý nội dung cho ca held-out.
   - Ngoại lệ duy nhất là lượt chạy chính thức sau freeze theo PLAN §9.
   - Agent làm cho **bao** (người tinh chỉnh prompt) tuyệt đối không tiếp xúc nội dung held-out.
 - **Chỉ hiệu chỉnh trên tập dev.** Không đổi prompt hay ngưỡng sau khi held-out đã được mở.
-- **`demo_compile_cache/`** chỉ chứa output LLM thật. Không sửa tay output rồi trình bày như do AI sinh ra.
+- **Output dự phòng trong `fallback_tactics.json`** chỉ chứa output LLM thật. Không sửa tay output rồi trình bày như do AI sinh ra.
 - **Số liệu trên slide hoặc README:** chỉ dùng số đo thật (`bench/results/`) hoặc nguồn đã kiểm chứng (ABOUT Phụ lục B). Ghi dạng x/n. Không bịa số, không làm tròn theo hướng có lợi.
 - **Báo cáo đúng thực tế:** test fail thì nói fail và đưa output; bước nào bỏ qua thì nói rõ là đã bỏ qua.
 
