@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.preprocess import clean_input, mask_pii, norm, norm_light
+from app.core.preprocess import clean_input, load_abbreviations, mask_pii, norm, norm_match
 
 
 # --- 3 ca bắt buộc trong SPEC §7.1
@@ -118,5 +118,45 @@ def test_norm_collides_thue_thue():
     assert norm("thuế") == norm("thuê") == "thue"
 
 
-def test_norm_light_keeps_diacritics():
-    assert norm_light("  Đóng   Phí ") == "đóng phí"
+# --- norm_match: bỏ dấu + mở rộng viết tắt theo từ nguyên vẹn (SPEC §8.1)
+def test_norm_match_expands_demo_sentence():
+    assert norm_match("Xác thực hồ sơ cập nhật thuế HKD") == "xac thuc ho so cap nhat thue ho kinh doanh"
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("CK tien hang", "chuyen khoan tien hang"),
+        ("gui stk va sdt", "gui so tai khoan va so dien thoai"),
+        ("phi kich hoat MST", "phi kich hoat ma so thue"),
+        ("thue TNCN, GTGT", "thue thu nhap ca nhan gia tri gia tang"),
+        ("chup CCCD/CMND", "chup can cuoc cong dan chung minh nhan dan"),
+        ("tk nh moi", "tai khoan ngan hang moi"),
+    ],
+)
+def test_norm_match_abbreviations(text, expected):
+    assert norm_match(text) == expected
+
+
+@pytest.mark.parametrize("text", ["hkdx", "tkb", "nhanh", "ckt", "thanh toan hd", "dk thue"])
+def test_norm_match_only_whole_tokens(text):
+    # Không mở rộng khi viết tắt nằm trong từ khác; 'hd'/'dk' nhập nhằng nên không có trong bảng.
+    assert norm_match(text) == norm(text)
+
+
+def test_norm_match_idempotent():
+    once = norm_match("Đóng phí HKD qua CK")
+    assert norm_match(once) == once
+
+
+def test_norm_match_empty():
+    assert norm_match("") == ""
+    assert norm_match("  !!  ") == ""
+
+
+def test_abbreviation_table_is_normalized_and_unambiguous():
+    abbr = load_abbreviations()
+    assert "hd" not in abbr and "dk" not in abbr
+    assert all(k == norm(k) and v == norm(v) and " " not in k for k, v in abbr.items())
+    # Giá trị mở rộng không chứa khóa khác (tránh chuỗi mở rộng lồng nhau)
+    assert all(tok not in abbr for v in abbr.values() for tok in v.split())

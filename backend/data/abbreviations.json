@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "Chỉ viết tắt KHÔNG nhập nhằng (SPEC §8.1). Khóa và giá trị đều ở dạng norm() (không dấu, chữ thường). Không thêm 'hd' (hóa đơn/hợp đồng), 'dk' (đăng ký/điều kiện).",
+  "abbreviations": {
+    "hkd": "ho kinh doanh",
+    "mst": "ma so thue",
+    "ck": "chuyen khoan",
+    "stk": "so tai khoan",
+    "tk": "tai khoan",
+    "cccd": "can cuoc cong dan",
+    "cmnd": "chung minh nhan dan",
+    "tncn": "thu nhap ca nhan",
+    "gtgt": "gia tri gia tang",
+    "sdt": "so dien thoai",
+    "nh": "ngan hang"
+  }
+}

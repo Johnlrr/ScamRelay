@@ -7,9 +7,12 @@ bằng token không chứa chữ số nên các regex sau không thể khớp l�
 
 from __future__ import annotations
 
+import json
 import re
 import unicodedata
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 
 # ---------------------------------------------------------------- chuẩn hóa đầu vào
 
@@ -38,9 +41,21 @@ def norm(text: str) -> str:
     return _SPACES.sub(" ", text).strip()
 
 
-def norm_light(text: str) -> str:
-    """Chế độ B (phía nội dung chuyển khoản): chỉ lowercase + gộp khoảng trắng, giữ dấu."""
-    return _SPACES.sub(" ", clean_input(text).lower()).strip()
+ABBREVIATIONS_PATH = Path(__file__).resolve().parents[2] / "data" / "abbreviations.json"
+
+
+@lru_cache(maxsize=1)
+def load_abbreviations() -> dict[str, str]:
+    raw = json.loads(ABBREVIATIONS_PATH.read_text(encoding="utf-8"))["abbreviations"]
+    # Khóa/giá trị luôn ở dạng norm() để so khớp theo token sau chuẩn hóa.
+    return {norm(k): norm(v) for k, v in raw.items()}
+
+
+def norm_match(text: str) -> str:
+    """SPEC §8.1: norm() rồi mở rộng viết tắt theo TỪ NGUYÊN VẸN. Dùng cho mọi phía của so khớp."""
+    abbr = load_abbreviations()
+    tokens = norm(text).split()
+    return " ".join(abbr.get(tok, tok) for tok in tokens)
 
 
 # ---------------------------------------------------------------- che PII
