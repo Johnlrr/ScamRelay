@@ -15,7 +15,7 @@
 | P3 | Việc mới cho linh: StagePolicy + mức sàn của lớp đối tác, sửa bản nháp, khóa Approve, đồng hồ 2 mốc, cờ `consent_handoff`, `protective_hold_notice` trên ví, ánh xạ câu trả lời held-out | linh |
 | P4 | Việc mới cho bao: chuẩn hóa viết tắt, **kiểm tra câu demo ngay đêm nay**, `layer1_match` dùng chung, assembler, tập sạch ≥ 200 mẫu, quy khớp nhầm về anchor, lưu output thật của 3 thủ đoạn mẫu làm dự phòng | bao |
 | P5 | Gói hồ sơ vẫn dựng ở frontend (Markdown + Blob), không có endpoint | quynh |
-| P6 | **Giữ nguyên phân vai của PLAN v2** (validator, baseline, regression thuộc bao) dù ABOUT §8.2 giao các việc này cho Member 2. Lý do: validator đã viết xong tối 27/11; regression và baseline gắn chặt với semantic và benchmark; Member 2 trong ABOUT đang quá tải | ABOUT §8.2 cần sửa cho khớp trước khi làm slide |
+| P6 | **Giữ nguyên phân vai của PLAN v2** (validator, baseline, regression thuộc bao) dù ABOUT §8.2 giao các việc này cho Member 2. Lý do: validator đã viết xong tối 27/11; regression và baseline gắn chặt với semantic và benchmark; Member 2 trong ABOUT đang quá tải | ABOUT §8.2 đã sửa cho khớp |
 | P7 | `preprocess.py` và `validator.py` viết tối 27/11 theo SPEC v1 **cần cập nhật lên v2** (bao, tối nay) | bao |
 | P8 | **Cắt cho hackathon (27/11, 23:20):** bỏ mã hóa và hash held-out; bỏ bảng `notification`, endpoint `consent` + xóa theo TTL, endpoint export-pack; dự phòng còn 2 tầng; dừng mềm 30 phút, bảng theo dõi, "Báo nhầm", chống dò đáp án, ablation chỉ làm nếu 30/11 dư giờ; Contract Drop nới tới 00:30 | cả nhóm |
 
@@ -172,7 +172,7 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 | bao | linh | quynh |
 |---|---|---|
 | Kiểm chứng mọi số liệu theo **ABOUT Phụ lục B** (mở bản gốc; chưa xác minh được thì xóa) | README (cách chạy, công nghệ, thư viện, tài sản có sẵn); thử bằng trình duyệt ẩn danh; `min-instances=1` | **Slide PDF ≤ 10 trang** (không sửa được sau khi nộp) |
-| README mục AI và dữ liệu (có danh sách công cụ AI đã dùng); **quay video cùng quynh** | Hỗ trợ quay video; sửa ABOUT §8.2 cho khớp phân vai | **Video ≤ 3 phút** trên bản live; **hướng dẫn 1 trang A4** (URL, tài khoản giám khảo, 5 bước) |
+| README mục AI và dữ liệu (có danh sách công cụ AI đã dùng); **quay video cùng quynh** | Hỗ trợ quay video | **Video ≤ 3 phút** trên bản live; **hướng dẫn 1 trang A4** (URL, tài khoản giám khảo, 5 bước) |
 
 ### 03/12
 - Sáng: rà chéo (bao xem slide, linh xem video, quynh xem zip và hướng dẫn).

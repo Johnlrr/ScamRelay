@@ -131,7 +131,7 @@ Từ một lần nhập ngữ cảnh, hệ thống xuất 1 gói hồ sơ dạng
 Trước khi hồ sơ được chuyển sang FraudOps, cô Lan (hoặc Tuấn) thấy một màn hình đồng ý ghi rõ ba điều:
 - Chia sẻ những gì: tóm tắt thủ đoạn và các trường giao dịch đã che định danh.
 - Dùng để làm gì: tạo luật bảo vệ người khác.
-- Lưu trong bao lâu: theo TTL của luật, sau đó xóa.
+- Lưu trong bao lâu: bản thật xóa theo TTL của luật; bản sandbox chỉ lưu trong workspace demo và xóa khi Reset.
 
 Ảnh chụp gốc không bao giờ rời khỏi khâu Privacy Gate.
 
@@ -159,7 +159,7 @@ Trước khi hồ sơ được chuyển sang FraudOps, cô Lan (hoặc Tuấn) t
 - Đồng hồ kích hoạt luật ghi **hai mốc riêng**: thời gian AI biên dịch + kiểm thử, và thời gian con người xem xét.
 - Luôn có nút **Rollback 1 chạm** để tắt luật ngay.
 
-**Bảng theo dõi luật (khép vòng "Relay").** Mỗi luật đang chạy có một bảng số liệu:
+**Bảng theo dõi luật (khép vòng "Relay"; làm nếu kịp).** Mỗi luật đang chạy có một bảng số liệu:
 - Số lần đã hỏi.
 - Số lần người dùng tự chọn mục đích khớp thủ đoạn.
 - Số lần chọn "Khác".
@@ -192,7 +192,7 @@ Khi người dùng ở luồng chặn tự chọn mục đích khớp thủ đo�
 > Dòng hiển thị cho **mọi** giao dịch đã khớp Lớp 1, bất kể chọn gì:
 > *"Nếu có người dặn bạn chọn một đáp án cụ thể ở màn hình này, đó là dấu hiệu lừa đảo. Hãy dừng lại và gọi kênh chính thức."*
 
-**Chống dò đáp án.** Nếu cùng một tài khoản gặp câu hỏi của cùng một luật từ 2 lần trở lên trong 24 giờ và chọn các đáp án khác nhau, giao dịch tiếp theo bị `HOLD_15M`. Hành vi đổi đáp án là dấu hiệu bị dặn hoặc đang thử luật.
+**Chống dò đáp án (nếu kịp).** Nếu cùng một tài khoản gặp câu hỏi của cùng một luật từ 2 lần trở lên trong 24 giờ và chọn các đáp án khác nhau, giao dịch tiếp theo bị `HOLD_15M`. Hành vi đổi đáp án là dấu hiệu bị dặn hoặc đang thử luật.
 
 ---
 
@@ -274,7 +274,7 @@ Bảng này giải quyết câu hỏi: *"Một luật mới chỉ có 1 báo cá
 
 1. **Nạn nhân bị dặn chọn đáp án lành.**
    - Lớp 2 không chặn được trường hợp này.
-   - Biện pháp giảm thiểu: dòng cảnh báo chống bị dặn trước, cơ chế chống dò đáp án, và `partner_risk_score` trong điều kiện luật.
+   - Biện pháp giảm thiểu: dòng cảnh báo chống bị dặn trước, cơ chế chống dò đáp án (nếu kịp), và `partner_risk_score` làm mức sàn.
    - Kết quả đo riêng ở mục 6.
 2. **Nội dung chuyển khoản trống hoặc vô hại.**
    - `SEMANTIC_MATCH` không có tín hiệu trong trường hợp này.
@@ -358,14 +358,13 @@ Bảng này giải quyết câu hỏi: *"Một luật mới chỉ có 1 báo cá
 | Nhóm | Endpoint | Chức năng |
 | :--- | :--- | :--- |
 | **Khoanh vùng** | `POST /v1/incidents/analyze` | Nhận chat đã che, cờ kích hoạt hộ và tình tiết mới (ví dụ lộ OTP). Trả về 3 việc cần làm, chính sách cho ví của nạn nhân và kênh chính thức. |
-| **Khoanh vùng** | `GET /v1/incidents/{id}/export-pack` | Xuất bộ hồ sơ "Kể 1 lần, dùng mọi nơi". |
 | **Tiếp sức** | `POST /v1/fraudops/rules/compile` | AI biên dịch `RelayRule` và 5–8 mô thức biến thể *(cần đăng nhập BGK)*. |
 | **Tiếp sức** | `POST /v1/fraudops/rules/{id}/regression-test` | Chạy validator và kiểm thử hồi quy. Trả về `flagged/checked` kèm ví dụ khớp nhầm. |
 | **Tiếp sức** | `POST /v1/fraudops/rules/{id}/approve` | Duyệt luật vào gateway theo giai đoạn. Bị từ chối nếu `flagged > 0` mà không có lý do ghi đè. Ghi lại 2 mốc thời gian. |
 | **Tiếp sức** | `POST /v1/fraudops/rules/{id}/rollback` | Thu hồi luật về `ROLLED_BACK` trong 1 chạm. |
 | **Chặn đúng** | `POST /v1/gateway/evaluate-transfer` | Chấm giao dịch song song trên baseline hành vi thuần và ScamRelay. Trả về `ALLOW` hoặc `CHALLENGE_JIT`. |
 | **Chặn đúng** | `POST /v1/gateway/submit-challenge` | Nhận lựa chọn mục đích. `StagePolicy` trả quyết định cuối cùng kèm `Receipt`. |
-| *(Nên có)* | `GET /v1/fraudops/rules/{id}/stats` | Bảng theo dõi luật: số lần hỏi, số lần chọn khớp thủ đoạn, số khiếu nại. |
+| *(Nếu kịp)* | `GET /v1/fraudops/rules/{id}/stats` | Bảng theo dõi luật: số lần hỏi, số lần chọn khớp thủ đoạn, số khiếu nại. |
 
 ---
 
@@ -381,9 +380,9 @@ Hai hệ thống được chấm trên **cùng một tập giao dịch**:
 
 **Tập dev:** 12 ca, dùng để tinh chỉnh prompt và hiệu chỉnh ngưỡng `SEMANTIC_MATCH`.
 
-**Tập held-out viết tay:** 12 ca.
-- Thành viên 3 viết **xong trước 12:00 ngày 28/11**, trước bất kỳ lần tinh chỉnh prompt nào.
-- File được mã hóa và **commit mã băm SHA-256 lên repo** ngay khi viết xong, để chứng minh tập này được khóa trước.
+**Tập held-out viết tay:** 10–12 ca.
+- Thành viên 3 viết và giữ trên máy riêng. **Người tinh chỉnh prompt (Thành viên 1) không xem tập này**; prompt và ngưỡng chỉ được chỉnh trên tập dev.
+- Held-out được mở và chạy **đúng 1 lượt** sau Feature Freeze; sau đó không sửa prompt hay ngưỡng. File được commit cùng kết quả.
 - Tuyệt đối không dùng LLM để sinh biến thể cho held-out.
 - Nếu kịp, nhờ thêm 1–2 người ngoài đội viết vài ca để giảm thiên lệch của người hiểu hệ thống.
 
@@ -444,28 +443,28 @@ Cơ cấu gợi ý của tập held-out:
 | Mức | Hạng mục |
 |---|---|
 | **Bắt buộc có** | Vòng lặp xuyên suốt: chat của cô Lan → biên dịch → kiểm thử hồi quy → sửa → Approve → câu hỏi cho chú Hùng → `StagePolicy` → quyết định. FraudOps có Approve/Rollback. VietWallet hiển thị trước/sau. `/docs`. Script benchmark. Deploy ổn định kèm đường dự phòng không phụ thuộc LLM. |
-| **Nên có** | Kích hoạt hộ (với các giới hạn ở mục 3.1). Nâng mức khóa khi lộ OTP. Xuất hồ sơ Markdown. Bảng theo dõi luật. `ALLOW_WITH_WARNING`. Ablation với luật từ khóa. |
-| **Có thể có** | Xuất PDF. Đọc ảnh chụp màn hình. Bộ sinh biến thể động (5 biến thể cố định là đủ). Chống dò đáp án. |
+| **Nên có** | Kích hoạt hộ (với các giới hạn ở mục 3.1). Nâng mức khóa khi lộ OTP. Xuất hồ sơ Markdown (dựng ngay trên trình duyệt). `ALLOW_WITH_WARNING`. |
+| **Có thể có** | Cưỡng chế khoảng chờ 30 phút sau `STOP_AND_EXPLAIN`. Bảng theo dõi luật. Ablation với luật từ khóa. Chống dò đáp án. Xuất PDF. Đọc ảnh chụp màn hình. Bộ sinh biến thể động (5 biến thể cố định là đủ). |
 | **Không làm** | Tích hợp ngân hàng thật. Dữ liệu người dùng thật. |
 
 ### 8.2. Phân công
 
 | Thành viên | Vai trò chính |
 | :--- | :--- |
-| **Member 1 (AI & Semantic Engine)** | Pipeline đọc chat; AI biên dịch `RelayRule` (câu mẫu, câu hỏi mục đích, nhãn ý nghĩa, mô thức biến thể); chuẩn hóa văn bản và embedding; hiệu chỉnh ngưỡng trên tập dev; 12 ca dev; script benchmark và ablation từ khóa. |
-| **Member 2 (Backend, API, Security & Ops)** | FastAPI + `/docs`; `DeterministicValidator`; `StagePolicy`; kiểm thử hồi quy và tập sạch ≥200 mẫu; baseline hành vi; gateway; JWT cho FraudOps + rate limit; xuất hồ sơ; **deploy, giám sát uptime và đường dự phòng LLM**; ánh xạ câu trả lời held-out. |
-| **Member 3 (Frontend, Held-out & Pitch)** | 3 giao diện (app cô Lan, FraudOps Workspace, VietWallet Sandbox với đồng hồ 2 mốc); **viết và khóa 12 ca held-out trước 12:00 ngày 28/11**; slide 10 trang và hướng dẫn 1 trang A4. Video quay chung với Member 1. |
+| **Member 1 (AI, luật & đo lường)** | Pipeline đọc chat; AI biên dịch `RelayRule` (câu mẫu, câu hỏi mục đích, nhãn ý nghĩa, mô thức biến thể); chuẩn hóa văn bản và embedding; `DeterministicValidator`; baseline hành vi; kiểm thử hồi quy và tập sạch ≥200 mẫu; hiệu chỉnh ngưỡng trên tập dev; 12 ca dev; output dự phòng LLM; script benchmark. |
+| **Member 2 (Backend, API, Security & Ops)** | FastAPI + `/docs`; `StagePolicy`; gateway; khoanh vùng ví; JWT cho FraudOps + rate limit; **deploy và giám sát uptime**; ánh xạ câu trả lời held-out. |
+| **Member 3 (Frontend, Held-out & Pitch)** | 3 giao diện (app cô Lan kèm xuất hồ sơ, FraudOps Workspace, VietWallet Sandbox với đồng hồ 2 mốc); **viết 10–12 ca held-out** (Member 1 không xem); slide 10 trang và hướng dẫn 1 trang A4. Video quay chung với Member 1. |
 
-*Thay đổi so với v1: việc deploy chuyển từ Member 3 sang Member 2 để giảm tải cho Member 3.*
+*Phân công chi tiết theo file nằm ở `PLAN.md` §3.*
 
 ### 8.3. Lịch trình
 
 | Ngày | Mốc bàn giao bắt buộc |
 | :--- | :--- |
 | **Tối 27/11** | Khóa schema v2 (gồm `outcome` và `StagePolicy`). Chạy thông vertical slice trên local. **Thử ngay câu demo "xac thuc ho so cap nhat thue HKD" qua `SEMANTIC_MATCH`**. Nếu không vượt ngưỡng, xử lý chuẩn hóa viết tắt ngay đêm nay. |
-| **28/11** | **12:00: Member 3 khóa held-out và commit mã băm.** Deploy khung lên link public trong ngày để phát hiện sớm lỗi CORS, timeout LLM, API key, rate limit. Làm kích hoạt hộ, nâng khóa khi lộ OTP, xuất hồ sơ. |
+| **28/11** | Deploy khung lên link public trong ngày để phát hiện sớm lỗi CORS, timeout LLM, API key, rate limit. Làm kích hoạt hộ, nâng khóa khi lộ OTP, xuất hồ sơ. |
 | **29/11** | FraudOps Workspace (JWT, kiểm thử hồi quy với khóa Approve, chỉnh sửa câu mẫu, Rollback). VietWallet trước/sau với đồng hồ 2 mốc. Sinh tập sạch ≥200 mẫu. |
-| **30/11** | Cập nhật đủ tính năng lên bản public. Kiểm thử ca biên: prompt injection, LLM lỗi hoặc chậm (dùng kết quả lưu sẵn), cô lập phiên người dùng. Đặt **giới hạn chi phí API LLM** đủ dùng tới 11/12. Bảng theo dõi luật nếu kịp. |
+| **30/11** | Cập nhật đủ tính năng lên bản public. Kiểm thử ca biên: prompt injection, LLM lỗi hoặc chậm (dùng kết quả lưu sẵn), cô lập phiên người dùng. Đặt **giới hạn chi phí API LLM** đủ dùng tới 11/12. Member 3 viết held-out. Bảng theo dõi luật nếu kịp. |
 | **01/12 (Feature Freeze 18:00)** | Mở held-out, chạy **đúng 1 lượt** đo thật. Không tinh chỉnh prompt sau khi đã mở. Chạy ablation từ khóa nếu kịp. |
 | **02/12** | Kiểm chứng mọi số liệu đưa lên slide. Hoàn thiện slide PDF tối đa 10 trang (lưu ý *không được sửa sau khi nộp*), quay video MP4 tối đa 3 phút trên bản live, viết hướng dẫn 1 trang A4 kèm link sản phẩm và tài khoản giám khảo. |
 | **03/12 (trước 18:00)** | Rà `README.md`: khai báo thư viện, công cụ AI và nguồn dữ liệu giả lập hợp pháp theo Điều 11–12 thể lệ. Đóng gói mã nguồn `.zip`. Kiểm thử link public bằng trình duyệt ẩn danh. **Nộp sớm.** |
@@ -494,8 +493,8 @@ Cơ cấu gợi ý của tập held-out:
 | Báo cáo giả có thể làm hại người khác không? | Luật không chứa số tài khoản. Câu mẫu trùng giao dịch hợp lệ bị kiểm thử hồi quy bắt và khóa Approve. Tác động tối đa của 1 báo cáo là 1 câu hỏi, và một lần dừng mềm 30 phút nếu chính người dùng chọn mục đích khớp thủ đoạn. |
 | Khác gì hệ thống chấm điểm rủi ro sẵn có của MoMo? | Hệ thống đó nhìn giao dịch; ScamRelay mang ngữ cảnh ngoài app từ nạn nhân đầu tiên vào và biến nó thành câu hỏi cho người tiếp theo. Điểm rủi ro sẵn có là một đầu vào của luật. |
 | Vì sao không chặn thẳng luôn? | Tiền là của người dùng. Một báo cáo đơn lẻ chưa đủ để chặn cứng. Dừng mềm kèm giải thích bảo vệ được người dùng mà vẫn tôn trọng quyền của họ. Chỉ khi có nhiều xác nhận độc lập mới tạm giữ đến khi xác minh. |
-| Dữ liệu của cô Lan được lưu bao lâu, ai xem? | Chỉ chia sẻ sau khi đồng ý; chỉ gồm tóm tắt đã che định danh; xóa theo TTL; ảnh gốc không rời Privacy Gate. |
-| Làm sao biết tập held-out không bị "học tủ"? | Viết tay trước khi tinh chỉnh prompt, commit mã băm từ 28/11, mở đúng một lần sau freeze. Bảng ánh xạ câu trả lời được công bố. |
+| Dữ liệu của cô Lan được lưu bao lâu, ai xem? | Chỉ chia sẻ sau khi đồng ý; chỉ gồm tóm tắt đã che định danh; bản thật xóa theo TTL (sandbox xóa khi Reset); ảnh gốc không rời Privacy Gate. |
+| Làm sao biết tập held-out không bị "học tủ"? | Người viết held-out không tinh chỉnh prompt; người tinh chỉnh không xem tập này và chỉ chỉnh trên tập dev. Held-out chạy đúng một lần sau freeze. Bảng ánh xạ câu trả lời được công bố. |
 | Sau cuộc thi triển khai thật thế nào? | Ví đối tác gọi 2 endpoint gateway; FraudOps dùng workspace; bắt đầu ở `SHADOW_LOG` để đo trên giao dịch thật trước khi hỏi người dùng. |
 
 ---
@@ -511,7 +510,7 @@ Cơ cấu gợi ý của tập held-out:
 | 5 | Thêm `partner_risk_score` và mục **Giới hạn đã biết**. | Nội dung chuyển khoản do kẻ gian kiểm soát; định vị ScamRelay rõ ràng là lớp bổ sung trên hệ thống của ví. |
 | 6 | Kích hoạt hộ **chỉ làm an toàn hơn**; chủ tài khoản được thông báo; chỉ chủ tài khoản gỡ được hạn chế. | v1 chưa nói cách chặn kẻ gian lợi dụng kích hoạt hộ để khóa phá tài khoản hoặc dò thông tin. |
 | 7 | Kiểm thử hồi quy trên **≥200 giao dịch sạch** và **khóa Approve** khi có khớp nhầm. Demo có cảnh chuyên viên sửa lỗi của AI. | v1 có "0% báo nhầm" trên tập rất nhỏ nên không thuyết phục; chuyên viên chỉ bấm Approve trông như thủ tục hình thức. |
-| 8 | Đánh giá: câu trả lời của nạn nhân viết trước bằng lời tự do và ánh xạ bởi người khác; thêm ca bị dặn trước và ca nội dung trống; chỉ số ghi x/n; tách Trigger Rate; tách 2 mốc thời gian; khóa held-out bằng mã băm; ablation từ khóa. | v1 chưa định nghĩa ai trả lời câu hỏi mục đích trong đánh giá. Nếu người viết ca chọn sẵn đáp án, tỷ lệ chặn gần như được đảm bảo, tức đánh giá vòng lặp. v1 cũng chưa có mốc viết held-out trong lịch. |
+| 8 | Đánh giá: câu trả lời của nạn nhân viết trước bằng lời tự do và ánh xạ bởi người khác; thêm ca bị dặn trước và ca nội dung trống; chỉ số ghi x/n; tách Trigger Rate; tách 2 mốc thời gian; held-out do người không tinh chỉnh prompt viết, chạy đúng 1 lần; ablation từ khóa (nếu kịp). | v1 chưa định nghĩa ai trả lời câu hỏi mục đích trong đánh giá. Nếu người viết ca chọn sẵn đáp án, tỷ lệ chặn gần như được đảm bảo, tức đánh giá vòng lặp. v1 cũng chưa có mốc viết held-out trong lịch. |
 | 9 | Chuẩn hóa văn bản (bỏ dấu, mở rộng viết tắt) trước `SEMANTIC_MATCH`; hiệu chỉnh ngưỡng trên tập dev. | Câu demo dùng "HKD", embedding có thể không khớp với "hộ kinh doanh". |
 | 10 | Khép vòng "Relay": thống kê luật và tín hiệu xác nhận chảy ngược về FraudOps. | v1 chưa có luồng phản hồi từ giao dịch của người tiếp theo về chuyên viên. |
 | 11 | Dùng nhân vật cụ thể; đặt FraudOps làm trung tâm của câu chuyện. | Bám sát chủ đề "Future Workspace"; dễ nhớ khi pitch. |
