@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.db
+.pytest_cache/
+node_modules/
+frontend/dist/
+.env.*
+!.env.example
+# Held-out chỉ commit bản mã hóa + hash (SPEC §13.2); bản rõ không bao giờ lên git trước freeze
+bench/heldout.json
