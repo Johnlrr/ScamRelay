@@ -20,7 +20,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from app.schemas.rule import Condition, RelayRuleDraft, ValidationResult
-from app.core.preprocess import _PHONE, norm, norm_match
+from app.core.preprocess import _PHONE, missing_vi_diacritics, norm, norm_match
 
 # ---------------------------------------------------------------- hằng số
 
@@ -92,12 +92,7 @@ def _present(value: Any) -> bool:
     return value is not None and value != []
 
 
-def _missing_diacritics(text: str) -> bool:
-    """V6c: chữ hiển thị ≥ 3 từ mà không có một dấu tiếng Việt nào → coi là viết không dấu."""
-    if len(re.findall(r"[^\W\d_]+", text)) < 3:
-        return False
-    return not (any(unicodedata.combining(ch) for ch in unicodedata.normalize("NFD", text))
-                or "đ" in text.lower())
+_missing_diacritics = missing_vi_diacritics
 
 
 def _banned_words(text: str) -> list[str]:

@@ -496,6 +496,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
    - URL giữ ở dạng text, **không bao giờ fetch**, UI hiển thị dạng không bấm được.
    - Ảnh (nếu có): resize, bỏ EXIF, chỉ giữ trong bộ nhớ, không ghi đĩa, không bao giờ chuyển sang FraudOps.
 3. **LLM extract:** prompt `incident_extract.vN.txt`, temperature 0, structured output `IncidentAnalysisLLM`, timeout 25 giây, retry 1 lần. Nội dung người dùng được bọc trong `<untrusted_evidence>`, và prompt nói rõ đây là dữ liệu, không phải chỉ thị.
+   - Chữ hiển thị (`tactic_summary_vi`, `manipulation_cues`, `facts[].text`) có chuỗi ≥ 3 từ mà không có dấu thì gọi lại **1 lần** với `incident_extract_fix_diacritics.v1.txt` nối sau prompt. Dùng bản gọi lại nếu đã có dấu, nhưng `otp_or_password_disclosed` và `remote_app_installed` chỉ được nâng so với bản đầu. Gọi lại lỗi hoặc vẫn không dấu thì giữ bản đầu (bao chốt 28/11: 1/12 bản phân tích dev viết không dấu).
 4. **Lỗi, timeout hoặc 429:** chuyển sang classifier từ khóa trên `fallback_tactics.json`, gắn `degraded: true`. Không bao giờ kết luận "an toàn".
 5. **Containment (tất định).** Tính `mode` và 3 việc cần làm như §6.1. Nếu có `protect_wallet_id`:
    - Tạo hoặc **nâng** `containment_policy`. Chỉ được nâng theo chiều không có → `MANIPULATION` → `COMPROMISE`, không bao giờ hạ.

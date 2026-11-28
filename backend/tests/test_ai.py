@@ -173,3 +173,48 @@ def test_compile_still_unaccented_new_tactic_returned_for_validator_to_block():
     finally:
         llm_client.set_llm(None)
     assert r.source == "LLM" and rule_ai.missing_diacritics(r.raw)
+
+
+# ---------------------------------------------------------------- analyze: gọi lại khi chữ hiển thị không dấu
+def _unaccented_analysis(**over):
+    import copy as _c
+
+    a = _c.deepcopy(HKD_ANALYSIS) | over
+    a["tactic_summary_vi"] = "Gia danh can bo thue doi phi xac minh ho kinh doanh"
+    return a
+
+
+def test_analyze_retries_once_when_unaccented_and_never_lowers_danger():
+    first = _unaccented_analysis(otp_or_password_disclosed="YES")
+    second = HKD_ANALYSIS | {"otp_or_password_disclosed": "NO"}
+    fake = FakeLLM(first, second)
+    llm_client.set_llm(fake)
+    try:
+        r = asyncio.run(analyze_incident("abc", None, False, []))
+    finally:
+        llm_client.set_llm(None)
+    assert len(fake.prompts) == 2 and "CÓ DẤU" in fake.prompts[1]
+    assert not r.degraded and r.analysis.tactic_summary_vi == HKD_ANALYSIS["tactic_summary_vi"]
+    assert r.analysis.otp_or_password_disclosed == "YES"                 # không hạ YES → NO
+
+
+@pytest.mark.parametrize("second", [LLMError("timeout"), "still_unaccented"])
+def test_analyze_keeps_first_result_if_retry_fails(second):
+    first = _unaccented_analysis()
+    fake = FakeLLM(first, first if second == "still_unaccented" else second)
+    llm_client.set_llm(fake)
+    try:
+        r = asyncio.run(analyze_incident("abc", None, False, []))
+    finally:
+        llm_client.set_llm(None)
+    assert not r.degraded and r.analysis.tactic_summary_vi == first["tactic_summary_vi"]
+
+
+def test_analyze_accented_no_retry():
+    fake = FakeLLM(HKD_ANALYSIS)
+    llm_client.set_llm(fake)
+    try:
+        asyncio.run(analyze_incident("abc", None, False, []))
+    finally:
+        llm_client.set_llm(None)
+    assert len(fake.prompts) == 1

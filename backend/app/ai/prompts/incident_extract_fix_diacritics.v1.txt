@@ -1,0 +1,2 @@
+
+LƯU Ý BỔ SUNG: ở lần trả lời trước, các trường hiển thị cho người dùng (tactic_summary_vi, manipulation_cues, facts[].text) bị viết KHÔNG DẤU. Hãy trả lại TOÀN BỘ JSON theo đúng yêu cầu ở trên, trong đó mọi trường chữ đó viết bằng tiếng Việt CÓ DẤU đầy đủ (ví dụ "Giả danh công an", không viết "Gia danh cong an"). Các trường còn lại giữ nguyên ý nghĩa.

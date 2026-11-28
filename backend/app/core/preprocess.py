@@ -196,3 +196,11 @@ def mask_pii(text: str) -> MaskResult:
     result = masker.restore()
     otp_mentioned = counts["otp"] > 0 or bool(_OTP_FLAG_KEYWORD.search(result))
     return MaskResult(text=result, otp_mentioned=otp_mentioned, counts=counts)
+
+
+def missing_vi_diacritics(text: str) -> bool:
+    """Chữ hiển thị ≥ 3 từ mà không có một dấu tiếng Việt nào → coi là viết không dấu (V6c, analyze)."""
+    if len(re.findall(r"[^\W\d_]+", text)) < 3:
+        return False
+    return not (any(unicodedata.combining(ch) for ch in unicodedata.normalize("NFD", text))
+                or "đ" in text.lower())

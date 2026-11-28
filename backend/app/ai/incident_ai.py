@@ -21,9 +21,10 @@ from pydantic import ValidationError
 from app.ai.llm_client import LLMError, get_llm
 from app.schemas.incident import AnalyzeResult, Fact, IncidentAnalysis
 from app.schemas.llm_incident import IncidentAnalysisLLM
-from app.core.preprocess import norm_match
+from app.core.preprocess import missing_vi_diacritics, norm_match
 
 PROMPT_VERSION = "incident_extract.v2"
+FIX_DIACRITICS_VERSION = "incident_extract_fix_diacritics.v1"   # gọi lại 1 lần khi chữ hiển thị không dấu
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 FALLBACK_PATH = Path(__file__).resolve().parents[2] / "data" / "fallback_tactics.json"
 TIMEOUT_S = 25
@@ -151,6 +152,12 @@ def merge_analysis(old: IncidentAnalysis, new: IncidentAnalysis) -> IncidentAnal
     )
 
 
+def unaccented(a: IncidentAnalysis) -> bool:
+    """Có chữ hiển thị (tóm tắt, dấu hiệu, sự kiện) viết không dấu — nạn nhân đọc và gói hồ sơ dùng lại."""
+    texts = [a.tactic_summary_vi, *a.manipulation_cues, *(f.text for f in a.facts)]
+    return any(missing_vi_diacritics(t) for t in texts)
+
+
 async def analyze_incident(masked_text: str, image_b64: str | None, otp_mentioned: bool,
                            history: list[IncidentAnalysis]) -> AnalyzeResult:
     llm = get_llm()
@@ -159,9 +166,24 @@ async def analyze_incident(masked_text: str, image_b64: str | None, otp_mentione
     if llm is not None:
         try:
             image = base64.b64decode(image_b64) if image_b64 else None
-            resp = await llm.generate_json(build_prompt(masked_text, otp_mentioned, history), IncidentAnalysisLLM,
-                                           timeout_s=TIMEOUT_S, retries=1, image=image)
+            prompt = build_prompt(masked_text, otp_mentioned, history)
+            resp = await llm.generate_json(prompt, IncidentAnalysisLLM, timeout_s=TIMEOUT_S, retries=1, image=image)
             analysis = to_domain(resp.data)
+            if unaccented(analysis):
+                try:
+                    fix = _template(FIX_DIACRITICS_VERSION).template
+                    resp = await llm.generate_json(prompt + "\n" + fix, IncidentAnalysisLLM, timeout_s=TIMEOUT_S,
+                                                   retries=0, image=image)
+                    retry = to_domain(resp.data)
+                    if not unaccented(retry):
+                        # dùng chữ có dấu của bản gọi lại; dấu hiệu nguy hiểm chỉ được nâng, không hạ
+                        analysis = retry.model_copy(update={
+                            "otp_or_password_disclosed": _raise(analysis.otp_or_password_disclosed,
+                                                                retry.otp_or_password_disclosed),
+                            "remote_app_installed": _raise(analysis.remote_app_installed, retry.remote_app_installed),
+                        })
+                except (LLMError, ValidationError, ValueError):
+                    pass                                   # giữ bản đầu: vẫn đúng nội dung, chỉ thiếu dấu
         except (LLMError, ValidationError, ValueError):
             analysis = None
     if analysis is None:
