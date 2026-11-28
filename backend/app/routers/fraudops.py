@@ -162,6 +162,8 @@ async def compile_rule_route(req: CompileRequest, p: Principal = Depends(require
     if not inc.consent_handoff:
         raise ApiError(403, "CONSENT_REQUIRED", "Sự cố chưa được đồng ý chia sẻ sang FraudOps.")
     requested_at = utcnow()
+    corr = corroboration(s, p.workspace_id, inc.tactic_family)
+    s.commit()   # kết thúc transaction đọc trước khi chờ LLM/embedding: SQLite sẽ khóa ghi cache ở kết nối khác
     try:
         cr = await compile_rule(IncidentAnalysis.model_validate(inc.analysis_json))
     except CompileUnavailable as e:
@@ -174,7 +176,7 @@ async def compile_rule_route(req: CompileRequest, p: Principal = Depends(require
         version=1, stage="DRAFT_INVALID", source=cr.source, degraded=cr.degraded,
         validation_json=v.model_dump(mode="json", exclude={"sanitized_draft"}),
         ttl_hours=config.DEFAULT_RULE_TTL_HOURS, compile_requested_at=requested_at,
-        corroboration_count=corroboration(s, p.workspace_id, inc.tactic_family),
+        corroboration_count=corr,
     )
     machine = cr.llm_seconds
     built = False
@@ -236,9 +238,11 @@ async def edit_draft(rule_id: str, draft: RelayRuleDraft, p: Principal = Depends
         return {a for c in (d or {}).get("conditions", []) for a in (c.get("anchor_phrases") or [])}
 
     before = anchors(row.draft_json)
+    corr = corroboration(s, p.workspace_id, row.tactic_family)
+    s.commit()   # như compile: không giữ transaction đọc qua lúc embed anchor mới
     try:
         machine = await _build(row, v.sanitized_draft, version=row.version + 1,
-                               corroboration_count=corroboration(s, p.workspace_id, row.tactic_family), edited=True)
+                               corroboration_count=corr, edited=True)
     except AssembleError as e:
         s.rollback()
         raise ApiError(422, "VALIDATION_FAILED", "Bản nháp chưa hợp lệ, luật chưa thay đổi.", [str(e)]) from e
