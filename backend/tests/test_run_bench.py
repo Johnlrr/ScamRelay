@@ -130,3 +130,39 @@ def test_api_waits_on_minute_rate_limit_then_gives_up_on_daily():
     with pytest.raises(rb.ApiError, match="429"):                  # hạn mức ngày: không chờ
         api.call("POST", "/v1/incidents/analyze", {})
     assert slept == [21]
+
+
+def test_dev_cases_pass_format_validation():
+    cases = rb.read_cases(ROOT / "bench" / "cases" / "dev")
+    assert len(cases) == 12 and rb.validate_cases(cases, interactive=False) == []
+
+
+def _heldout_like(**tx_over):
+    tx = {"tx_id": "H-1-1", "from_wallet": "W-HUNG", "to_account_id": "ACC-OLD-7731", "amount_vnd": 1_000_000,
+          "transfer_note": "abc", "label": "SCAM", "is_variant": True, "victim_belief_vi": "x"} | tx_over
+    return {"case_id": "H-1", "category": "VARIANT_NEW_TACTIC", "incident_A": {"text": "abc", "followups": []},
+            "expected_A": {"mode": "MANIPULATION"}, "transactions_B": [tx]}
+
+
+@pytest.mark.parametrize("wrap", [lambda c: [c], lambda c: {"cases": [c]}, lambda c: c])
+def test_single_file_input_and_check(tmp_path, capsys, wrap):
+    f = tmp_path / "heldout.json"
+    f.write_text(json.dumps(wrap(_heldout_like())), encoding="utf-8")
+    assert rb.main(["--check", str(f)]) == 0
+    assert "OK: 1 ca, 1 giao dịch" in capsys.readouterr().out
+
+
+def test_check_reports_ids_not_content(tmp_path, capsys):
+    secret_note = "noi dung bi mat khong duoc in"
+    bad = _heldout_like(transfer_note=secret_note, from_wallet="W-NOPE", dev_outcome="BENIGN", amount_vnd=9_000_000)
+    f = tmp_path / "heldout.json"
+    f.write_text(json.dumps([bad, bad]), encoding="utf-8")
+    assert rb.main(["--check", str(f)]) == 1
+    out = capsys.readouterr().out
+    assert "from_wallet" in out and "dev_outcome" in out and "case_id trùng" in out and "tx_id trùng" in out
+    assert secret_note not in out
+
+
+def test_interactive_rejects_dev_folder():
+    with pytest.raises(SystemExit, match="dev_outcome"):
+        rb.load_cases(ROOT / "bench" / "cases" / "dev", interactive=True)

@@ -867,6 +867,7 @@ Bảng trên cho 12 ca; nếu chỉ viết 10 ca thì bớt 1 ca biến thể v�
 ### 13.3 Runner (`bench/run_bench.py`)
 
 - Runner chạy bằng tài khoản `bench_runner` trên workspace riêng, và gọi **đúng các endpoint thật** (không có nhánh `dry_run`).
+- Đầu vào: thư mục ca (`bench/cases/dev/`) hoặc một file JSON là danh sách ca (`bench/heldout.json`). Runner kiểm tra định dạng trước khi chạy; `--check` chỉ kiểm tra, không gọi server, không in nội dung ca.
 - Với mỗi ca:
   1. `reset` → `analyze(A)` với `consent_handoff=true` → `compile` → `regression`.
   2. `approve ASK_ONLY`. Nếu `flagged > 0`, runner duyệt với `override_reason = "bench: ghi đè tự động, xem results"` và **ghi việc này vào kết quả**.

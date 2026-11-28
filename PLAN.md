@@ -247,8 +247,9 @@ output dự phòng đã lưu (bao, 29/11) ─► demo không chết khi LLM lỗ
 
 ## 9. Quy trình chạy held-out (01/12, 18:30, cả nhóm cùng ngồi)
 
+0. **Tối 30/11, trên máy quynh:** `backend/.venv/bin/python bench/run_bench.py --check bench/heldout.json` phải in `OK`. Lệnh chỉ báo lỗi theo id và tên trường (ví, tài khoản phải có trong seed; số tiền ≤ số dư; không có `dev_outcome`), không in nội dung ca. File là một danh sách JSON các ca theo SPEC §13.1.
 1. Bản deploy đang chạy đúng code đã freeze.
 2. quynh chép `heldout.json` vào `bench/`.
-3. bao chạy `python bench/run_bench.py --split heldout --interactive` trên URL public, bằng tài khoản `bench_runner`.
+3. bao chạy `SCAMRELAY_URL=<URL public> BENCH_USER=bench_runner BENCH_PASS=… backend/.venv/bin/python bench/run_bench.py --interactive bench/heldout.json`.
 4. **linh ngồi trước terminal:** mỗi khi câu hỏi bật lên, đọc `victim_belief_vi` và chọn phương án khớp nhất (terminal không hiện nhãn ý nghĩa). Lựa chọn tự lưu vào `heldout_mapping.json`.
 5. Commit `bench/heldout.json` (dùng `git add -f`, vì `.gitignore` chặn file này để tránh lỡ commit sớm), `bench/results/heldout_*.json`, `heldout_mapping.json` và bảng Markdown cho slide. **Không sửa prompt hay ngưỡng sau bước này**; kết quả xấu thì báo cáo trung thực dạng x/n kèm phân tích ca bỏ lọt.

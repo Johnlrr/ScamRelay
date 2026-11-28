@@ -3,7 +3,11 @@
     # Dev, tự chọn phương án theo dev_outcome
     backend/.venv/bin/python bench/run_bench.py --auto bench/cases/dev
     # Held-out (01/12 sau freeze, linh ngồi terminal): chọn phương án theo victim_belief_vi
-    backend/.venv/bin/python bench/run_bench.py --interactive <thư mục held-out>
+    backend/.venv/bin/python bench/run_bench.py --interactive bench/heldout.json
+    # Chỉ kiểm tra định dạng (không gọi server, không in nội dung ca) — quynh chạy trên máy mình
+    backend/.venv/bin/python bench/run_bench.py --check bench/heldout.json
+
+Đầu vào: một thư mục (mỗi file *.json là một ca) HOẶC một file JSON (danh sách ca, {"cases": [...]} hoặc một ca).
 
 Biến môi trường: SCAMRELAY_URL (mặc định http://localhost:8000), BENCH_USER / BENCH_PASS (tài khoản
 `bench_runner`). Kết quả: bench/results/<tên tập>_<thời điểm>.{json,md}; chế độ interactive ghi thêm
@@ -295,10 +299,91 @@ def to_markdown(name: str, m: dict, cases: list[CaseResult]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def load_cases(folder: Path, interactive: bool) -> list[dict]:
-    cases = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(folder.glob("*.json"))]
-    if interactive and any("dev_outcome" in t for c in cases for t in c["transactions_B"]):
-        raise SystemExit("held-out không được có dev_outcome (SPEC §13.1)")
+CATEGORIES = {"VARIANT_NEW_TACTIC", "RECOVERY", "OTP", "COACHED", "EMPTY_NOTE", "LEGIT_HARD"}
+OUTCOMES = {"BENIGN", "TACTIC_MATCH", "UNCLEAR"}
+SEED_PATH = Path(__file__).resolve().parents[1] / "backend" / "data" / "seed_workspace.json"
+MAX_AMOUNT_VND = 50_000_000            # TransferRequest.amount_vnd ≤ 50 triệu
+
+
+def read_cases(path: Path) -> list[dict]:
+    if path.is_dir():
+        return [json.loads(p.read_text(encoding="utf-8")) for p in sorted(path.glob("*.json"))]
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(data, dict) and "cases" in data:
+        data = data["cases"]
+    return data if isinstance(data, list) else [data]
+
+
+def validate_cases(cases: list[dict], *, interactive: bool, seed_path: Path = SEED_PATH) -> list[str]:
+    """Lỗi định dạng theo SPEC §13.1. Chỉ nêu id và tên trường, KHÔNG in nội dung ca (held-out)."""
+    seed = json.loads(seed_path.read_text(encoding="utf-8"))
+    bal = {w["id"]: w["balance_vnd"] for w in seed["wallets"]}
+    accounts = {a["id"] for a in seed["accounts"]}
+    errs: list[str] = []
+    case_ids, tx_ids = set(), set()
+    if not cases:
+        errs.append("không có ca nào")
+    for i, c in enumerate(cases):
+        if not isinstance(c, dict):
+            errs.append(f"ca #{i + 1}: không phải object JSON")
+            continue
+        cid = c.get("case_id") or f"#{i + 1}"
+        if not c.get("case_id"):
+            errs.append(f"{cid}: thiếu case_id")
+        elif cid in case_ids:
+            errs.append(f"{cid}: case_id trùng")
+        case_ids.add(cid)
+        if c.get("category") not in CATEGORIES:
+            errs.append(f"{cid}: category phải thuộc {sorted(CATEGORIES)}")
+        a = c.get("incident_A")
+        if not isinstance(a, dict) or not str(a.get("text", "")).strip():
+            errs.append(f"{cid}: thiếu incident_A.text")
+        elif a.get("protect_wallet_id") not in (None, *bal):
+            errs.append(f"{cid}: incident_A.protect_wallet_id không có trong seed")
+        if isinstance(a, dict) and not isinstance(a.get("followups", []), list):
+            errs.append(f"{cid}: incident_A.followups phải là danh sách")
+        if not isinstance(c.get("expected_A"), dict):
+            errs.append(f"{cid}: thiếu expected_A")
+        txs = c.get("transactions_B")
+        if not isinstance(txs, list) or not txs:
+            errs.append(f"{cid}: thiếu transactions_B")
+            continue
+        for j, t in enumerate(txs):
+            tid = t.get("tx_id") or f"{cid}#{j + 1}"
+            if not t.get("tx_id"):
+                errs.append(f"{tid}: thiếu tx_id")
+            elif tid in tx_ids:
+                errs.append(f"{tid}: tx_id trùng")
+            tx_ids.add(tid)
+            if t.get("from_wallet") not in bal:
+                errs.append(f"{tid}: from_wallet không có trong seed ({sorted(bal)})")
+            if t.get("to_account_id") not in accounts:
+                errs.append(f"{tid}: to_account_id không có trong seed")
+            amt = t.get("amount_vnd")
+            if not isinstance(amt, int) or amt <= 0:
+                errs.append(f"{tid}: amount_vnd phải là số nguyên dương")
+            elif amt > min(bal.get(t.get("from_wallet"), MAX_AMOUNT_VND), MAX_AMOUNT_VND):
+                errs.append(f"{tid}: amount_vnd vượt số dư ví seed hoặc hạn mức 50 triệu")
+            if not isinstance(t.get("transfer_note", ""), str) or len(t.get("transfer_note", "")) > 120:
+                errs.append(f"{tid}: transfer_note phải là chuỗi ≤ 120 ký tự")
+            if t.get("label") not in ("SCAM", "LEGIT"):
+                errs.append(f"{tid}: label phải là SCAM hoặc LEGIT")
+            if not isinstance(t.get("is_variant"), bool):
+                errs.append(f"{tid}: is_variant phải là true/false")
+            if not str(t.get("victim_belief_vi", "")).strip():
+                errs.append(f"{tid}: thiếu victim_belief_vi")
+            if interactive and "dev_outcome" in t:
+                errs.append(f"{tid}: held-out không được có dev_outcome (SPEC §13.1)")
+            if not interactive and t.get("dev_outcome") not in OUTCOMES:
+                errs.append(f"{tid}: ca dev cần dev_outcome thuộc {sorted(OUTCOMES)}")
+    return errs
+
+
+def load_cases(path: Path, interactive: bool) -> list[dict]:
+    cases = read_cases(path)
+    errs = validate_cases(cases, interactive=interactive)
+    if errs:
+        raise SystemExit("Tập ca chưa hợp lệ:\n- " + "\n- ".join(errs))
     return cases
 
 
@@ -307,15 +392,23 @@ def main(argv: list[str] | None = None, transport: Transport | None = None) -> i
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--auto", action="store_true")
     mode.add_argument("--interactive", action="store_true")
-    ap.add_argument("folder", type=Path)
+    mode.add_argument("--check", action="store_true", help="chỉ kiểm tra định dạng held-out, không gọi server")
+    ap.add_argument("path", type=Path, help="thư mục ca (*.json) hoặc một file JSON")
     args = ap.parse_args(argv)
+
+    if args.check:
+        cases = read_cases(args.path)
+        errs = validate_cases(cases, interactive=True)
+        print(f"OK: {len(cases)} ca, {sum(len(c['transactions_B']) for c in cases)} giao dịch" if not errs
+              else "Chưa hợp lệ:\n- " + "\n- ".join(errs))
+        return 1 if errs else 0
 
     api = Api(transport or http_transport(os.environ.get("SCAMRELAY_URL", "http://localhost:8000")))
     user, pw = os.environ.get("BENCH_USER"), os.environ.get("BENCH_PASS")
     if user and pw:
         api.login(user, pw)
     choose = interactive_chooser() if args.interactive else auto_chooser
-    cases = load_cases(args.folder, args.interactive)
+    cases = load_cases(args.path, args.interactive)
     results = []
     for c in cases:
         results.append(run_case(api, c, choose))
@@ -323,7 +416,7 @@ def main(argv: list[str] | None = None, transport: Transport | None = None) -> i
         print(f"{last.case_id}: {last.error or 'ok'} — " +
               ", ".join(f"{t.tx_id}={t.relay_final or t.error}" for t in last.txs), flush=True)
 
-    name = args.folder.name
+    name = args.path.stem if args.path.is_file() else args.path.name
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%MZ")
     m = metrics(results)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
