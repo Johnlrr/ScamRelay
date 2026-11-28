@@ -32,6 +32,11 @@ def make_engine(url: str) -> Engine:
 
         @event.listens_for(eng, "begin")
         def _begin(conn):  # noqa: ANN001
+            # COMMIT thất bại (database is locked) có thể trả kết nối về pool khi transaction còn dở;
+            # dọn trước, không thì BEGIN lỗi "cannot start a transaction within a transaction" (PLAN H4).
+            dbapi = conn.connection.dbapi_connection
+            if dbapi is not None and dbapi.in_transaction:
+                dbapi.execute("ROLLBACK")
             immediate = conn.get_execution_options().get("sqlite_immediate", False)
             conn.exec_driver_sql("BEGIN IMMEDIATE" if immediate else "BEGIN")
 
@@ -106,4 +111,8 @@ class DbEmbeddingCache:
                 vec = np.asarray(v, dtype=np.float32)
                 s.add(EmbeddingCacheRow(text_hash=k, model=config.EMBED_MODEL, dim=int(vec.shape[-1]),
                                         vector=vec.tobytes()))
-            s.commit()
+            try:
+                s.commit()
+            except Exception:
+                s.rollback()   # cache chỉ là tối ưu; lần sau embed lại
+                raise
