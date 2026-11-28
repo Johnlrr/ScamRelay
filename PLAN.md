@@ -179,7 +179,8 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 ### 03/12
 - Sáng: rà chéo (bao xem slide, linh xem video, quynh xem zip và hướng dẫn).
-- bao đóng gói `.zip` (không có `.env`, không có key); linh kiểm tra lại.
+- bao đóng gói `.zip` (không có `.env`, không có key); linh kiểm tra lại. Lệnh (chạy thử 28/11: 165 file, 1,2MB, không có `.env`/key/held-out; lịch sử git không có key):
+  `git archive --format=zip --prefix=ScamRelay/ -o ScamRelay.zip main`. Lệnh này chỉ lấy file đã commit, nên `.env`, `*.db`, `bench/.cache/`, `node_modules/` tự bị loại. Held-out đã `git add -f` sau lượt chạy chính thức thì **có** trong zip, đúng theo PLAN §9. Sau khi đóng gói, quét lại tên file và chuỗi `AIza…` trong zip.
 - **quynh nộp trước 18:00**; bao và linh xác nhận.
 
 ### 04/12 → 11/12: trực vận hành
