@@ -156,7 +156,7 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 | bao | linh | quynh |
 |---|---|---|
-| Kiểm tra các nhánh degraded qua API (LLM lỗi, embedding lỗi, 429). Nếu dư giờ: thống kê luật + `feedback` (`core/stats.py`, route trong `fraudops.py`) | Nếu dư giờ: dừng mềm 30 phút, chống dò đáp án | `/help`: người thân, "Thêm tình tiết", gói hồ sơ `.md` (dựng ở frontend), ô đồng ý chia sẻ, thông báo quyền riêng tư, dòng 18+ |
+| ~~Kiểm tra các nhánh degraded qua API (LLM lỗi, embedding lỗi, 429)~~ (xong 28/11: tập dượt demo khi không có key và khi key hỏng đều 17/17 bước; 429 có test đơn vị, `bench/results/demo_rehearsal_summary_20261128.md`). ~~Thống kê luật~~ (xong 28/11); `feedback` thuộc router gateway (H7) | Nếu dư giờ: dừng mềm 30 phút, chống dò đáp án | `/help`: người thân, "Thêm tình tiết", gói hồ sơ `.md` (dựng ở frontend), ô đồng ý chia sẻ, thông báo quyền riêng tư, dòng 18+ |
 | Chạy bench dev trên bản deploy | Rà lại test INV phía gateway (08, 09, 11, 12, 14–16 đã có 28/11) | Trạng thái chờ và lỗi, banner degraded, responsive mobile |
 | Chạy thử mọi câu trong kịch bản demo trên bản deploy; prompt ảnh (có thể có) | Deploy bản đủ tính năng; giới hạn chi tiêu Gemini đủ dùng tới 11/12 | **Tối: viết 10–12 ca held-out** (SPEC §13.2) trên máy riêng, không commit |
 

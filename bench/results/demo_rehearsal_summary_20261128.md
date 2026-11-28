@@ -35,3 +35,23 @@ Chuyên viên được mô phỏng bằng `bench/_expert.py`, chỉ nhìn ví d�
 Offline trên 9 luật HKD dev (`demo_edit_eval_20261128T1034Z.md`): thêm loại trừ cho câu demo khớp 9/9, xóa câu mẫu 8/9.
 Lượt chọn mục đích lành ra `HOLD_15M` thay vì `ALLOW_WITH_WARNING` là đúng thiết kế: chú Hùng chuyển ≥ 3 lần
 trong 10 phút nên lớp đối tác `WARN` (INV-13).
+
+## Khi Gemini lỗi (`105012Z`, `105019Z`)
+
+Chạy `REHEARSAL_LLM_DOWN=1`: kỳ vọng analyze dự phòng bằng từ khóa (`degraded=true`) và compile dùng output thật đã lưu (`CACHED_FALLBACK`).
+
+| Lượt | Server | Kết quả | Ghi chú |
+|---|---|---|---|
+| `105012Z` | không có key Gemini | **17/17 bước PASS** | analyze 0,0 giây; `/healthz` báo `gemini_configured=false` |
+| `105019Z` | key hỏng (Gemini trả lỗi thật) | **17/17 bước PASS** | analyze 0,5 giây, compile 0,3 giây; `/healthz` vẫn báo `gemini_configured=true` vì chỉ kiểm có key |
+
+- Cả hai lượt giống hệt luồng chính: khoanh vùng, khóa cứng khi lộ OTP, regression bắt "phí dịch vụ kế toán hộ kinh doanh",
+  chuyên viên thêm loại trừ "dich vu ke toan" → 0/265, chú Hùng bị hỏi và dừng với 0đ rời ví.
+  Lý do: câu demo, tập sạch và anchor của output dự phòng đều có vector tính sẵn trong `embeddings_seed.npz`, nên không cần gọi embedding.
+- Trên đồng hồ, phần "AI" chỉ còn 0,1–0,3 giây vì không gọi LLM. **Video quay ở chế độ này thì không được nói là AI vừa biên dịch live.**
+- **Câu mới, chưa có vector, khi embedding lỗi** (thử thêm 2 câu qua `evaluate-transfer`, cùng server key hỏng): trả lời 0,1 giây,
+  không lỗi 500, nhưng luật không khớp qua trigram ở câu "nop le phi xac nhan ho so thue ca the gap" (không bật câu hỏi).
+  Giao dịch vẫn bị giữ `HOLD_15M` nhờ mức sàn đối tác (ví vừa chuyển dồn dập sau lượt tập dượt). Đúng thiết kế đã ghi ở SPEC:
+  khi embedding lỗi thì trigram yếu hơn cosine. Response chưa có trường `degraded` (việc của linh).
+- Log server của cả ba lượt không chứa key.
+- 429 / hết quota không giả lập được qua mạng thật; đường này có test đơn vị (`tests/test_keyring.py`, `test_ai.py`): ném ngay, không retry, chuyển dự phòng.

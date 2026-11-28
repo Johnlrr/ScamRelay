@@ -4,6 +4,7 @@ Dùng trước khi quay video và sau mỗi lần deploy (PLAN 30/11: "chạy th
 Gọi LLM thật của server (khoảng 3 request: analyze, follow-up OTP, compile).
 
     SCAMRELAY_URL=https://… DEMO_USER=judge_01 DEMO_PASS=… python bench/demo_rehearsal.py
+    REHEARSAL_LLM_DOWN=1 …  # server chạy khi Gemini lỗi: kỳ vọng analyze dự phòng, compile dùng output đã lưu
 
 Mỗi bước in PASS/FAIL kèm số liệu; kết quả ghi vào bench/results/demo_rehearsal_<giờ UTC>.md.
 Reset workspace của tài khoản dùng để chạy (không đụng workspace khác).
@@ -23,6 +24,8 @@ from run_bench import Api, ApiError, http_transport
 
 from app.core.preprocess import norm_match
 
+# Tập dượt khi Gemini lỗi (server chạy không key / key hỏng / hết quota): đổi kỳ vọng ở analyze và compile
+LLM_DOWN = os.environ.get("REHEARSAL_LLM_DOWN") == "1"
 RESULTS = Path(__file__).resolve().parent / "results"
 STOP_SET = {"HOLD_15M", "STOP_AND_EXPLAIN", "HOLD_UNTIL_VERIFIED", "BLOCK"}
 
@@ -67,7 +70,8 @@ class Rehearsal:
         inc = api.call("POST", "/v1/incidents/analyze", {
             "text": LAN_CHAT, "is_proxy": True, "protect_wallet_id": "W-LAN", "consent_handoff": True})
         a = inc["analysis"]
-        self.check("Lan · analyze", inc["mode"] == "MANIPULATION" and len(inc["actions"]) == 3 and not inc["degraded"],
+        self.check("Lan · analyze", inc["mode"] == "MANIPULATION" and len(inc["actions"]) == 3
+                   and inc["degraded"] == LLM_DOWN,
                    f"mode={inc['mode']}, {len(inc['actions'])} việc, {a['tactic_family']}, "
                    f"đòi {a['money_requested_vnd']}, degraded={inc['degraded']}, {time.perf_counter() - t0:.1f}s")
         self.check("Lan · thông báo trên ví", bool(self.wallet("W-LAN")["protective_hold_notice"]),
@@ -101,7 +105,8 @@ class Rehearsal:
         t0 = time.perf_counter()
         comp = api.call("POST", "/v1/fraudops/rules/compile", {"incident_id": inc["incident_id"]})
         rid = comp["rule_id"]
-        self.check("FraudOps · compile", comp["stage"] == "SHADOW_LOG",
+        self.check("FraudOps · compile", comp["stage"] == "SHADOW_LOG"
+                   and (comp["source"] == "CACHED_FALLBACK") == LLM_DOWN,
                    f"stage={comp['stage']}, source={comp['source']}, degraded={comp['degraded']}, "
                    f"{time.perf_counter() - t0:.1f}s, validator errors={comp['validation']['errors']}")
         reg = api.call("POST", f"/v1/fraudops/rules/{rid}/regression-test")
@@ -188,7 +193,9 @@ class Rehearsal:
         passed = sum(ok for _, ok, _ in self.rows)
         host = "local" if "localhost" in base_url or "127.0.0.1" in base_url else base_url
         lines = [f"# Tập dượt kịch bản demo ({ts})", "",
-                 f"Server: {host}. Kết quả: **{passed}/{len(self.rows)} bước PASS**. LLM thật của server.", "",
+                 f"Server: {host}. Kết quả: **{passed}/{len(self.rows)} bước PASS**. "
+                 + ("Chế độ **Gemini lỗi** (`REHEARSAL_LLM_DOWN=1`): kỳ vọng analyze dự phòng bằng từ khóa, "
+                    "compile dùng output thật đã lưu." if LLM_DOWN else "LLM thật của server."), "",
                  "| Bước | Kết quả | Chi tiết |", "|---|---|---|"]
         lines += [f"| {s} | {'PASS' if ok else '**FAIL**'} | {d.replace('|', '/')} |" for s, ok, d in self.rows]
         out.write_text("\n".join(lines) + "\n", encoding="utf-8")
