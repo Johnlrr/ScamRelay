@@ -24,6 +24,7 @@ from app.schemas.llm_rule import RelayRuleDraftLLM
 from app.schemas.rule import CompileResult
 
 PROMPT_VERSION = "rule_compile.v3"
+FIX_DIACRITICS_VERSION = "rule_compile_fix_diacritics.v1"   # thử lại 1 lần khi chữ hiển thị không dấu (V6c)
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 TIMEOUT_S = 30
 
@@ -32,7 +33,7 @@ class CompileUnavailable(RuntimeError):
     """LLM lỗi và không có output đã lưu cho thủ đoạn này."""
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=4)
 def _template(name: str) -> Template:
     return Template((PROMPTS_DIR / f"{name}.txt").read_text(encoding="utf-8"))
 
@@ -49,6 +50,13 @@ def build_prompt(analysis: IncidentAnalysis) -> str:
     return _template(PROMPT_VERSION).substitute(tactic_family=target_family(analysis), analysis_json=payload)
 
 
+def missing_diacritics(raw: dict) -> bool:
+    """Output có lỗi V6c (chữ hiển thị viết không dấu) — lỗi chất lượng LLM, đáng thử lại 1 lần."""
+    from app.core.validator import validate_llm_output
+
+    return any(e.startswith("V6c") for e in validate_llm_output(raw).errors)
+
+
 def cached_compile_output(tactic_family: str) -> dict | None:
     entry = load_fallback_tactics().get(tactic_family) or {}
     out = entry.get("compile_output")
@@ -56,16 +64,30 @@ def cached_compile_output(tactic_family: str) -> dict | None:
 
 
 async def compile_rule(analysis: IncidentAnalysis) -> CompileResult:
+    """LLM → (chữ hiển thị không dấu thì thử lại 1 lần) → nếu LLM lỗi: output thật đã lưu → nếu không có: lỗi."""
     start = time.perf_counter()
+    family = analysis.tactic_family                  # khóa tra output đã lưu (như trước)
     llm = get_llm()
     if llm is not None:
         try:
-            resp = await llm.generate_json(build_prompt(analysis), RelayRuleDraftLLM, timeout_s=TIMEOUT_S, retries=1)
-            return CompileResult(raw=resp.data, source="LLM", degraded=False, llm_seconds=resp.seconds)
+            prompt = build_prompt(analysis)
+            resp = await llm.generate_json(prompt, RelayRuleDraftLLM, timeout_s=TIMEOUT_S, retries=1)
+            raw, seconds = resp.data, resp.seconds
+            if missing_diacritics(raw):
+                fix = _template(FIX_DIACRITICS_VERSION).template
+                resp = await llm.generate_json(prompt + "\n" + fix, RelayRuleDraftLLM, timeout_s=TIMEOUT_S, retries=0)
+                raw, seconds = resp.data, seconds + resp.seconds
+                if missing_diacritics(raw):
+                    # vẫn không dấu: dùng output thật đã lưu nếu có; không thì trả nguyên để validator chặn
+                    # (DRAFT_INVALID, chuyên viên sửa nhãn hoặc bấm "Biên dịch lại")
+                    cached = cached_compile_output(family)
+                    if cached is not None:
+                        return CompileResult(raw=cached, source="CACHED_FALLBACK", degraded=True, llm_seconds=seconds)
+            return CompileResult(raw=raw, source="LLM", degraded=False, llm_seconds=seconds)
         except LLMError:
             pass
-    cached = cached_compile_output(analysis.tactic_family)
+    cached = cached_compile_output(family)
     if cached is None:
-        raise CompileUnavailable(f"LLM không phản hồi và chưa có kết quả đã lưu cho {analysis.tactic_family}")
+        raise CompileUnavailable(f"LLM không phản hồi và chưa có kết quả đã lưu cho {family}")
     return CompileResult(raw=cached, source="CACHED_FALLBACK", degraded=True,
                          llm_seconds=time.perf_counter() - start)

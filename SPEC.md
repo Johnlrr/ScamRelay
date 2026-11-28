@@ -529,6 +529,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 1. Yêu cầu đã có đồng ý. Ghi `compile_requested_at`.
 2. `rule_ai.compile_rule(analysis)` dùng prompt `rule_compile.vN.txt`, timeout 30 giây.
    - Nếu lỗi hoặc 429: đọc output đã lưu của thủ đoạn tương ứng trong `fallback_tactics.json` (`CACHED_FALLBACK`, `degraded: true`). Thủ đoạn không có trong file (`OTHER_NEW`) thì trả lỗi kèm nút "Biên dịch lại".
+   - Nếu output có lỗi V6c (chữ hiển thị viết không dấu): gọi lại **1 lần** với lời nhắc `rule_compile_fix_diacritics.v1.txt` nối sau prompt. Vẫn không dấu thì dùng output đã lưu (nếu có, `CACHED_FALLBACK`); không có thì trả nguyên để validator chặn (`DRAFT_INVALID`). Bao chốt 28/11: trên dev, khoảng 1/12 lượt compile của flash-lite viết nhãn không dấu.
 3. `validate_llm_output(raw)`:
    - Không đạt: lưu luật ở stage `DRAFT_INVALID` kèm lỗi; UI hiện lỗi và nút "Biên dịch lại".
    - Đạt: assembler dựng `RelayRule` version 1, stage `SHADOW_LOG` (chỉ ghi log, không hỏi), `ttl_hours` mặc định 24.
@@ -550,6 +551,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 | V5 | Có đúng một trường giá trị, và trường đó khớp `op`. `amount_vnd` nằm trong [10.000; 50.000.000]; `partner_risk_score` trong [0; 100]; số đếm không âm |
 | V6 | Đúng 3 phương án: 2 `BENIGN` + 1 `TACTIC_MATCH`. Nhãn dài 1–100 ký tự; câu hỏi dài 1–120 ký tự. Câu hỏi và nhãn không chứa từ cấm: bản có dấu "lừa", "lừa đảo", "bị dụ", "kẻ gian", "nghi ngờ"; bản không dấu "lua dao", "bi du", "ke gian", "nghi ngo" (không cấm "lua" đứng riêng vì trùng "lúa", "lựa"). Không chứa SĐT hay URL |
 | V6b | **Chỉ cảnh báo, không chặn:** nếu nhãn `TACTIC_MATCH` chứa nguyên văn một anchor (sau chuẩn hóa), báo "phương án đang nêu đúng tên thủ đoạn; nên viết theo nhóm mục đích chung" (chống dò đáp án, ABOUT §3.3) |
+| V6c | `question_vi`, mọi `label_vi` và `tactic_alert_vi` phải là tiếng Việt **có dấu**: chuỗi có từ 3 từ trở lên mà không có dấu nào thì báo lỗi. Không áp cho anchor và biến thể (vốn được phép không dấu) |
 | V7 | `tactic_alert_vi` dài 1–240 ký tự, không chứa SĐT, URL hay email. Kênh liên hệ chỉ được lấy từ registry |
 | V8 | Gỡ ở mọi cấp, ghi cảnh báo, các trường quyền: `threshold`, `action`, `stage`, `ttl_hours`, `corroboration_count`, `approved_by`, `approvals`, `rule_id`, `version`, `source_incident_id`, `target_scope`, `lifecycle`, `guard_conditions`, `normalize`, `anti_coaching_notice_vi`, `id`, `benign_regression`, `variant_coverage`, `edited_by_human` |
 | VAR | Có 5–8 biến thể; `transfer_note` dài 1–60 ký tự; `amount_vnd` trong [10.000; 50.000.000]; `manipulation_intent` ≤ 100 ký tự; cùng lệnh cấm như V4 |
@@ -697,7 +699,7 @@ Vì quyết định cuối luôn lấy `max` với mức sàn, chọn `BENIGN` k
 3. **Ngưỡng `SEMANTIC_THRESHOLD`:**
    - Hiệu chỉnh **chỉ trên tập dev**, bằng `bench/calibrate.py`: quét 0,60–0,95 với bước 0,01, mỗi ngưỡng in ra tỷ lệ biến thể lừa của dev bật câu hỏi và số mẫu sạch bị khớp.
    - Cách chọn (bao chốt 28/11): lấy **ngưỡng cao nhất mà tỷ lệ bật câu hỏi trên biến thể dev vẫn đạt mức tối đa** của bảng quét. Khớp nhầm còn lại trên tập sạch được chấp nhận vì regression bắt được và khóa Approve; chuyên viên xóa anchor gây nhầm rồi chạy lại. Lý do: với quy tắc cũ (`flagged = 0`) ngưỡng là 0,93 và câu demo chỉ khớp 4/9 lần biên dịch luật HKD trên dev; ở 0,90 khớp 9/9.
-   - Kết quả 28/11 (dev, `gemini-3.5-flash-lite`): `SEMANTIC_THRESHOLD = 0,90` (8/9 biến thể, ca còn lại là nội dung trống; 15 cặp luật × mẫu sạch khớp nhầm trên 3.191 cặp), `TRIGRAM_THRESHOLD` theo cùng quy tắc. Ghi vào `config.py` kèm ngày giờ.
+   - Kết quả 28/11 (dev, `gemini-3.5-flash-lite`): `SEMANTIC_THRESHOLD = 0,90` (8/9 biến thể, ca còn lại là nội dung trống; 14 cặp luật × mẫu sạch khớp nhầm trên 3.191 cặp; `bench/results/calibration_20261128T0933Z.md`, sau khi biên dịch lại D-05 và D-07 vì V6c), `TRIGRAM_THRESHOLD` theo cùng quy tắc. Ghi vào `config.py` kèm ngày giờ.
    - Bảng quét được giữ lại làm hình phụ lục slide (ABOUT §6.4).
 4. **Nội dung ngắn** (`note_norm` dưới 4 ký tự) thì không khớp semantic.
 5. **Fallback khi API embedding lỗi:** cosine trên vector trigram ký tự viết bằng Python thuần, với ngưỡng riêng `TRIGRAM_THRESHOLD` cũng hiệu chỉnh trên dev; response gắn `degraded: true`.

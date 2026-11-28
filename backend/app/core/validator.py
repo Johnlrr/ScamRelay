@@ -92,6 +92,14 @@ def _present(value: Any) -> bool:
     return value is not None and value != []
 
 
+def _missing_diacritics(text: str) -> bool:
+    """V6c: chữ hiển thị ≥ 3 từ mà không có một dấu tiếng Việt nào → coi là viết không dấu."""
+    if len(re.findall(r"[^\W\d_]+", text)) < 3:
+        return False
+    return not (any(unicodedata.combining(ch) for ch in unicodedata.normalize("NFD", text))
+                or "đ" in text.lower())
+
+
 def _banned_words(text: str) -> list[str]:
     lowered = unicodedata.normalize("NFC", text).lower()
     hits = [w for w in BANNED_ACCENTED if re.search(rf"(?<!\w){re.escape(w)}(?!\w)", lowered)]
@@ -227,6 +235,8 @@ def validate_rule(draft: RelayRuleDraft) -> ValidationResult:
         errors.append(f"V6: question_vi chứa từ cấm '{w}' (câu hỏi phải trung lập)")
     for bad in _contact_content(q.question_vi):
         errors.append(f"V6: question_vi chứa {bad}")
+    if _missing_diacritics(q.question_vi):
+        errors.append("V6c: question_vi viết không dấu; chữ hiển thị phải là tiếng Việt có dấu")
     for i, o in enumerate(q.options):
         if not (1 <= len(o.label_vi.strip()) <= LABEL_MAX):
             errors.append(f"V6: options[{i}].label_vi phải 1–{LABEL_MAX} ký tự")
@@ -234,6 +244,8 @@ def validate_rule(draft: RelayRuleDraft) -> ValidationResult:
             errors.append(f"V6: options[{i}].label_vi chứa từ cấm '{w}'")
         for bad in _contact_content(o.label_vi):
             errors.append(f"V6: options[{i}].label_vi chứa {bad}")
+        if _missing_diacritics(o.label_vi):
+            errors.append(f"V6c: options[{i}].label_vi viết không dấu; chữ hiển thị phải là tiếng Việt có dấu")
 
     # V6b (chỉ cảnh báo): nhãn TACTIC_MATCH nêu nguyên văn anchor → dễ bị dò đáp án
     anchors = {norm_match(a) for c in filters if c.op == "SEMANTIC_MATCH" for a in (c.anchor_phrases or [])}
@@ -253,6 +265,8 @@ def validate_rule(draft: RelayRuleDraft) -> ValidationResult:
         errors.append(f"V7: tactic_alert_vi phải 1–{ALERT_MAX} ký tự")
     for bad in _contact_content(q.tactic_alert_vi):
         errors.append(f"V7: tactic_alert_vi chứa {bad} (kênh liên hệ chỉ lấy từ registry)")
+    if _missing_diacritics(q.tactic_alert_vi):
+        errors.append("V6c: tactic_alert_vi viết không dấu; chữ hiển thị phải là tiếng Việt có dấu")
 
     # Biến thể có cấu trúc (chỉ để kiểm thử)
     if not (VARIANT_COUNT[0] <= len(draft.variants) <= VARIANT_COUNT[1]):

@@ -408,3 +408,52 @@ def test_variant_rejects_account_numbers():
     d = draft()
     d["variants"][0]["transfer_note"] = "ck 19034567890"
     assert "VAR" in errors_of(d)
+
+
+# ---------------------------------------------------------------- V6c: chữ hiển thị phải có dấu
+from tests._fixtures import draft_dict  # noqa: E402
+
+
+def _with_question(**over):
+    d = draft_dict()
+    d["purpose_question"] = {**d["purpose_question"], **over}
+    return d
+
+
+@pytest.mark.parametrize("field,value", [
+    ("question_vi", "Ban chuyen khoan nay de lam gi?"),
+    ("tactic_alert_vi", "Co quan thue khong yeu cau chuyen tien vao tai khoan ca nhan."),
+])
+def test_v6c_unaccented_question_or_alert_rejected(field, value):
+    r = validate_llm_output(_with_question(**{field: value}))
+    assert not r.ok and any(e.startswith("V6c") and field in e for e in r.errors)
+
+
+def test_v6c_unaccented_label_rejected():
+    d = draft_dict()
+    d["purpose_question"] = copy.deepcopy(d["purpose_question"])
+    d["purpose_question"]["options"][0]["label_vi"] = "Nop phi de xu ly ho so"
+    r = validate_llm_output(d)
+    assert not r.ok and any(e.startswith("V6c: options[0]") for e in r.errors)
+
+
+@pytest.mark.parametrize("label", ["Mua hàng", "OTP", "Mua hang", "Đóng phí xác minh hồ sơ", "Gửi tiền cho người quen"])
+def test_v6c_accepts_accented_or_short(label):
+    d = draft_dict()
+    d["purpose_question"] = copy.deepcopy(d["purpose_question"])
+    d["purpose_question"]["options"][0]["label_vi"] = label
+    assert not any(e.startswith("V6c") for e in validate_llm_output(d).errors)
+
+
+def test_v6c_does_not_apply_to_anchors_or_variants():
+    assert validate_llm_output(draft_dict()).ok         # anchor và biến thể trong VALID_DRAFT đều không dấu
+
+
+def test_saved_fallback_outputs_pass_validator():
+    """Output thật đã lưu làm dự phòng phải qua validator hiện hành (kể cả V6c), nếu không demo sẽ hỏng."""
+    from app.ai.incident_ai import load_fallback_tactics
+
+    for family, entry in load_fallback_tactics().items():
+        if entry.get("compile_output"):
+            r = validate_llm_output(entry["compile_output"])
+            assert r.ok, (family, r.errors[:3])

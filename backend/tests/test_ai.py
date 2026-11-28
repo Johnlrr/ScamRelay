@@ -133,3 +133,43 @@ def test_prompts_have_no_unescaped_placeholders():
     assert "$" not in p
     p = incident_ai.build_prompt("abc", True, [analysis()])
     assert "$" not in p and "<previous_analysis>" in p
+
+
+# ---------------------------------------------------------------- compile: thử lại khi chữ hiển thị không dấu
+def _unaccented(draft):
+    import copy as _c
+
+    d = _c.deepcopy(draft)
+    d["purpose_question"]["question_vi"] = "Ban chuyen khoan nay de lam gi?"
+    return d
+
+
+def test_compile_retries_once_when_display_text_unaccented():
+    fake = FakeLLM(_unaccented(VALID_DRAFT), VALID_DRAFT)
+    llm_client.set_llm(fake)
+    try:
+        r = asyncio.run(compile_rule(IncidentAnalysis.model_validate(HKD_ANALYSIS)))
+    finally:
+        llm_client.set_llm(None)
+    assert r.source == "LLM" and not r.degraded and r.raw == VALID_DRAFT
+    assert len(fake.prompts) == 2 and "CÓ DẤU" in fake.prompts[1] and "CÓ DẤU" not in fake.prompts[0][-400:]
+    assert r.llm_seconds == pytest.approx(1.0)                      # cộng cả 2 lượt
+
+
+def test_compile_still_unaccented_uses_saved_output_for_known_tactic():
+    llm_client.set_llm(FakeLLM(_unaccented(VALID_DRAFT), _unaccented(VALID_DRAFT)))
+    try:
+        r = asyncio.run(compile_rule(IncidentAnalysis.model_validate(HKD_ANALYSIS)))
+    finally:
+        llm_client.set_llm(None)
+    assert r.source == "CACHED_FALLBACK" and r.degraded
+
+
+def test_compile_still_unaccented_new_tactic_returned_for_validator_to_block():
+    analysis = {**HKD_ANALYSIS, "tactic_family": "OTHER_NEW", "tactic_slug": "khac"}
+    llm_client.set_llm(FakeLLM(_unaccented(VALID_DRAFT), _unaccented(VALID_DRAFT)))
+    try:
+        r = asyncio.run(compile_rule(IncidentAnalysis.model_validate(analysis)))
+    finally:
+        llm_client.set_llm(None)
+    assert r.source == "LLM" and rule_ai.missing_diacritics(r.raw)

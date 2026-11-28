@@ -107,12 +107,12 @@ scripts/       deploy.sh, smoke.sh
 
 ### Ngưỡng (hiệu chỉnh chỉ trên tập dev)
 
-`bench/calibrate.py` quét ngưỡng từ 0,60 đến 0,95 trên 12 luật dev do LLM thật biên dịch × 265 mẫu sạch, cộng các giao dịch hợp lệ của dev (tổng 3.191 cặp). Trích từ `bench/results/calibration_20261128T0036Z.md`:
+`bench/calibrate.py` quét ngưỡng từ 0,60 đến 0,95 trên 12 luật dev do LLM thật biên dịch × 265 mẫu sạch, cộng các giao dịch hợp lệ của dev (tổng 3.191 cặp). Trích từ `bench/results/calibration_20261128T0933Z.md`:
 
 | Ngưỡng | Biến thể dev bật câu hỏi | Cặp sạch bị khớp nhầm |
 |---|---|---|
-| 0,88 | 8/9 | 54/3.191 |
-| **0,90 (chọn)** | **8/9** | **15/3.191** |
+| 0,88 | 8/9 | 51/3.191 |
+| **0,90 (chọn)** | **8/9** | **14/3.191** |
 | 0,92 | 7/9 | 1/3.191 |
 | 0,93 | 6/9 | 0/3.191 |
 
@@ -132,6 +132,7 @@ scripts/       deploy.sh, smoke.sh
 | V5 | Đúng một trường giá trị, nằm trong khoảng hợp lệ |
 | V6 | Đúng 3 phương án (2 `BENIGN` + 1 `TACTIC_MATCH`); câu hỏi trung lập, không chứa từ cấm như "lừa", "kẻ gian", "nghi ngờ"… |
 | V6b | Chỉ cảnh báo: phương án `TACTIC_MATCH` nêu nguyên văn câu mẫu (dễ bị dò đáp án) |
+| V6c | Câu hỏi, nhãn phương án và lời giải thích phải là tiếng Việt có dấu. LLM viết không dấu (khoảng 1/12 lượt trên dev) thì compile tự gọi lại 1 lần với lời nhắc |
 | V7 | Lời giải thích thủ đoạn không chứa SĐT, URL hay email; kênh liên hệ chỉ lấy từ registry đã kiểm chứng |
 | V8 | Gỡ mọi trường quyền ở mọi cấp, ghi cảnh báo |
 | VAR | 5–8 biến thể có cấu trúc, cùng các lệnh cấm như V4 |
@@ -146,7 +147,7 @@ Assembler luôn chạy lại validator; phương án "Mục đích khác" (`UNCL
 | Tập dev (`bench/cases/dev/`) | 12 ca: 4 biến thể thủ đoạn mới, 1 "dịch vụ thu hồi tiền", 1 lộ OTP, 2 bị dặn trước, 1 nội dung trống, 3 giao dịch hợp lệ dễ nhầm | Viết tay, dữ liệu tổng hợp |
 | Held-out | 10–12 ca do thành viên **không** tinh chỉnh prompt viết; người tinh chỉnh không xem; chạy đúng 1 lượt sau freeze | `bench/heldout.*` (commit sau lượt chạy) |
 | Output dự phòng (`backend/data/fallback_tactics.json`) | Output biên dịch **thật** của LLM cho 3 thủ đoạn (thuế HKD, thu hồi tiền, giả danh cơ quan chức năng), chép nguyên văn kèm model và thời điểm | `bench/save_fallback.py` |
-| Embedding tính sẵn (`backend/data/embeddings_seed.npz`) | 323 vector: tập sạch, nội dung giao dịch dev, anchor và biến thể dự phòng; khởi động server không tốn quota | `bench/build_seed.py` |
+| Embedding tính sẵn (`backend/data/embeddings_seed.npz`) | 320 vector: tập sạch, nội dung giao dịch dev, anchor và biến thể dự phòng; khởi động server không tốn quota | `bench/build_seed.py` |
 
 Toàn bộ là dữ liệu tổng hợp: không có PII, số tài khoản, CCCD hay OTP thật.
 

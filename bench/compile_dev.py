@@ -50,6 +50,7 @@ async def compile_case(path, force: bool) -> str:
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "model": llm.model if llm else None,
         "prompts": [incident_ai.PROMPT_VERSION, rule_ai.PROMPT_VERSION],
+        "retry_prompt_if_unaccented": rule_ai.FIX_DIACRITICS_VERSION,
         "source": compiled.source,
         "analysis": analyzed.analysis.model_dump(mode="json"),
         "compile_raw": compiled.raw,

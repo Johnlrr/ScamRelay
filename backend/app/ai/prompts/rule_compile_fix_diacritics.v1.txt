@@ -1,0 +1,2 @@
+
+LƯU Ý BỔ SUNG: ở lần trả lời trước, các trường hiển thị cho người dùng (purpose_question.question_vi, mọi options[].label_vi, purpose_question.tactic_alert_vi) bị viết KHÔNG DẤU. Hãy trả lại TOÀN BỘ JSON theo đúng yêu cầu ở trên, trong đó các trường hiển thị đó viết bằng tiếng Việt CÓ DẤU đầy đủ (ví dụ "Đóng phí xác minh hồ sơ", không viết "Dong phi xac minh ho so"). anchor_phrases và transfer_note của biến thể giữ quy ước như cũ.

@@ -1,31 +1,32 @@
 {
  "case_id": "D-05",
- "generated_at": "2026-11-27T16:56:34+00:00",
+ "generated_at": "2026-11-28T09:33:33+00:00",
  "model": "gemini-3.5-flash-lite",
  "prompts": [
   "incident_extract.v2",
   "rule_compile.v3"
  ],
+ "retry_prompt_if_unaccented": "rule_compile_fix_diacritics.v1",
  "source": "LLM",
  "analysis": {
   "tactic_family": "RECOVERY_FEE_SCAM",
   "tactic_slug": null,
-  "tactic_summary_vi": "Nạn nhân bị kẻ giả mạo văn phòng luật sư tiếp cận, hứa hẹn hỗ trợ lấy lại số tiền đã mất trước đó nhưng yêu cầu đóng trước phí làm hồ sơ.",
+  "tactic_summary_vi": "Kẻ gian giả mạo văn phòng luật hứa hẹn giúp nạn nhân lấy lại số tiền đã mất nhưng yêu cầu nạn nhân đóng trước phí hồ sơ.",
   "money_lost_vnd": 2000000,
-  "money_requested_vnd": null,
+  "money_requested_vnd": 2000000,
   "otp_or_password_disclosed": "UNKNOWN",
   "remote_app_installed": "UNKNOWN",
   "facts": [
    {
-    "text": "Nạn nhân được một trang tự xưng văn phòng luật hứa lấy lại tiền sau khi bị lừa.",
+    "text": "Nạn nhân liên hệ với một trang tự xưng là văn phòng luật hứa giúp lấy lại tiền bị lừa.",
     "provenance": "USER_REPORTED"
    },
    {
-    "text": "Đối tượng yêu cầu đóng trước phí hồ sơ 2 triệu đồng.",
+    "text": "Kẻ gian yêu cầu đóng trước phí hồ sơ 2 triệu đồng.",
     "provenance": "USER_REPORTED"
    },
    {
-    "text": "Nạn nhân đã đóng khoản tiền phí hồ sơ theo yêu cầu.",
+    "text": "Nạn nhân đã chuyển khoản số tiền phí hồ sơ 2 triệu đồng.",
     "provenance": "USER_REPORTED"
    }
   ],
@@ -44,14 +45,12 @@
     "value_bool": null,
     "value_str_list": null,
     "anchor_phrases": [
-     "nop phi ho so lay lai tien",
-     "thanh toan phi ho tro thu hoi von",
-     "chuyen tien phi giam dinh ho so",
-     "dong phi xu ly don khieu nai",
-     "chi phi ho tro phap ly thu hoi",
-     "nop tien phi trich xuat ho so",
-     "chi phi xac minh ho so bi mat",
-     "thanh toan tien phi ho so khieu kien"
+     "phi ho so lay lai tien",
+     "dong phi ho tro thu hoi von",
+     "chi phi xac minh lay lai tien",
+     "nop tien phi xu ly ho so",
+     "phi thuc hien ho so khiếu nai",
+     "thanh toan phi ho so luat su"
     ]
    },
    {
@@ -60,69 +59,69 @@
     "value_int": null,
     "value_bool": null,
     "value_str_list": [
+     "mua hang",
+     "tra tien hang",
+     "chuyen tien cho ban",
+     "tra tien nha",
      "thue nha",
-     "thue phong",
-     "thue mat bang",
-     "thue xe",
-     "thue bao",
-     "thue vat ly"
+     "thue phong"
     ],
     "anchor_phrases": null
    }
   ],
   "purpose_question": {
-   "question_vi": "Ban dang chuyen khoan nay cho muc dich gi?",
+   "question_vi": "Khoản chuyển khoản này dùng để làm gì?",
    "options": [
     {
-     "label_vi": "Thanh toan tien mua hang hoa hoac dich vu thuong mai",
+     "label_vi": "Thanh toán mua hàng, trả tiền dịch vụ thương mại thông thường",
      "outcome": "BENIGN"
     },
     {
-     "label_vi": "Chuyen tien cho nguoi than hoac ban be",
+     "label_vi": "Chuyển tiền cho người thân, bạn bè hoặc người quen biết",
      "outcome": "BENIGN"
     },
     {
-     "label_vi": "Dong cac khoan phi de duoc ho tro thu hoi hoac xu ly ho so",
+     "label_vi": "Đóng phí trước cho cá nhân hay tổ chức để xử lý thủ tục hoặc lấy lại tiền",
      "outcome": "TACTIC_MATCH"
     }
    ],
-   "tactic_alert_vi": "Canh bao: Cac co quan chuc nang hoac van phong luat su uy tin khong yeu thuong xuyen thu truoc phi ho so hay phi ho tro qua tai khoan ca nhan de lay lai tien."
+   "tactic_alert_vi": "Cảnh giác: Các cơ quan chức năng hoặc văn phòng luật sư uy tín không yêu cầu chuyển tiền trước qua tài khoản cá nhân để xử lý hồ sơ hay lấy lại tiền đã mất."
   },
   "variants": [
    {
-    "transfer_note": "nop phi ho so",
+    "transfer_note": "phi ho so ho tro",
     "amount_vnd": 500000,
-    "manipulation_intent": "Dung tu viet tat ngan gon de qua mat he thong"
+    "manipulation_intent": "Dong phi ho so de duoc ho tro"
    },
    {
-    "transfer_note": "phi ho tro thu hoi tien bi mat",
+    "transfer_note": "chi phi lay lai tien da mat",
     "amount_vnd": 2000000,
-    "manipulation_intent": "Loi dung long tin de thuyet phuc dong phi ho so"
+    "manipulation_intent": "Nop phi de lay lai tien"
    },
    {
-    "transfer_note": "chi phi giam dinh ho so vu viec",
-    "amount_vnd": 1500000,
-    "manipulation_intent": "Ngụy trang duoi dang chi phi phap ly"
-   },
-   {
-    "transfer_note": "nop tien phi xac minh don",
-    "amount_vnd": 800000,
-    "manipulation_intent": "Tao cam giac thu tuc hanh chinh hop phap"
-   },
-   {
-    "transfer_note": "chuyen phi xu ly ho so khieu nai",
-    "amount_vnd": 3000000,
-    "manipulation_intent": "Huong dan nan nhan ghi dung noi dung yeu cau"
-   },
-   {
-    "transfer_note": "phi ho tro phap ly thang 5",
+    "transfer_note": "phi xu ly ho so thu hoi von",
     "amount_vnd": 1000000,
-    "manipulation_intent": "Ghi them moc thoi gian de ngụy trang giao dịch"
+    "manipulation_intent": "Thanh toan chi phi xu ly ho so"
+   },
+   {
+    "transfer_note": "nop tien phi luat su ho so",
+    "amount_vnd": 5000000,
+    "manipulation_intent": "Dong tien cho dich vu luat su"
+   },
+   {
+    "transfer_note": "phi xac minh ho so khieu nai",
+    "amount_vnd": 1500000,
+    "manipulation_intent": "Tra phi xac minh thong tin"
+   },
+   {
+    "transfer_note": "phi ho so ho tro thu hoi",
+    "amount_vnd": 3000000,
+    "manipulation_intent": "Chuyen khoan phi ho tro"
    }
   ]
  },
- "compile_seconds": 3.49,
- "total_seconds": 4.79,
+ "compile_seconds": 2.99,
+ "total_seconds": 5.03,
  "validation": {
   "ok": true,
   "errors": [],
