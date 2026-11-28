@@ -19,7 +19,7 @@ from app.config import TRIGRAM_THRESHOLD
 from app.schemas.gateway import DerivedTx
 from app.schemas.rule import AnchorSet, Condition, RelayRule
 from app.core.preprocess import norm_match
-from app.core.semantic import MIN_NOTE_LEN, best_cosine, best_trigram
+from app.core.semantic import MIN_NOTE_LEN, trigram_cosine, trigrams
 
 
 @dataclass
@@ -30,6 +30,7 @@ class Layer1Detail:
     top_anchor: str | None = None         # anchor cho điểm cao nhất (quy khớp nhầm về anchor)
     degraded: bool = False                # đã dùng trigram
     failed: list[str] = field(default_factory=list)
+    culprits: list[str] = field(default_factory=list)   # mọi anchor tự nó vượt ngưỡng (regression tô đậm hết)
 
 
 def semantic_phrases(rule: RelayRule) -> list[str]:
@@ -85,14 +86,18 @@ def layer1_explain(rule: RelayRule, tx: DerivedTx, anchors: AnchorSet, *,
             else:
                 idxs = [index[p] for p in phrases]
                 if use_vectors:
-                    s, j = best_cosine(note_vec, anchors.vectors[idxs])
+                    sims = [float(x) for x in anchors.vectors[idxs] @ note_vec]
                     threshold = sig.threshold
                 else:
-                    s, j = best_trigram(note, [anchors.phrases[i] for i in idxs])
+                    tn = trigrams(note)
+                    sims = [trigram_cosine(tn, trigrams(anchors.phrases[i])) for i in idxs]
                     threshold = trigram_threshold
                     detail.degraded = True
+                j = max(range(len(sims)), key=sims.__getitem__)
+                s = sims[j]
                 if detail.semantic_score is None or s > detail.semantic_score:
                     detail.semantic_score, detail.top_anchor = s, anchors.phrases[idxs[j]]
+                detail.culprits += [anchors.phrases[i] for i, x in zip(idxs, sims) if x >= threshold]
                 ok = s >= threshold
                 sem_scores.append(s)
         elif c.op == "CONTAINS_ANY":

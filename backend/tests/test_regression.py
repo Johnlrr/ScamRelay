@@ -40,8 +40,27 @@ def test_regression_counts_flags_and_attributes_to_anchor():
     # chỉ mẫu đầu bị khớp: biller (INV-15) và số tiền < sàn được miễn; "thuê nhà" bị NOT_CONTAINS_ANY loại
     assert (r.benign_checked, r.benign_flagged) == (5, 1)
     assert r.flagged_examples[0].transfer_note == CORPUS[0]["transfer_note"]
-    assert r.flags_by_anchor == {"dong phi xac minh ho kinh doanh": 1}
+    # mọi anchor tự nó vượt ngưỡng đều được chỉ ra (không chỉ anchor cao nhất)
+    assert r.flags_by_anchor == {"dong phi xac minh ho kinh doanh": 1, "cap nhat thue ho kinh doanh 2026": 1}
+    assert r.flagged_examples[0].top_anchor in r.flags_by_anchor
     assert r.variants_checked == 5 and r.rule_version == 1 and not r.degraded
+
+
+def test_removing_all_flagged_anchors_clears_in_one_round():
+    """Chuyên viên xóa mọi anchor được tô đậm → chạy lại một lần là hết khớp nhầm (không phải xóa lặp)."""
+    from app.core.preprocess import norm_match
+
+    m = SemanticMatcher(FakeEmbedder(), dim=64)
+    rule = rule_from()
+    r = run(run_regression(rule, run(m.prepare_anchors(semantic_phrases(rule))), matcher=m, corpus=CORPUS))
+    d = draft_dict()
+    sem = next(c for c in d["conditions"] if c["op"] == "SEMANTIC_MATCH")
+    sem["anchor_phrases"] = [a for a in sem["anchor_phrases"] if norm_match(a) not in r.flags_by_anchor]
+    sem["anchor_phrases"] += ["phi kich hoat ma so thue dien tu", "le phi chuan hoa tai khoan thue",
+                              "tien duy tri ma so thue ca the"]   # giữ ≥ 3 anchor (V4)
+    rule2 = rule_from(d)
+    r2 = run(run_regression(rule2, run(m.prepare_anchors(semantic_phrases(rule2))), matcher=m, corpus=CORPUS))
+    assert r2.benign_flagged == 0
 
 
 def test_regression_reports_missed_variants():

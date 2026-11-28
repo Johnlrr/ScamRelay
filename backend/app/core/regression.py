@@ -1,7 +1,8 @@
 """Kiểm thử hồi quy (SPEC §7.2e): chạy `layer1_match` — ĐÚNG HÀM gateway dùng — trên tập sạch và biến thể.
 
 - Tập sạch `data/benign_corpus.json` (≥ 200 mẫu template + ≥ 20 ca bẫy viết tay, do bench/gen_benign.py sinh).
-- Mỗi mẫu sạch bị khớp được quy về anchor cho điểm cao nhất → `flags_by_anchor` (UI tô đậm để chuyên viên xóa).
+- `flags_by_anchor`: với mỗi mẫu sạch bị khớp, đếm MỌI anchor tự nó vượt ngưỡng (không chỉ anchor cao nhất),
+  để chuyên viên thấy hết anchor gây nhầm trong một lượt (bao chốt 28/11). `top_anchor` của từng ví dụ giữ nguyên.
 - Biến thể trong luật chỉ để tham khảo khi vận hành, KHÔNG đưa vào số liệu báo cáo.
 - Embedding tập sạch đã seed sẵn vào cache lúc khởi động (`seed_benign_cache`), nên mỗi lượt chỉ tốn cosine.
 """
@@ -74,8 +75,8 @@ async def run_regression(rule: RelayRule, anchors: AnchorSet, *, matcher: Semant
         if d.matched:
             flagged.append(FlaggedExample(transfer_note=s["transfer_note"], amount_vnd=int(s["amount_vnd"]),
                                           score=round(float(d.score), 4), top_anchor=d.top_anchor))
-            if d.top_anchor:
-                by_anchor[d.top_anchor] += 1
+            for a in dict.fromkeys(d.culprits):
+                by_anchor[a] += 1
 
     missed: list[str] = []
     for j, v in enumerate(rule.variants):

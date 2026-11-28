@@ -574,7 +574,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
     - **≥ 20 ca bẫy viết tay.** Bắt buộc có nhóm "thuê" ("tra tien thue nha thang 12", "thue mat bang", "tien thue xe", "phi gia han hop dong thue"), vì sau khi bỏ dấu, "thuế" và "thuê" cùng thành "thue". Thêm các ca: nộp hộ thuế cho người quen, phí dịch vụ kế toán, hoàn tiền đơn hàng, cập nhật phần mềm bán hàng.
     - Mỗi mẫu có `transfer_note`, `amount_vnd`, `is_verified_biller`.
   - **Biến thể** trong luật (5–8). Chỉ dùng để tham khảo khi vận hành, **không** đưa vào số liệu báo cáo.
-- Trả về `RegressionResult` (§6.4), gồm `flags_by_anchor`: mỗi mẫu sạch bị khớp được quy về anchor cho cosine cao nhất. UI tô đậm anchor gây khớp nhầm để chuyên viên xóa.
+- Trả về `RegressionResult` (§6.4), gồm `flags_by_anchor`: với mỗi mẫu sạch bị khớp, đếm **mọi** anchor tự nó vượt ngưỡng; `top_anchor` của từng ví dụ là anchor có cosine cao nhất. UI tô đậm mọi anchor trong `flags_by_anchor` để chuyên viên xóa (hoặc thêm cụm loại trừ `NOT_CONTAINS_ANY`). Bao đổi 28/11: trước đây chỉ quy về anchor cao nhất, nên 4/9 luật HKD dev phải xóa 2–3 vòng mới hết khớp nhầm; nay một vòng là đủ, và tập anchor bị xóa không đổi.
 - Lưu kèm `rule.version` và cộng `seconds` vào `ai_seconds`.
 - Embedding của tập sạch được seed sẵn vào cache khi khởi động, nên mỗi lượt regression chỉ tốn phép tính cosine.
 
