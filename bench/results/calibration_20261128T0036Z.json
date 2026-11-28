@@ -1,0 +1,770 @@
+{
+ "generated_at": "20261128T0036Z",
+ "dev_rules_used": [
+  "D-01",
+  "D-02",
+  "D-03",
+  "D-04",
+  "D-05",
+  "D-06",
+  "D-07",
+  "D-08",
+  "D-09",
+  "D-10",
+  "D-11",
+  "D-12"
+ ],
+ "dev_rules_skipped": [],
+ "benign_samples": 265,
+ "pairs_checked": 3191,
+ "semantic": {
+  "pick": {
+   "threshold": 0.9,
+   "triggered": 8,
+   "variants": 9,
+   "flagged": 15
+  },
+  "table": [
+   {
+    "threshold": 0.6,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.61,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.62,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.63,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.64,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.65,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.66,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.67,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.68,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.69,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.7,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.71,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.72,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.73,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2985
+   },
+   {
+    "threshold": 0.74,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2981
+   },
+   {
+    "threshold": 0.75,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2961
+   },
+   {
+    "threshold": 0.76,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2903
+   },
+   {
+    "threshold": 0.77,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2818
+   },
+   {
+    "threshold": 0.78,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2618
+   },
+   {
+    "threshold": 0.79,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2314
+   },
+   {
+    "threshold": 0.8,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 1926
+   },
+   {
+    "threshold": 0.81,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 1516
+   },
+   {
+    "threshold": 0.82,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 1111
+   },
+   {
+    "threshold": 0.83,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 743
+   },
+   {
+    "threshold": 0.84,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 450
+   },
+   {
+    "threshold": 0.85,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 294
+   },
+   {
+    "threshold": 0.86,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 173
+   },
+   {
+    "threshold": 0.87,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 107
+   },
+   {
+    "threshold": 0.88,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 54
+   },
+   {
+    "threshold": 0.89,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 31
+   },
+   {
+    "threshold": 0.9,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 15
+   },
+   {
+    "threshold": 0.91,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 6
+   },
+   {
+    "threshold": 0.92,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 1
+   },
+   {
+    "threshold": 0.93,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.94,
+    "triggered": 5,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.95,
+    "triggered": 2,
+    "variants": 9,
+    "flagged": 0
+   }
+  ]
+ },
+ "trigram": {
+  "pick": {
+   "threshold": 0.6,
+   "triggered": 8,
+   "variants": 9,
+   "flagged": 2
+  },
+  "table": [
+   {
+    "threshold": 0.3,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 652
+   },
+   {
+    "threshold": 0.31,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 571
+   },
+   {
+    "threshold": 0.32,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 477
+   },
+   {
+    "threshold": 0.33,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 438
+   },
+   {
+    "threshold": 0.34,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 411
+   },
+   {
+    "threshold": 0.35,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 351
+   },
+   {
+    "threshold": 0.36,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 306
+   },
+   {
+    "threshold": 0.37,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 270
+   },
+   {
+    "threshold": 0.38,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 228
+   },
+   {
+    "threshold": 0.39,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 207
+   },
+   {
+    "threshold": 0.4,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 184
+   },
+   {
+    "threshold": 0.41,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 158
+   },
+   {
+    "threshold": 0.42,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 146
+   },
+   {
+    "threshold": 0.43,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 130
+   },
+   {
+    "threshold": 0.44,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 113
+   },
+   {
+    "threshold": 0.45,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 91
+   },
+   {
+    "threshold": 0.46,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 80
+   },
+   {
+    "threshold": 0.47,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 69
+   },
+   {
+    "threshold": 0.48,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 54
+   },
+   {
+    "threshold": 0.49,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 43
+   },
+   {
+    "threshold": 0.5,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 40
+   },
+   {
+    "threshold": 0.51,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 36
+   },
+   {
+    "threshold": 0.52,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 27
+   },
+   {
+    "threshold": 0.53,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 14
+   },
+   {
+    "threshold": 0.54,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 14
+   },
+   {
+    "threshold": 0.55,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 14
+   },
+   {
+    "threshold": 0.56,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 10
+   },
+   {
+    "threshold": 0.57,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 9
+   },
+   {
+    "threshold": 0.58,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 9
+   },
+   {
+    "threshold": 0.59,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 3
+   },
+   {
+    "threshold": 0.6,
+    "triggered": 8,
+    "variants": 9,
+    "flagged": 2
+   },
+   {
+    "threshold": 0.61,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 2
+   },
+   {
+    "threshold": 0.62,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 2
+   },
+   {
+    "threshold": 0.63,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 2
+   },
+   {
+    "threshold": 0.64,
+    "triggered": 7,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.65,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.66,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.67,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.68,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.69,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.7,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.71,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.72,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.73,
+    "triggered": 6,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.74,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.75,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.76,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.77,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.78,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.79,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.8,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.81,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.82,
+    "triggered": 4,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.83,
+    "triggered": 3,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.84,
+    "triggered": 2,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.85,
+    "triggered": 1,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.86,
+    "triggered": 1,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.87,
+    "triggered": 1,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.88,
+    "triggered": 1,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.89,
+    "triggered": 1,
+    "variants": 9,
+    "flagged": 0
+   },
+   {
+    "threshold": 0.9,
+    "triggered": 0,
+    "variants": 9,
+    "flagged": 0
+   }
+  ]
+ },
+ "variants": [
+  {
+   "case": "D-08",
+   "note": "phi xac minh thue ca nhan kinh doanh",
+   "sem": 0.9799901247024536,
+   "tri": 0.848528137423857
+  },
+  {
+   "case": "D-04",
+   "note": "phi dieu chinh ho so thue khoan",
+   "sem": 0.9503183364868164,
+   "tri": 0.649519052838329
+  },
+  {
+   "case": "D-11",
+   "note": "chuyen tien xac minh tai khoan tam giu",
+   "sem": 0.94792640209198,
+   "tri": 0.8249579113843054
+  },
+  {
+   "case": "D-03",
+   "note": "nop le phi chuan hoa du lieu thue 2026",
+   "sem": 0.9437399506568909,
+   "tri": 0.7359800721939872
+  },
+  {
+   "case": "D-01",
+   "note": "xac thuc ho so cap nhat thue HKD",
+   "sem": 0.9430739879608154,
+   "tri": 0.8358542283826298
+  },
+  {
+   "case": "D-05",
+   "note": "phi ho so lay lai tien",
+   "sem": 0.9354883432388306,
+   "tri": 0.891337623249849
+  },
+  {
+   "case": "D-02",
+   "note": "phi kich hoat dinh danh MST",
+   "sem": 0.9278445243835449,
+   "tri": 0.6040404496926219
+  },
+  {
+   "case": "D-07",
+   "note": "cap nhat ho so ho kinh doanh",
+   "sem": 0.9091496467590332,
+   "tri": 0.7396705090823069
+  },
+  {
+   "case": "D-09",
+   "note": "",
+   "sem": null,
+   "tri": null
+  }
+ ],
+ "top_benign": [
+  {
+   "case": "D-08",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9252811670303345
+  },
+  {
+   "case": "D-08",
+   "kind": "BENIGN",
+   "note": "thanh toan don trung",
+   "sem": 0.9183538556098938
+  },
+  {
+   "case": "D-07",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9160469770431519
+  },
+  {
+   "case": "D-08",
+   "kind": "BENIGN",
+   "note": "thanh toán đơn bia",
+   "sem": 0.9143510460853577
+  },
+  {
+   "case": "D-09",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9131994843482971
+  },
+  {
+   "case": "D-03",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9131250381469727
+  },
+  {
+   "case": "D-04",
+   "kind": "BENIGN",
+   "note": "phí gia hạn hợp đồng thuê",
+   "sem": 0.9087774157524109
+  },
+  {
+   "case": "D-12",
+   "kind": "BENIGN",
+   "note": "đóng học phí lớp kế toán thuế",
+   "sem": 0.9081191420555115
+  },
+  {
+   "case": "D-04",
+   "kind": "BENIGN",
+   "note": "đóng học phí lớp kế toán thuế",
+   "sem": 0.9081190824508667
+  },
+  {
+   "case": "D-12",
+   "kind": "BENIGN",
+   "note": "phí công chứng hợp đồng",
+   "sem": 0.9067660570144653
+  },
+  {
+   "case": "D-07",
+   "kind": "BENIGN",
+   "note": "phí đăng ký mã vạch sản phẩm",
+   "sem": 0.906222939491272
+  },
+  {
+   "case": "D-12",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9054942727088928
+  },
+  {
+   "case": "D-04",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9039217233657837
+  },
+  {
+   "case": "D-08",
+   "kind": "BENIGN",
+   "note": "thanh toán đơn gạo",
+   "sem": 0.9001896381378174
+  },
+  {
+   "case": "D-01",
+   "kind": "BENIGN",
+   "note": "phí dịch vụ kế toán hộ kinh doanh",
+   "sem": 0.9000197052955627
+  }
+ ]
+}

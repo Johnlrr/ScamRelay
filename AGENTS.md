@@ -75,7 +75,7 @@ npm run gen:types        # sinh lại type từ /openapi.json mỗi khi schema b
   - React + Vite + TypeScript + Tailwind.
   - Type lấy từ `openapi-typescript`; không viết tay type trùng với backend.
   - VietWallet Sandbox dùng thương hiệu trung tính: **không dùng tên, logo hay màu của MoMo**.
-- **LLM của sản phẩm:** Gemini Flash bản ổn định, không dùng model preview hay experimental. Prompt nằm trong file `ai/prompts/*.txt` có số phiên bản.
+- **LLM của sản phẩm:** `gemini-3.5-flash-lite` (SPEC §0), bản ổn định, không dùng model preview hay experimental. Prompt nằm trong file `ai/prompts/*.txt` có số phiên bản.
 
 ---
 

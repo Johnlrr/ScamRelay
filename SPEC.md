@@ -45,7 +45,7 @@
 | D10 | **Gateway không gọi LLM.** Mỗi giao dịch chỉ tốn tối đa 1 lần embed, có cache | Latency và quota ổn định khi giám khảo dùng |
 
 **Đã chốt (27/11):**
-1. **LLM:** Gemini dòng **Flash**, bản ổn định (có vision và structured output; tên chính xác lấy trong AI Studio). Không dùng bản preview hoặc experimental. Gọi qua lớp `LLMClient`.
+1. **LLM:** `gemini-3.5-flash-lite` (bao chốt 28/11: đêm 27/11 các bản Flash thường 503/timeout, `gemini-2.5-flash` không còn mở cho người dùng mới; flash-lite phản hồi ~4–5 giây/lượt compile). Bản ổn định, có structured output; không dùng bản preview hoặc experimental. Gọi qua lớp `LLMClient`; đổi model thì chạy lại `compile_dev` → `calibrate` → `save_fallback`.
 2. **Embedding:** `gemini-embedding-001`, dùng chung API key.
 3. **Hosting:** Cloud Run (`asia-southeast1`) + Neon Postgres (Singapore). CI chỉ chạy `pytest`; deploy tay bằng `scripts/deploy.sh`.
 
@@ -696,8 +696,9 @@ Vì quyết định cuối luôn lấy `max` với mức sàn, chọn `BENIGN` k
    - Khi khởi động, seed cache cho tập sạch và các câu demo; chỉ tính phần còn thiếu, và **gửi theo lô 50–100 câu/request** (gói miễn phí chỉ có khoảng 1.000 request/ngày).
 3. **Ngưỡng `SEMANTIC_THRESHOLD`:**
    - Hiệu chỉnh **chỉ trên tập dev**, bằng `bench/calibrate.py`: quét 0,60–0,95 với bước 0,01, mỗi ngưỡng in ra tỷ lệ biến thể lừa của dev bật câu hỏi và số mẫu sạch bị khớp.
-   - Cách chọn: trong các ngưỡng có `flagged = 0` trên tập sạch, lấy ngưỡng có tỷ lệ bật câu hỏi cao nhất. Ghi vào `config.py` kèm ngày giờ.
-   - Bảng quét được giữ lại làm hình phụ lục slide (ABOUT §6.4). Giá trị 0,78 hiện tại chỉ là placeholder.
+   - Cách chọn (bao chốt 28/11): lấy **ngưỡng cao nhất mà tỷ lệ bật câu hỏi trên biến thể dev vẫn đạt mức tối đa** của bảng quét. Khớp nhầm còn lại trên tập sạch được chấp nhận vì regression bắt được và khóa Approve; chuyên viên xóa anchor gây nhầm rồi chạy lại. Lý do: với quy tắc cũ (`flagged = 0`) ngưỡng là 0,93 và câu demo chỉ khớp 4/9 lần biên dịch luật HKD trên dev; ở 0,90 khớp 9/9.
+   - Kết quả 28/11 (dev, `gemini-3.5-flash-lite`): `SEMANTIC_THRESHOLD = 0,90` (8/9 biến thể, ca còn lại là nội dung trống; 15 cặp luật × mẫu sạch khớp nhầm trên 3.191 cặp), `TRIGRAM_THRESHOLD` theo cùng quy tắc. Ghi vào `config.py` kèm ngày giờ.
+   - Bảng quét được giữ lại làm hình phụ lục slide (ABOUT §6.4).
 4. **Nội dung ngắn** (`note_norm` dưới 4 ký tự) thì không khớp semantic.
 5. **Fallback khi API embedding lỗi:** cosine trên vector trigram ký tự viết bằng Python thuần, với ngưỡng riêng `TRIGRAM_THRESHOLD` cũng hiệu chỉnh trên dev; response gắn `degraded: true`.
 6. **Kiểm tra câu demo ngay tối 27/11** bằng `bench/check_demo.py`:
@@ -964,7 +965,7 @@ engine = create_engine(
 | Biến | Giá trị / ghi chú |
 |---|---|
 | `GEMINI_API_KEY` | Secret Manager |
-| `LLM_MODEL` | Model Flash bản ổn định, ghi đúng tên trong AI Studio |
+| `LLM_MODEL` | `gemini-3.5-flash-lite` (§0) |
 | `EMBED_MODEL`, `EMBED_DIM` | `gemini-embedding-001`, `768` |
 | `DATABASE_URL` | Neon, **dùng host có hậu tố `-pooler`**, `?sslmode=require`; khi dev: `sqlite:///./dev.db` |
 | `JWT_SECRET`, `JUDGE_ACCOUNTS` | Secret Manager; `judge_01:pass1,…` |

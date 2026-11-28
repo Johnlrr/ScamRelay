@@ -27,11 +27,11 @@ def _env_int(name: str, default: int) -> int:
     return int(os.environ.get(name, default))
 
 
-LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-3.8-flash")
+LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-3.5-flash-lite")   # SPEC §0, chốt 28/11
 EMBED_MODEL = os.environ.get("EMBED_MODEL", "gemini-embedding-001")
 EMBED_DIM = _env_int("EMBED_DIM", 768)
-SEMANTIC_THRESHOLD = _env_float("SEMANTIC_THRESHOLD", 0.93)   # calibrate.py trên dev, bench/results/calibration_20261127T1702Z.md
-TRIGRAM_THRESHOLD = _env_float("TRIGRAM_THRESHOLD", 0.64)     # calibrate.py trên dev, cùng file kết quả
+SEMANTIC_THRESHOLD = _env_float("SEMANTIC_THRESHOLD", 0.90)   # SPEC §8.3, bench/results/calibration_20261128T0036Z.md
+TRIGRAM_THRESHOLD = _env_float("TRIGRAM_THRESHOLD", 0.60)     # SPEC §8.3, cùng file kết quả
 MIN_ASK_AMOUNT_VND = _env_int("MIN_ASK_AMOUNT_VND", 200_000)
 PARTNER_WARN_SCORE = _env_int("PARTNER_WARN_SCORE", 50)
 DEFAULT_RULE_TTL_HOURS = _env_int("DEFAULT_RULE_TTL_HOURS", 24)

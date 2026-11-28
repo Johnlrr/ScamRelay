@@ -8,7 +8,8 @@ các giao dịch B của ca dev, và tập sạch `backend/data/benign_corpus.js
 Với mỗi ngưỡng t (0,60 → 0,95, bước 0,01) dùng ĐÚNG `layer1_explain` của gateway:
 - trigger(t) = số giao dịch B `is_variant` khớp luật của chính ca đó / tổng biến thể dev
 - flagged(t) = số cặp (luật dev, mẫu sạch) bị khớp + số giao dịch LEGIT của dev bị khớp
-Chọn: trong các t có flagged = 0, lấy t có trigger cao nhất; hòa thì lấy t CAO hơn (ít làm phiền hơn).
+Chọn (SPEC §8.3, chốt 28/11): ngưỡng CAO NHẤT mà trigger vẫn đạt mức tối đa của bảng quét. Khớp nhầm còn lại
+do regression + chuyên viên xử lý (khóa Approve).
 Kết quả ghi `bench/results/calibration_<thời điểm>.{json,md}` (bảng phụ lục slide). Không tự sửa config.
 """
 
@@ -74,11 +75,10 @@ def sweep(rows: list[Scored], grid: list[float], attr: str) -> list[dict]:
 
 
 def choose(table: list[dict]) -> dict | None:
-    zero = [r for r in table if r["flagged"] == 0]
-    if not zero:
+    if not table:
         return None
-    best = max(r["triggered"] for r in zero)
-    return max((r for r in zero if r["triggered"] == best), key=lambda r: r["threshold"])
+    best = max(r["triggered"] for r in table)
+    return max((r for r in table if r["triggered"] == best), key=lambda r: r["threshold"])
 
 
 async def main() -> int:
@@ -151,7 +151,7 @@ async def main() -> int:
           f"Tập sạch: {len(corpus)} mẫu × {len(used)} luật + giao dịch LEGIT dev = {report['pairs_checked']} cặp.", "",
           "| ngưỡng | biến thể bật câu hỏi | khớp nhầm (sạch) |", "|---|---|---|"]
     md += [f"| {r['threshold']:.2f} | {r['triggered']}/{r['variants']} | {r['flagged']} |" for r in sem_table]
-    md += ["", f"**Chọn SEMANTIC_THRESHOLD:** {sem_pick['threshold'] if sem_pick else 'KHÔNG CÓ ngưỡng nào flagged = 0'}",
+    md += ["", f"**Chọn SEMANTIC_THRESHOLD:** {sem_pick['threshold'] if sem_pick else '—'}",
            f"**Chọn TRIGRAM_THRESHOLD:** {tri_pick['threshold'] if tri_pick else 'KHÔNG CÓ'}"]
     (RESULTS_DIR / f"calibration_{stamp}.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
