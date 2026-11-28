@@ -93,6 +93,11 @@ def l2_normalize(m: np.ndarray) -> np.ndarray:
     return m / np.where(norms == 0, 1.0, norms)
 
 
+def _is_rate_limit(e: Exception) -> bool:
+    code = getattr(e, "code", None) or getattr(e, "status_code", None)
+    return code == 429 or "RESOURCE_EXHAUSTED" in str(e)
+
+
 class GeminiEmbedder:
     """gemini-embedding-001, task_type SEMANTIC_SIMILARITY, 768 chiều, chuẩn hóa L2."""
 
@@ -101,11 +106,12 @@ class GeminiEmbedder:
         from google import genai
         from google.genai import types
 
+        from app.ai.llm_client import KeyRing, gemini_api_keys
+
         self._types = types
-        self._client = genai.Client(
-            api_key=api_key or os.environ["GEMINI_API_KEY"],
-            http_options=types.HttpOptions(timeout=int(timeout_s * 1000)),
-        )
+        keys = [api_key] if api_key else gemini_api_keys()
+        http = types.HttpOptions(timeout=int(timeout_s * 1000))
+        self._ring = KeyRing([genai.Client(api_key=k, http_options=http) for k in keys])
         self.model, self.dim, self.batch_size = model, dim, batch_size
         self.requests = 0
 
@@ -114,11 +120,19 @@ class GeminiEmbedder:
         cfg = self._types.EmbedContentConfig(task_type="SEMANTIC_SIMILARITY", output_dimensionality=self.dim)
         for i in range(0, len(texts), self.batch_size):
             chunk = texts[i : i + self.batch_size]
-            try:
-                self.requests += 1
-                resp = await self._client.aio.models.embed_content(model=self.model, contents=chunk, config=cfg)
-            except Exception as e:  # SDK ném nhiều loại lỗi (httpx, APIError…): gom về một loại
-                raise EmbeddingError(f"{type(e).__name__}: {e}") from e
+            resp = None
+            for client in self._ring.order():        # nhiều key: 429 thì thử key sau (SPEC §14.6)
+                try:
+                    self.requests += 1
+                    resp = await client.aio.models.embed_content(model=self.model, contents=chunk, config=cfg)
+                    break
+                except Exception as e:  # SDK ném nhiều loại lỗi (httpx, APIError…): gom về một loại
+                    if _is_rate_limit(e):
+                        last_429 = e
+                        continue
+                    raise EmbeddingError(f"{type(e).__name__}: {str(e)[:200]}") from e
+            if resp is None:
+                raise EmbeddingError(f"429 trên mọi key: {type(last_429).__name__}") from last_429
             vecs = [e.values for e in (resp.embeddings or [])]
             if len(vecs) != len(chunk) or any(v is None or len(v) != self.dim for v in vecs):
                 raise EmbeddingError(f"embedding trả {len(vecs)} vector cho {len(chunk)} câu hoặc sai số chiều")
@@ -257,7 +271,9 @@ def init_matcher(cache: EmbeddingCache | None = None, embedder: Embedder | None 
     `use_seed`: nạp embedding tính sẵn (tập sạch, câu demo, anchor dự phòng) để khởi động không tốn quota.
     """
     global _default_matcher
-    if embedder is None and os.environ.get("GEMINI_API_KEY"):
+    from app.ai.llm_client import gemini_api_keys
+
+    if embedder is None and gemini_api_keys():
         embedder = GeminiEmbedder()
     _default_matcher = SemanticMatcher(embedder, cache)
     if use_seed:

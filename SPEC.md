@@ -761,7 +761,7 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 
 **Auth và chống lạm dụng**
 - `/ops` và mọi endpoint `/v1/fraudops/*` cần JWT. Tài khoản `judge_01..judge_05` với mật khẩu lấy từ biến môi trường, ghi trong hướng dẫn 1 trang A4. Token hết hạn sau 12 giờ.
-- Rate limit cho các endpoint gọi LLM (`POST /v1/incidents/analyze`, `POST /v1/fraudops/rules/compile`): 10 lần/phút/phiên và 200 lần/ngày/IP. Vượt thì trả 429 `RATE_LIMITED` kèm header `Retry-After`. Đổi bằng env `RATE_LIMIT_SESSION`, `RATE_LIMIT_IP`, `RATE_LIMIT_ENABLED`.
+- Rate limit cho các endpoint gọi LLM (`POST /v1/incidents/analyze`, `POST /v1/fraudops/rules/compile`): 10 lần/phút/phiên và 100 lần/ngày/IP (bao hạ từ 200 ngày 28/11: quota flash-lite gói miễn phí chỉ 500 request/ngày, một IP không nên dùng quá 1/5). Vượt thì trả 429 `RATE_LIMITED` kèm header `Retry-After`. Đổi bằng env `RATE_LIMIT_SESSION`, `RATE_LIMIT_IP`, `RATE_LIMIT_ENABLED`.
 - Gemini trả 429 hoặc hết quota thì chuyển fallback, gắn `degraded: true` và hiện banner. Đặt budget alert $5 trên GCP và giới hạn chi tiêu Gemini cho project deploy, đủ dùng tới 11/12.
 - Biến thể chỉ có dạng `StructuredVariant`. Hệ thống không có endpoint nào sinh đoạn chat lừa đảo hoàn chỉnh.
 - Security headers: CSP chặt cho SPA, `X-Content-Type-Options`, `Referrer-Policy`.
@@ -988,7 +988,8 @@ engine = create_engine(
   1. Cache embedding trong DB và seed sẵn.
   2. Gửi anchor theo lô.
   3. Dùng **project riêng** cho bench và calibrate.
-  4. Rate limit theo phiên và IP (§10), cùng đường dự phòng khi 429. Không bật billing cho project Gemini của bản deploy (bao chốt 28/11, §10).
+  4. Rate limit theo phiên và IP (§10), cùng đường dự phòng khi 429.
+  5. Nhiều key: env `GEMINI_API_KEYS="k1,k2,…"` (key của các project khác nhau). Mỗi lời gọi LLM hoặc embedding bắt đầu ở key kế tiếp; key trả 429 thì thử key sau; mọi key đều 429 mới chuyển dự phòng. Không đặt thì dùng `GEMINI_API_KEY`. Không bật billing cho project Gemini của bản deploy (bao chốt 28/11, §10).
 
 ### 14.7 Vận hành tới 11/12
 

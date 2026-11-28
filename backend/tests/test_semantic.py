@@ -93,7 +93,9 @@ def _gemini(dim=8, batch=3, fail_at=None):
 
     e = GeminiEmbedder(api_key="test-key-not-used", dim=dim, batch_size=batch)
     fake = _FakeModels(dim, fail_at)
-    e._client = SimpleNamespace(aio=SimpleNamespace(models=fake))
+    from app.ai.llm_client import KeyRing
+
+    e._ring = KeyRing([SimpleNamespace(aio=SimpleNamespace(models=fake))])
     return e, fake
 
 

@@ -1,4 +1,4 @@
-"""Rate limit cho các endpoint gọi LLM (SPEC §10): 10 lần/phút/phiên và 200 lần/ngày/IP.
+"""Rate limit cho các endpoint gọi LLM (SPEC §10): 10 lần/phút/phiên và 100 lần/ngày/IP.
 
 ASGI middleware thuần, không cần decorator trên route. Bộ đếm `limits` (thư viện lõi của slowapi) lưu trong bộ
 nhớ của process: Cloud Run chạy 1 worker; nhiều instance thì mỗi instance đếm riêng (chấp nhận cho demo —
@@ -24,7 +24,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 LIMITED_PATHS = frozenset({"/v1/incidents/analyze", "/v1/fraudops/rules/compile"})
 SESSION_LIMIT = parse(os.environ.get("RATE_LIMIT_SESSION", "10/minute"))
-IP_LIMIT = parse(os.environ.get("RATE_LIMIT_IP", "200/day"))
+IP_LIMIT = parse(os.environ.get("RATE_LIMIT_IP", "100/day"))
 ENABLED = os.environ.get("RATE_LIMIT_ENABLED", "1") != "0"
 SESSION_COOKIE = "sr_session"
 

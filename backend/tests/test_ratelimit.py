@@ -1,4 +1,4 @@
-"""Rate limit endpoint gọi LLM (SPEC §10): 10 lần/phút/phiên, 200 lần/ngày/IP; 429 đúng định dạng lỗi."""
+"""Rate limit endpoint gọi LLM (SPEC §10): 10 lần/phút/phiên, 100 lần/ngày/IP; 429 đúng định dạng lỗi."""
 
 from __future__ import annotations
 
