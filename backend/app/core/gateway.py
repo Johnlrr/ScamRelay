@@ -133,6 +133,31 @@ def _channels(decision: str, tactic_family: str | None):
     return containment.official_channels(tactic_family) if decision in STOPPING else []
 
 
+def _lock_wallet(s: Session, workspace_id: str, wallet_id: str) -> Wallet:
+    """Mở transaction ghi và khóa dòng ví, đọc số dư mới nhất (SQLite: BEGIN IMMEDIATE; Postgres: FOR UPDATE).
+
+    Mọi chỗ trừ tiền phải đi qua đây: object ví đọc từ đầu request có thể đã cũ (có commit/await ở giữa),
+    ghi đè bằng số dư cũ là tiêu một khoản hai lần.
+    """
+    from app.db import IMMEDIATE
+
+    s.commit()
+    s.connection(execution_options=IMMEDIATE)
+    return s.exec(select(Wallet).where(Wallet.workspace_id == workspace_id, Wallet.id == wallet_id)
+                  .with_for_update().execution_options(populate_existing=True)).one()
+
+
+def _recheck_containment(s: Session, workspace_id: str, wallet: Wallet, trusted: bool,
+                         floor: Floor) -> ContainmentPolicy | None:
+    """Khoanh vùng đọc lại trong transaction đang khóa ví: kích hoạt trong lúc chờ vẫn có hiệu lực (INV-10)."""
+    pol = containment.active_policy(s, workspace_id, wallet.id)
+    if wallet.compromise_locked or (pol and pol.mode == "COMPROMISE"):
+        floor.raise_to("BLOCK", "CONTAINMENT_COMPROMISE")
+    elif pol and pol.mode == "MANIPULATION" and not trusted:
+        floor.raise_to("HOLD_UNTIL_VERIFIED", "CONTAINMENT_MANIPULATION")
+    return pol
+
+
 def _active_for(row: RelayRuleRow | None) -> int | None:
     if row is None or row.activated_at is None:
         return None
@@ -150,6 +175,7 @@ async def evaluate(s: Session, workspace_id: str, req: TransferRequest) -> Evalu
     ledger.release_holds(s, workspace_id)
 
     tx, wallet, _acc = derive_signals(s, workspace_id, req)
+    trusted = tx.is_verified_biller or tx.is_known_contact
     ledger.ensure_funds(wallet, req.amount_vnd)
     base = baseline_score(tx)
     tx.partner_risk_score = base.risk_score
@@ -164,8 +190,8 @@ async def evaluate(s: Session, workspace_id: str, req: TransferRequest) -> Evalu
     pol = containment.active_policy(s, workspace_id, wallet.id)
     if wallet.compromise_locked or (pol and pol.mode == "COMPROMISE"):
         floor.raise_to("BLOCK", "CONTAINMENT_COMPROMISE")
-        return _final(s, row_tx, wallet, floor, baseline, pol, None, None)
-    if pol and pol.mode == "MANIPULATION" and not (tx.is_verified_biller or tx.is_known_contact):
+        return _final(s, row_tx, wallet, trusted, floor, baseline, None, None)
+    if pol and pol.mode == "MANIPULATION" and not trusted:
         floor.raise_to("HOLD_UNTIL_VERIFIED", "CONTAINMENT_MANIPULATION")
 
     # 2) luật tiếp sức; biller đã xác minh không bao giờ bị hỏi (INV-15)
@@ -193,18 +219,24 @@ async def evaluate(s: Session, workspace_id: str, req: TransferRequest) -> Evalu
         r, rule, _ = max(live, key=lambda x: (STAGE_RANK[x[0].stage], x[2]))
         return _issue_challenge(s, row_tx, r, rule, floor, baseline)
     matched = live[0] if live else None
-    return _final(s, row_tx, wallet, floor, baseline, pol, matched[0] if matched else None,
+    return _final(s, row_tx, wallet, trusted, floor, baseline, matched[0] if matched else None,
                   matched[1] if matched else None)
 
 
-def _final(s: Session, row_tx: Transaction, wallet: Wallet, floor: Floor, baseline: BaselineView,
-           pol: ContainmentPolicy | None, row: RelayRuleRow | None, rule: RelayRule | None) -> EvaluateResponse:
-    reasons = list(floor.reasons)
-    if row is not None:
-        row_tx.matched_rule_id, row_tx.matched_rule_version = row.id, row.version
-        reasons.append("RULE_MATCH_FLOOR_ALREADY_STOPS")
-    receipt = ledger.apply_decision(s, row_tx, wallet, floor.decision, reasons, _policy_refs(pol, row))
-    s.commit()
+def _final(s: Session, row_tx: Transaction, wallet: Wallet, trusted: bool, floor: Floor, baseline: BaselineView,
+           row: RelayRuleRow | None, rule: RelayRule | None) -> EvaluateResponse:
+    try:
+        wallet = _lock_wallet(s, row_tx.workspace_id, wallet.id)
+        pol = _recheck_containment(s, row_tx.workspace_id, wallet, trusted, floor)
+        reasons = list(floor.reasons)
+        if row is not None:
+            row_tx.matched_rule_id, row_tx.matched_rule_version = row.id, row.version
+            reasons.append("RULE_MATCH_FLOOR_ALREADY_STOPS")
+        receipt = ledger.apply_decision(s, row_tx, wallet, floor.decision, reasons, _policy_refs(pol, row))
+        s.commit()
+    except Exception:
+        s.rollback()
+        raise
     return EvaluateResponse(
         tx_id=row_tx.id, status="FINAL", decision=floor.decision, challenge=None, baseline=baseline,
         reason_codes=row_tx.reason_codes, matched_rule_id=row.id if row else None, receipt_id=receipt.id,
@@ -277,15 +309,11 @@ def submit(s: Session, workspace_id: str, req: SubmitChallengeRequest) -> Submit
 
         # 3) kiểm tra lại ví (khóa dòng ví; SQLite đã BEGIN IMMEDIATE)
         wallet = s.exec(select(Wallet).where(Wallet.workspace_id == workspace_id, Wallet.id == tx.wallet_id)
-                        .with_for_update()).one()
+                        .with_for_update().execution_options(populate_existing=True)).one()
         acc = s.get(Account, (workspace_id, tx.to_account_id))
         floor = Floor(ch.floor_decision, list(ch.floor_reasons))
-        pol = containment.active_policy(s, workspace_id, wallet.id)
-        if wallet.compromise_locked or (pol and pol.mode == "COMPROMISE"):
-            floor.raise_to("BLOCK", "CONTAINMENT_COMPROMISE")
-        elif pol and pol.mode == "MANIPULATION" and not (
-                (acc and acc.is_verified_biller) or tx.to_account_id in (wallet.known_contacts or [])):
-            floor.raise_to("HOLD_UNTIL_VERIFIED", "CONTAINMENT_MANIPULATION")
+        trusted = bool(acc and acc.is_verified_biller) or tx.to_account_id in (wallet.known_contacts or [])
+        pol = _recheck_containment(s, workspace_id, wallet, trusted, floor)
 
         # 4) đọc lại luật; 5) StagePolicy; 7) max với mức sàn
         row = s.get(RelayRuleRow, ch.rule_id)
