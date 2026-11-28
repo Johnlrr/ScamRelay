@@ -1,0 +1,5 @@
+# Giữ LF cho file chạy trên Linux (Cloud Build, CI) dù checkout trên Windows
+*.sh text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+.github/** text eol=lf
