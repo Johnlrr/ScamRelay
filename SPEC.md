@@ -130,7 +130,7 @@ scamrelay/
 │  ├─ app/
 │  │  ├─ main.py, config.py, db.py, models.py
 │  │  ├─ schemas/          # incident.py, rule.py, gateway.py, llm_incident.py, llm_rule.py
-│  │  ├─ routers/          # incidents.py, fraudops.py, gateway.py, aux.py
+│  │  ├─ routers/          # incidents.py, fraudops.py, gateway.py, support.py (không đặt tên aux.py: Windows cấm)
 │  │  ├─ core/             # preprocess, validator, assembler, layer1, semantic, regression, baseline,
 │  │  │                    # stage_policy, gateway, ledger, containment, stats
 │  │  └─ ai/               # interfaces.py, llm_client.py, incident_ai.py, rule_ai.py, prompts/

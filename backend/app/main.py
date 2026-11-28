@@ -2,16 +2,46 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
 from app import config
-from app.routers import fraudops, gateway, incidents
+from app.db import DbEmbeddingCache, init_db
+from app.routers import fraudops, gateway, incidents, support
 from app.routers.errors import install_error_handlers
 
+log = logging.getLogger("scamrelay")
+
+
+async def _seed_benign_cache() -> None:
+    """Embed phần tập sạch còn thiếu (đa số đã có trong seed tính sẵn). Lỗi thì bỏ qua: regression tự fallback."""
+    from app.core.regression import seed_benign_cache
+
+    try:
+        ok = await asyncio.wait_for(seed_benign_cache(), timeout=60)
+        log.info("benign cache seeded: %s", ok)
+    except Exception as e:  # noqa: BLE001
+        log.warning("benign cache seed failed: %s", type(e).__name__)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    from app.core.semantic import init_matcher
+
+    init_db()
+    init_matcher(cache=DbEmbeddingCache())
+    task = asyncio.create_task(_seed_benign_cache())
+    yield
+    task.cancel()
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="ScamRelay Incident-to-Policy API",
     version="0.1.0",
     description=(
@@ -23,11 +53,7 @@ install_error_handlers(app)
 app.include_router(incidents.router)
 app.include_router(fraudops.router)
 app.include_router(gateway.router)
-
-
-@app.get("/healthz", tags=["Phụ trợ"])
-async def healthz() -> JSONResponse:
-    return JSONResponse({"status": "ok", "llm_model": config.LLM_MODEL})
+app.include_router(support.router)
 
 
 # ---- SPA tĩnh (bản build frontend). Đường dẫn lạ không thuộc API → index.html để router phía client xử lý.
