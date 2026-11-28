@@ -23,7 +23,7 @@ Nhóm có 3 người. Mỗi người làm trên nhánh mang tên mình (`bao`, `
 
 | Thành viên | Vai trò | File được sửa (chi tiết ở PLAN §3) |
 |---|---|---|
-| **bao** | AI, luật, đo lường, route FraudOps | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression,stats}.py`, `routers/fraudops.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) |
+| **bao** | AI, luật, đo lường, route FraudOps | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression,stats}.py`, `routers/fraudops.py`, `app/ratelimit.py`, `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) |
 | **linh** | API, DB, auth, gateway, deploy | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**` (trừ `fraudops.py`), `core/{gateway,stage_policy,ledger,containment}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` |
 | **quynh** | Frontend, held-out, pitch | `frontend/**`, `backend/data/action_registry.json`, `bench/heldout.*`, `docs/**` |
 

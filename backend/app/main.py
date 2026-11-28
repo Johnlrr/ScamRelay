@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from app import config
 from app.db import DbEmbeddingCache, init_db
+from app.ratelimit import LlmRateLimitMiddleware
 from app.routers import fraudops, gateway, incidents, support
 from app.routers.errors import install_error_handlers
 
@@ -50,6 +51,7 @@ app = FastAPI(
     ),
 )
 install_error_handlers(app)
+app.add_middleware(LlmRateLimitMiddleware)   # SPEC §10; file của bao (PLAN P9)
 app.include_router(incidents.router)
 app.include_router(fraudops.router)
 app.include_router(gateway.router)

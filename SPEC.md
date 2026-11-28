@@ -112,7 +112,7 @@ Browser ──HTTPS──►  FastAPI (uvicorn, 1 worker)                       
 | HTTP client | `httpx` (async), có danh sách host được phép gọi ra | Chỉ cho phép `generativelanguage.googleapis.com` |
 | Toán | `numpy` | Cosine |
 | Auth | `pyjwt`; tài khoản giám khảo seed từ biến môi trường | Không có đăng ký |
-| Rate limit | `slowapi` | Theo IP và cookie phiên |
+| Rate limit | `limits` (lõi của `slowapi`), ASGI middleware `app/ratelimit.py` | Theo phiên (tài khoản JWT, không có thì cookie) và theo IP; bộ đếm trong bộ nhớ process |
 | Prompt | File `ai/prompts/*.txt`, điền bằng `string.Template`; tên file mang số phiên bản (`rule_compile.v3.txt`) | Không cần Jinja2 |
 | Ảnh (có thể có) | `Pillow` | Resize ≤ 1600px, bỏ EXIF |
 | Frontend | React + Vite + TypeScript + Tailwind | shadcn/ui tùy chọn |
@@ -757,7 +757,7 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 
 **Auth và chống lạm dụng**
 - `/ops` và mọi endpoint `/v1/fraudops/*` cần JWT. Tài khoản `judge_01..judge_05` với mật khẩu lấy từ biến môi trường, ghi trong hướng dẫn 1 trang A4. Token hết hạn sau 12 giờ.
-- Rate limit cho các endpoint gọi LLM: 10 lần/phút/phiên và 200 lần/ngày/IP.
+- Rate limit cho các endpoint gọi LLM (`POST /v1/incidents/analyze`, `POST /v1/fraudops/rules/compile`): 10 lần/phút/phiên và 200 lần/ngày/IP. Vượt thì trả 429 `RATE_LIMITED` kèm header `Retry-After`. Đổi bằng env `RATE_LIMIT_SESSION`, `RATE_LIMIT_IP`, `RATE_LIMIT_ENABLED`.
 - Gemini trả 429 hoặc hết quota thì chuyển fallback, gắn `degraded: true` và hiện banner. Đặt budget alert $5 trên GCP và giới hạn chi tiêu Gemini cho project deploy, đủ dùng tới 11/12.
 - Biến thể chỉ có dạng `StructuredVariant`. Hệ thống không có endpoint nào sinh đoạn chat lừa đảo hoàn chỉnh.
 - Security headers: CSP chặt cho SPA, `X-Content-Type-Options`, `Referrer-Policy`.

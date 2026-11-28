@@ -118,3 +118,15 @@ def test_dev_cases_fit_seed_workspace():
         for t in case["transactions_B"]:
             assert t["from_wallet"] in bal and t["to_account_id"] in accounts, t["tx_id"]
             assert 0 < t["amount_vnd"] <= min(bal[t["from_wallet"]], 50_000_000), t["tx_id"]
+
+
+def test_api_waits_on_minute_rate_limit_then_gives_up_on_daily():
+    replies = [(429, {"error": {"code": "RATE_LIMITED"}, "_retry_after": 20}), (200, {"ok": 1}),
+               (429, {"error": {"code": "RATE_LIMITED"}, "_retry_after": 50000})]
+    slept = []
+    api = rb.Api(lambda *a: replies.pop(0), sleep=slept.append)
+    assert api.call("POST", "/v1/incidents/analyze", {}) == {"ok": 1}
+    assert slept == [21] and api.rate_waits == 1
+    with pytest.raises(rb.ApiError, match="429"):                  # hạn mức ngày: không chờ
+        api.call("POST", "/v1/incidents/analyze", {})
+    assert slept == [21]

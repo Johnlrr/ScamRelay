@@ -17,7 +17,7 @@
 | P5 | Gói hồ sơ vẫn dựng ở frontend (Markdown + Blob), không có endpoint | quynh |
 | P6 | **Giữ nguyên phân vai của PLAN v2** (validator, baseline, regression thuộc bao) dù ABOUT §8.2 giao các việc này cho Member 2. Lý do: validator đã viết xong tối 27/11; regression và baseline gắn chặt với semantic và benchmark; Member 2 trong ABOUT đang quá tải | ABOUT §8.2 đã sửa cho khớp |
 | P7 | `preprocess.py` và `validator.py` viết tối 27/11 theo SPEC v1 **cần cập nhật lên v2** (bao, tối nay) | bao |
-| P9 | **Chuyển việc từ linh sang bao (28/11, trưa)** vì linh đang quá tải (deploy M1, GCP, Neon). bao nhận: `routers/fraudops.py` (sở hữu, sửa lỗi, hỗ trợ quynh nối `/ops`); `core/stats.py` + thống kê luật (nếu dư giờ); test API cho INV-01/04/10/13; README phần cách chạy, công nghệ, thư viện; đóng gói `.zip` ngày 03/12. linh giữ: deploy, auth, DB, gateway, ledger, containment, rate limit, test race Postgres, ánh xạ held-out | bao, linh |
+| P9 | **Chuyển việc từ linh sang bao (28/11, trưa)** vì linh đang quá tải (deploy M1, GCP, Neon). bao nhận: `routers/fraudops.py` (sở hữu, sửa lỗi, hỗ trợ quynh nối `/ops`); `core/stats.py` + thống kê luật (nếu dư giờ); test API cho INV-01/04/10/13; README phần cách chạy, công nghệ, thư viện; đóng gói `.zip` ngày 03/12; **rate limit** (`app/ratelimit.py`, xong 28/11). linh giữ: deploy, auth, DB, gateway, ledger, containment, test race Postgres, ánh xạ held-out | bao, linh |
 | P8 | **Cắt cho hackathon (27/11, 23:20):** bỏ mã hóa và hash held-out; bỏ bảng `notification`, endpoint `consent` + xóa theo TTL, endpoint export-pack; dự phòng còn 2 tầng; dừng mềm 30 phút, bảng theo dõi, "Báo nhầm", chống dò đáp án, ablation chỉ làm nếu 30/11 dư giờ; Contract Drop nới tới 00:30 | cả nhóm |
 
 ---
@@ -61,7 +61,7 @@ git checkout <ten-minh>
 
 | Người | Sở hữu | Tóm tắt |
 |---|---|---|
-| **bao** | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression,stats}.py`, **`routers/fraudops.py`** (từ 28/11, P9), `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) | *AI, luật, đo lường, route FraudOps:* prompt, chuẩn hóa, embedding, validator, Lớp 1, tập sạch, baseline, ngưỡng, benchmark; các route `/v1/fraudops/*` |
+| **bao** | `backend/app/ai/**` (trừ `interfaces.py`), `core/{preprocess,semantic,layer1,validator,assembler,baseline,regression,stats}.py`, **`routers/fraudops.py`**, **`app/ratelimit.py`** (từ 28/11, P9; dòng gắn middleware trong `main.py` cũng do bao giữ), `backend/data/{abbreviations,benign_corpus,static_scam_keywords,fallback_tactics}.json`, `bench/**` (trừ `heldout.*`) | *AI, luật, đo lường, route FraudOps:* prompt, chuẩn hóa, embedding, validator, Lớp 1, tập sạch, baseline, ngưỡng, benchmark; các route `/v1/fraudops/*` |
 | **linh** | `main.py`, `config.py`, `db.py`, `models.py`, `routers/**` (trừ `fraudops.py`), `core/{gateway,stage_policy,ledger,containment}.py`, `schemas/**`, `ai/interfaces.py`, `data/seed_workspace.json`, `Dockerfile`, `scripts/**`, `.github/**` | *API, DB, auth, gateway, deploy, vận hành.* Ngày chạy held-out: **ánh xạ câu trả lời** |
 | **quynh** | `frontend/**`, `backend/data/action_registry.json`, `bench/heldout.*`, `docs/**` | *Giao diện, held-out, slide, hướng dẫn A4.* Quay video cùng bao |
 
@@ -149,7 +149,7 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 |---|---|---|
 | ~~`regression.py`~~ (xong 27/11). **Nhận `routers/fraudops.py` từ linh (P9):** sửa lỗi SQLite khóa khi ghi cache embedding (giữ transaction đọc qua lời gọi LLM), test cho lỗi đó | **Deploy M1 nếu 28/11 chưa xong** (GCP, Neon, Secret Manager). Route `/ops` đã xong 28/11, từ nay thuộc bao | `/ops` đầy đủ: đăng nhập, hàng đợi, chi tiết, biên dịch (**sửa anchor**, xem trước câu hỏi như chú Hùng thấy, nhãn nguồn), thẻ kiểm thử (**tô anchor gây khớp nhầm**, Approve bị khóa, ô lý do ghi đè), Approve, **đồng hồ 2 mốc**, danh sách luật + Rollback |
 | **Hỗ trợ quynh nối `/ops`** (sửa route theo nhu cầu UI, giữ đúng schema) | Hỗ trợ quynh nối `/wallet` và `/help`; gửi quynh danh sách id action cho `action_registry.json`; sửa lỗi M1 | `/wallet`: công tắc so sánh baseline vs ScamRelay, nút "Chạy lại giao dịch", dải "Luật có hiệu lực X phút trước", dải thông báo kích hoạt hộ |
-| Tinh chỉnh prompt trên dev nếu bench dev còn lỗi chất lượng (chữ không dấu ở nhãn hiển thị) | Rate limit (`slowapi`); test race trên Postgres (CI đã có) | Landing `/` (4 nhân vật, hướng dẫn 5 bước) |
+| Tinh chỉnh prompt trên dev nếu bench dev còn lỗi chất lượng (chữ không dấu ở nhãn hiển thị). ~~Rate limit~~ (xong 28/11, P9) | Test race trên Postgres (CI đã có) | Landing `/` (4 nhân vật, hướng dẫn 5 bước) |
 | ~~`run_bench.py`, `calibrate.py`, tập sạch, output dự phòng~~ (xong 27–28/11). Test API cho **INV-01, 04, 10, 13** (`tests/test_invariants_api.py`) | | |
 
 ### 30/11

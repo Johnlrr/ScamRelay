@@ -24,6 +24,7 @@ import json
 import os
 import statistics
 import sys
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -56,9 +57,12 @@ def http_transport(base_url: str, timeout: float = 90) -> Transport:
         except urllib.error.HTTPError as e:
             raw = e.read()
             try:
-                return e.code, json.loads(raw) if raw else {}
+                data = json.loads(raw) if raw else {}
             except json.JSONDecodeError:
-                return e.code, {"raw": raw.decode("utf-8", "replace")[:300]}
+                data = {"raw": raw.decode("utf-8", "replace")[:300]}
+            if e.code == 429 and e.headers.get("Retry-After", "").isdigit():
+                data["_retry_after"] = int(e.headers["Retry-After"])
+            return e.code, data
     return send
 
 
@@ -66,13 +70,26 @@ class ApiError(RuntimeError):
     pass
 
 
+MAX_RATE_WAIT_S = 120      # 429 theo phút (SPEC §10: 10 lần/phút/phiên) thì chờ; theo ngày thì dừng
+
+
 class Api:
-    def __init__(self, transport: Transport):
+    def __init__(self, transport: Transport, sleep: Callable[[float], None] = time.sleep):
         self.t = transport
+        self.sleep = sleep
         self.token: str | None = None
+        self.rate_waits = 0
 
     def call(self, method: str, path: str, body: dict | None = None, ok: tuple[int, ...] = (200, 201)) -> dict:
         status, data = self.t(method, path, body, self.token)
+        for _ in range(3):
+            wait = data.get("_retry_after") if status == 429 else None
+            if wait is None or wait > MAX_RATE_WAIT_S:
+                break
+            self.rate_waits += 1
+            print(f"  429 rate limit, chờ {wait} giây…", flush=True)
+            self.sleep(wait + 1)
+            status, data = self.t(method, path, body, self.token)
         if status not in ok:
             raise ApiError(f"{method} {path} → {status}: {json.dumps(data, ensure_ascii=False)[:300]}")
         return data
