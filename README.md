@@ -60,6 +60,20 @@ Một image Docker (build frontend rồi phục vụ API và SPA tĩnh) lên Clo
 
 Không dùng model chạy cục bộ hay thư viện ML nặng. Ứng dụng chỉ gọi ra ngoài tới Gemini (có test INV-01).
 
+### Tài sản có sẵn
+
+Mã nguồn trong repo do nhóm viết trong thời gian cuộc thi; lịch sử git bắt đầu ngày 27/11/2026. Những gì dùng lại từ bên ngoài:
+
+| Loại | Tài sản | Ghi chú |
+|---|---|---|
+| Thư viện mã nguồn mở (backend) | FastAPI, Pydantic, SQLModel (MIT); Uvicorn, httpx, python-dotenv (BSD-3-Clause); NumPy (BSD-3-Clause, phần đóng gói kèm có thêm 0BSD/MIT/Zlib); `google-genai` (Apache-2.0); PyJWT, slowapi, limits, pytest (MIT); psycopg (LGPL-3.0, chỉ dùng như thư viện) | Cài từ PyPI theo `backend/requirements*.txt`, không sửa mã thư viện; license đối chiếu với metadata gói ngày 28/11 |
+| Thư viện mã nguồn mở (frontend) | React, Vite, Tailwind CSS, openapi-typescript (MIT); TypeScript (Apache-2.0) | Danh sách đầy đủ trong `frontend/package.json` |
+| Dịch vụ | Google Gemini API (gói miễn phí): `gemini-3.5-flash-lite`, `gemini-embedding-001`; Google Cloud Run; Neon Postgres | Chỉ gọi qua API, không dùng mô hình hay dữ liệu huấn luyện riêng |
+| Dữ liệu | Không dùng bộ dữ liệu bên ngoài | Mọi ca, giao dịch, ví và nhân vật đều là dữ liệu tổng hợp do nhóm viết hoặc sinh bằng script (xem mục Dữ liệu) |
+| Thương hiệu | Không dùng tên, logo hay màu của MoMo | Ví tham chiếu mang tên trung tính VietWallet Sandbox |
+
+Kênh liên hệ chính thức (hotline, đường dẫn) trong `backend/data/action_registry.json` lấy từ trang chính thức của từng tổ chức, mỗi mục có `source_url` và `verified_at`.
+
 ## Cấu trúc thư mục
 
 ```

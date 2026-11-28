@@ -174,7 +174,7 @@ Các màn `/ops` còn lại (danh sách, sửa bản nháp, regression, approve,
 
 | bao | linh | quynh |
 |---|---|---|
-| Kiểm chứng mọi số liệu theo **ABOUT Phụ lục B** (mở bản gốc; chưa xác minh được thì xóa); README (cách chạy, công nghệ, thư viện, tài sản có sẵn) | Thử bằng trình duyệt ẩn danh; `min-instances=1` | **Slide PDF ≤ 10 trang** (không sửa được sau khi nộp) |
+| Kiểm chứng mọi số liệu theo **ABOUT Phụ lục B** (mở bản gốc; chưa xác minh được thì xóa); README (cách chạy, công nghệ, thư viện, tài sản có sẵn: ~~viết 28/11~~; 02/12 đối chiếu lại hàng frontend với `frontend/package.json` và câu về `action_registry.json`) | Thử bằng trình duyệt ẩn danh; `min-instances=1` | **Slide PDF ≤ 10 trang** (không sửa được sau khi nộp) |
 | README mục AI và dữ liệu (có danh sách công cụ AI đã dùng); **quay video cùng quynh** | Hỗ trợ quay video | **Video ≤ 3 phút** trên bản live; **hướng dẫn 1 trang A4** (URL, tài khoản giám khảo, 5 bước) |
 
 ### 03/12
