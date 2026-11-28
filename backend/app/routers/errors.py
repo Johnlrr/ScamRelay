@@ -20,7 +20,7 @@ def _body(code: str, message_vi: str, details: list[Any] | None = None) -> dict:
     return {"error": {"code": code, "message_vi": message_vi, "details": details or []}}
 
 
-_HTTP_CODES = {401: "UNAUTHORIZED", 403: "FORBIDDEN", 404: "NOT_FOUND", 405: "METHOD_NOT_ALLOWED",
+_HTTP_CODES = {400: "INVALID_REQUEST", 401: "UNAUTHORIZED", 403: "FORBIDDEN", 404: "NOT_FOUND", 405: "METHOD_NOT_ALLOWED",
                409: "CONFLICT", 429: "RATE_LIMITED"}
 
 
@@ -37,5 +37,6 @@ def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(StarletteHTTPException)
     async def _http(_: Request, exc: StarletteHTTPException) -> JSONResponse:
         code = _HTTP_CODES.get(exc.status_code, "HTTP_ERROR")
-        msg = exc.detail if isinstance(exc.detail, str) else "Có lỗi xảy ra."
+        msg = "Dữ liệu gửi lên không đọc được (JSON hỏng)." if exc.status_code == 400 else (
+            exc.detail if isinstance(exc.detail, str) else "Có lỗi xảy ra.")
         return JSONResponse(_body(code, msg), status_code=exc.status_code)
