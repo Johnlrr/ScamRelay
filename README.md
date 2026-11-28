@@ -1,4 +1,80 @@
-# ScamRelay
+# ScamRelay — Khoanh vùng. Chặn đúng. Tiếp sức.
+
+Một báo cáo từ người bị lừa hôm nay trở thành câu hỏi chặn đứng thủ đoạn đó cho người tiếp theo, chỉ sau vài phút. Dự án tham gia MoMo Tech Contest 2026, chủ đề *Imagine the Future Workspace*. Mô tả sản phẩm: `SCAMRELAY_ABOUT.md`; chuẩn kỹ thuật: `SPEC.md`.
+
+Ba luồng trong sandbox **VietWallet** (thương hiệu trung tính, dữ liệu tổng hợp, không có tiền thật):
+
+1. **Khoanh vùng** (`/help`): nạn nhân hoặc người thân dán đoạn chat. Hệ thống đưa ra 3 việc cần làm và tạm giữ bảo vệ ví ở đúng mức: bị thao túng hay đã lộ OTP.
+2. **Tiếp sức** (`/ops`): chuyên viên FraudOps cho AI biên dịch thủ đoạn thành bản nháp luật, kiểm thử hồi quy trên tập giao dịch sạch, sửa câu mẫu gây khớp nhầm, rồi duyệt.
+3. **Chặn đúng** (`/wallet`): người tiếp theo chuyển tiền với nội dung khớp thủ đoạn thì được hỏi mục đích. Câu trả lời đi qua StagePolicy, và kết quả không bao giờ yếu hơn lớp chống gian lận của đối tác.
+
+## Cách chạy
+
+### Backend (Python 3.12)
+
+```bash
+cd backend
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -r requirements.txt -r requirements-dev.txt
+cp .env.example .env          # điền GEMINI_API_KEY, JWT_SECRET (≥ 32 ký tự), JUDGE_ACCOUNTS
+set -a; . ./.env; set +a      # app đọc biến môi trường, không tự nạp .env
+.venv/bin/uvicorn app.main:app --reload --port 8000
+```
+
+- Tài liệu API: `http://localhost:8000/docs`; kiểm tra sức khỏe: `GET /healthz`.
+- Dev dùng SQLite (`DATABASE_URL=sqlite:///./dev.db`), deploy dùng Neon Postgres; chỉ khác `DATABASE_URL`.
+- Không có `GEMINI_API_KEY` thì vẫn chạy được ở chế độ dự phòng: phân tích bằng từ khóa, biên dịch bằng output thật đã lưu, so khớp bằng embedding tính sẵn và trigram (`degraded: true`).
+- Đăng nhập tài khoản giám khảo: `POST /v1/auth/login` với một cặp trong `JUDGE_ACCOUNTS`. Mỗi tài khoản có workspace riêng và nút Reset (`POST /v1/demo/reset`).
+
+### Test
+
+```bash
+cd backend && .venv/bin/pytest -q      # LLM và embedding luôn được mock, không tốn quota
+```
+
+CI (GitHub Actions) chạy cùng bộ test kèm Postgres khi push lên `main`.
+
+### Frontend
+
+```bash
+cd frontend && npm ci && npm run dev
+npm run gen:types          # sinh lại type từ /openapi.json mỗi khi schema backend đổi
+```
+
+### Deploy
+
+Một image Docker (build frontend rồi phục vụ API và SPA tĩnh) lên Cloud Run, chạy tay bằng `scripts/deploy.sh` từ `main`; sau đó `scripts/smoke.sh <URL>`. Secret (`GEMINI_API_KEY`, `DATABASE_URL`, `JWT_SECRET`, `JUDGE_ACCOUNTS`) nằm trong Secret Manager, không bao giờ commit.
+
+## Công nghệ và thư viện
+
+| Phần | Dùng |
+|---|---|
+| Backend | Python 3.12, FastAPI, Pydantic v2, SQLModel (SQLAlchemy), Uvicorn |
+| CSDL | SQLite (dev, test), Neon Postgres qua `psycopg` (deploy) |
+| AI | Google Gemini qua `google-genai`: `gemini-3.5-flash-lite` (structured output), `gemini-embedding-001` (768 chiều) |
+| Tính toán | `numpy` (cosine, chuẩn hóa L2, cache vector) |
+| Xác thực, giới hạn | `PyJWT` (tài khoản giám khảo), `limits`/`slowapi` (rate limit endpoint gọi LLM) |
+| Frontend | React, Vite, TypeScript, Tailwind; type sinh bằng `openapi-typescript` |
+| Hạ tầng | Docker, Google Cloud Run, Secret Manager, GitHub Actions (chỉ chạy test) |
+| Test, đo lường | `pytest`, `httpx` (TestClient), `python-dotenv` (chỉ script `bench/`) |
+
+Không dùng model chạy cục bộ hay thư viện ML nặng. Ứng dụng chỉ gọi ra ngoài tới Gemini (có test INV-01).
+
+## Cấu trúc thư mục
+
+```
+backend/app/
+  ai/          llm_client, incident_ai, rule_ai, prompts/*.vN.txt, interfaces.py (hợp đồng)
+  core/        preprocess, semantic, layer1, validator, assembler, baseline, regression,
+               gateway, stage_policy, ledger, containment
+  routers/     incidents, fraudops, gateway, support
+  schemas/     kiểu dữ liệu API và LLM (hai lớp schema, SPEC §6)
+backend/data/  tập sạch, từ khóa, viết tắt, output dự phòng, embedding tính sẵn, seed workspace
+backend/tests/ pytest (bất biến INV-01…16, luồng demo end-to-end)
+bench/         ca dev, hiệu chỉnh ngưỡng, đo độ trễ, run_bench, results/
+frontend/      React app
+scripts/       deploy.sh, smoke.sh
+```
 
 ## AI & dữ liệu
 
