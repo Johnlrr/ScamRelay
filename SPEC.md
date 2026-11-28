@@ -771,7 +771,7 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 - **bao chốt 28/11: giữ gói miễn phí.** Hệ quả bắt buộc:
   - `/help` hiện thông báo rõ **trước khi gửi**: *"Nội dung sẽ được xử lý bởi Google Gemini; vui lòng che thông tin cá nhân"*. README và slide ghi đúng như vậy.
   - Key Gemini của bản deploy lấy từ project **không** gắn billing (gắn billing là thành gói trả phí). Cloud Run vẫn cần billing nhưng nằm ở project khác.
-  - Không xoay vòng nhiều key hay nhiều project để cộng dồn quota: quota tính theo project, và điều khoản Google APIs không cho lách giới hạn sử dụng. Hết quota thì đi đường dự phòng (`degraded`).
+  - Hết quota thì đi đường dự phòng (`degraded`). Nếu đo thấy thiếu, bao chốt 28/11: **được bổ sung key từ nhiều project** và xoay vòng (key cùng một project không thêm quota). Nhóm đã biết rủi ro điều khoản Google APIs về việc vượt giới hạn.
 - Lớp che PII bằng regex luôn chạy, dù chọn cách nào. Chân trang `/help` có dòng: dành cho người dùng từ 18 tuổi.
 
 **Workspace và Reset**
@@ -984,7 +984,7 @@ engine = create_engine(
 ### 14.6 Quota Gemini
 
 - Rate limit tính **theo project**, không theo key. Quota ngày reset lúc nửa đêm giờ Thái Bình Dương (khoảng 14:00–15:00 giờ Việt Nam).
-- Với gói miễn phí, `gemini-embedding-001` có khoảng 1.000 request/ngày (cần tự kiểm tra lại trong AI Studio). Các biện pháp:
+- Gói miễn phí: `gemini-3.5-flash-lite` **500 request/ngày** (bao xác nhận 28/11); `gemini-embedding-001` khoảng 1.000 request/ngày (cần tự kiểm tra lại trong AI Studio). Một lượt demo đầy đủ tốn khoảng 3 request LLM (analyze, follow-up OTP, compile), nên 500 request/ngày đủ cho khoảng 150 lượt. Các biện pháp:
   1. Cache embedding trong DB và seed sẵn.
   2. Gửi anchor theo lô.
   3. Dùng **project riêng** cho bench và calibrate.
