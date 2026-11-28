@@ -173,3 +173,35 @@ def test_partial_progress_is_cached_when_later_batch_fails(monkeypatch):
     assert len(cache) == 2                                  # lô đầu được giữ
     out = run(m.embed_texts(["mot hai", "ba bon", "nam sau", "bay tam"]))
     assert out.shape == (4, 64) and emb.calls[-1] == ["nam sau", "bay tam"]
+
+
+def test_seed_file_covers_benign_corpus_and_demo():
+    # Đổi tập sạch / bảng viết tắt / model mà quên chạy bench/build_seed.py → test này đỏ
+    from app.core.preprocess import norm_match
+    from app.core.regression import load_benign_corpus
+
+    seed = semantic.load_seed_embeddings()
+    assert seed, "thiếu backend/data/embeddings_seed.npz"
+    need = [s["transfer_note"] for s in load_benign_corpus()] + ["xac thuc ho so cap nhat thue HKD"]
+    missing = [t for t in need if cache_key(norm_match(t)) not in seed]
+    assert not missing, f"seed thiếu {len(missing)} câu, ví dụ {missing[:3]} — chạy bench/build_seed.py"
+    v = next(iter(seed.values()))
+    assert v.shape == (768,) and abs(float(np.linalg.norm(v)) - 1) < 1e-4
+
+
+def test_preload_seed_then_no_api_calls():
+    from app.core.regression import load_benign_corpus
+
+    emb = FakeEmbedder()
+    cache = InMemoryEmbeddingCache()
+    added = semantic.preload_seed(cache)
+    assert added == len(semantic.load_seed_embeddings())
+    assert semantic.preload_seed(cache) == 0                       # lần 2 không thêm gì
+    m = SemanticMatcher(emb, cache)                                # model/dim mặc định như seed
+    out = run(m.embed_texts([s["transfer_note"] for s in load_benign_corpus()]))
+    assert out.shape[0] == len(load_benign_corpus()) and emb.calls == []
+
+
+def test_seed_ignored_for_other_model(tmp_path):
+    assert semantic.load_seed_embeddings(model="other-model") == {}
+    assert semantic.load_seed_embeddings(tmp_path / "none.npz") == {}

@@ -219,17 +219,48 @@ class SemanticMatcher:
         return best_cosine(vec, anchors.vectors)[0]
 
 
+# ============================================================ seed embedding tính sẵn
+
+SEED_PATH = Path(__file__).resolve().parents[2] / "data" / "embeddings_seed.npz"
+
+
+def load_seed_embeddings(path: Path = SEED_PATH, model: str = EMBED_MODEL, dim: int = EMBED_DIM) -> dict[str, np.ndarray]:
+    """Vector tính sẵn (bench/build_seed.py). Trả {} nếu thiếu file hoặc khác model/số chiều."""
+    if not path.exists():
+        return {}
+    with np.load(path) as z:
+        if [str(x) for x in z["meta"]] != [model, str(dim)]:
+            return {}
+        return dict(zip((str(k) for k in z["keys"]), z["vectors"].astype(np.float32)))
+
+
+def preload_seed(cache: EmbeddingCache, path: Path = SEED_PATH) -> int:
+    """Nạp phần seed còn thiếu vào cache (không gọi API). Trả số vector đã thêm."""
+    seed = load_seed_embeddings(path)
+    have = cache.get_many(list(seed))
+    new = {k: v for k, v in seed.items() if k not in have}
+    if new:
+        cache.put_many(new)
+    return len(new)
+
+
 # ============================================================ matcher mặc định của process
 
 _default_matcher: SemanticMatcher | None = None
 
 
-def init_matcher(cache: EmbeddingCache | None = None, embedder: Embedder | None = None) -> SemanticMatcher:
-    """Gọi 1 lần lúc khởi động (linh truyền cache DB). Không có embedder → GeminiEmbedder từ env."""
+def init_matcher(cache: EmbeddingCache | None = None, embedder: Embedder | None = None,
+                 use_seed: bool = True) -> SemanticMatcher:
+    """Gọi 1 lần lúc khởi động (linh truyền cache DB). Không có embedder → GeminiEmbedder từ env.
+
+    `use_seed`: nạp embedding tính sẵn (tập sạch, câu demo, anchor dự phòng) để khởi động không tốn quota.
+    """
     global _default_matcher
     if embedder is None and os.environ.get("GEMINI_API_KEY"):
         embedder = GeminiEmbedder()
     _default_matcher = SemanticMatcher(embedder, cache)
+    if use_seed:
+        preload_seed(_default_matcher.cache)
     return _default_matcher
 
 
