@@ -273,3 +273,10 @@ def test_reset_restores_seed(client):
 def test_healthz(client):
     r = client.get("/healthz").json()
     assert r["db"] is True and r["llm_model"] == config.LLM_MODEL
+
+
+def test_healthz_reads_multi_key_env(client, monkeypatch):
+    """PLAN H9: deploy có thể chỉ đặt GEMINI_API_KEYS (xoay vòng), không có GEMINI_API_KEY."""
+    assert client.get("/healthz").json()["gemini_configured"] is False
+    monkeypatch.setenv("GEMINI_API_KEYS", "fake-a,fake-b")
+    assert client.get("/healthz").json()["gemini_configured"] is True

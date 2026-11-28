@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import os
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlmodel import Session, select
 
 from app import config
+from app.ai.llm_client import gemini_api_keys
 from app.core import containment, ledger
 from app.db import get_engine, get_session
 from app.models import Account, Transaction, Wallet, Workspace, utcnow
@@ -86,5 +85,5 @@ def healthz() -> HealthResponse:
     except Exception:  # noqa: BLE001
         db_ok = False
     return HealthResponse(status="ok" if db_ok else "degraded", db=db_ok,
-                          gemini_configured=bool(os.environ.get("GEMINI_API_KEY")),
+                          gemini_configured=bool(gemini_api_keys()),
                           registry_unverified=containment.registry_unverified(), llm_model=config.LLM_MODEL)
