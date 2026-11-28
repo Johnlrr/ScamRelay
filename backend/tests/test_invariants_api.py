@@ -1,4 +1,5 @@
 """Bất biến phía API do bao viết test (PLAN P9): INV-01, INV-04, INV-10, INV-13 (SPEC §10).
+Bổ sung 28/11 các tên test SPEC §10 còn thiếu: INV-05 (ảnh), INV-11 (kích hoạt hộ), INV-16 (cổng ENFORCE_HOLD).
 
 Chạy qua HTTP với TestClient; LLM giả, embedding lấy từ embeddings_seed.npz (không gọi mạng).
 """
@@ -245,3 +246,118 @@ def test_final_never_below_partner(tmp_path, monkeypatch):
         assert c.post("/v1/demo/reset", headers=h).status_code == 200
         ev = c.post("/v1/gateway/evaluate-transfer", headers=h, json=risky).json()
         assert ev["status"] == "FINAL" and ev["decision"] == ev["baseline"]["as_final"] == "HOLD_15M", ev
+
+
+# ------------------------------------------------------------------ INV-05 (ảnh không ghi đĩa)
+
+
+def test_image_not_persisted(tmp_path, monkeypatch):
+    """Ảnh gửi kèm chỉ ở trong bộ nhớ: không mở file nào để ghi, không nằm trong DB hay response."""
+    import base64
+    import builtins
+    import io
+    import os
+
+    marker = base64.b64encode(b"\x89PNG-ANH-TONG-HOP-" + os.urandom(16)).decode()
+    seen_images: list[bytes | None] = []
+
+    class SpyLLM(FakeLLM):
+        async def generate_json(self, prompt, schema, **kw):
+            seen_images.append(kw.get("image"))
+            return await super().generate_json(prompt, schema, **kw)
+
+    writes: list[str] = []
+    real_open, real_io_open = builtins.open, io.open
+
+    def spy_open(file, mode="r", *a, **kw):
+        if any(ch in mode for ch in "wax+"):
+            writes.append(str(file))
+        return real_open(file, mode, *a, **kw)
+
+    with make_client(tmp_path, monkeypatch) as c:
+        llm_client.set_llm(SpyLLM(HKD_ANALYSIS))
+        h = login(c)
+        monkeypatch.setattr(builtins, "open", spy_open)
+        monkeypatch.setattr(io, "open", spy_open)
+        r = c.post("/v1/incidents/analyze", headers=h, json={
+            "text": LAN_CHAT, "image_base64": marker, "consent_handoff": True})
+        monkeypatch.setattr(builtins, "open", real_open)
+        monkeypatch.setattr(io, "open", real_io_open)
+        assert r.status_code == 200, r.text
+        assert seen_images and seen_images[0] == base64.b64decode(marker)      # ảnh có tới LLM
+        assert marker not in r.text
+        inc_id = r.json()["incident_id"]
+        assert marker not in c.get(f"/v1/fraudops/incidents/{inc_id}", headers=h).text   # không sang FraudOps
+    assert writes == []
+    assert marker.encode() not in (tmp_path / "t.db").read_bytes()
+
+
+# ------------------------------------------------------------------ INV-11 (kích hoạt hộ chỉ làm an toàn hơn)
+
+
+def _openapi_paths(c) -> dict:
+    return c.get("/openapi.json").json()["paths"]
+
+
+def test_proxy_cannot_downgrade_or_read_balance(tmp_path, monkeypatch):
+    """Người thân: không có đường gỡ/hạ khoanh vùng, response không lộ số dư hay giao dịch."""
+    from app.schemas.incident import AnalyzeRequest
+
+    assert not {"mode", "release", "unlock", "downgrade", "lift_hold"} & set(AnalyzeRequest.model_fields)
+    with make_client(tmp_path, monkeypatch, HKD_ANALYSIS, UNCLEAR_ANALYSIS) as c:
+        h = login(c)
+        # không có endpoint nào để gỡ/hạ tạm giữ bảo vệ (sandbox: chỉ Reset; bản thật: chủ ví qua kênh chính thức)
+        paths = " ".join(_openapi_paths(c))
+        assert not re.search(r"release|unlock|unhold|lift|downgrade|unprotect", paths), paths
+        a = c.post("/v1/incidents/analyze", headers=h, json={
+            "text": LAN_CHAT, "is_proxy": True, "protect_wallet_id": "W-LAN"})
+        assert a.status_code == 200 and a.json()["mode"] == "MANIPULATION"
+        body = json.dumps(a.json(), ensure_ascii=False).lower()
+        assert not re.search(r"balance|so_du|số dư|transactions|tx_id|amount_vnd", body), body
+        f = c.post("/v1/incidents/analyze", headers=h, json={
+            "incident_id": a.json()["incident_id"], "is_proxy": True, "followup_text": "Mẹ bảo không sao rồi"}).json()
+        assert f["mode"] == "MANIPULATION" and f["protective_hold"]["mode"] == "MANIPULATION"
+        ev = c.post("/v1/gateway/evaluate-transfer", headers=h, json={
+            "wallet_id": "W-LAN", "to_account_id": "ACC-NEW-01", "amount_vnd": 1_800_000,
+            "transfer_note": "phi xac minh"}).json()
+        assert SEVERITY[ev.get("decision") or "HOLD_UNTIL_VERIFIED"] >= SEVERITY["HOLD_UNTIL_VERIFIED"], ev
+
+
+def test_proxy_hold_visible_to_owner(tmp_path, monkeypatch):
+    """Chủ ví luôn thấy tạm giữ do người thân yêu cầu (thông báo trên ví)."""
+    with make_client(tmp_path, monkeypatch, HKD_ANALYSIS) as c:
+        h = login(c)
+        lan = lambda: next(w for w in c.get("/v1/wallets", headers=h).json()["wallets"] if w["id"] == "W-LAN")  # noqa: E731
+        assert not lan()["protective_hold_notice"]
+        c.post("/v1/incidents/analyze", headers=h, json={"text": LAN_CHAT, "is_proxy": True, "protect_wallet_id": "W-LAN"})
+        assert "Người thân đã yêu cầu" in lan()["protective_hold_notice"]
+
+
+# ------------------------------------------------------------------ INV-16 (cổng ENFORCE_HOLD)
+
+
+def test_enforce_requires_corroboration_and_ask_only(tmp_path, monkeypatch):
+    """ENFORCE_HOLD: không nhảy thẳng từ SHADOW_LOG (kể cả khi đủ 2 báo cáo); 1 báo cáo thì bị khóa."""
+    with make_client(tmp_path, monkeypatch, HKD_ANALYSIS, LLMRateLimited("429"),
+                     HKD_ANALYSIS, HKD_ANALYSIS, LLMRateLimited("429")) as c:
+        h = login(c)
+        # (a) 1 báo cáo: ASK_ONLY được, ENFORCE_HOLD bị khóa
+        rid = live_rule(c, h)
+        r = c.post(f"/v1/fraudops/rules/{rid}/approve", headers=h, json={"stage": "ENFORCE_HOLD"})
+        assert r.status_code == 409 and r.json()["error"]["code"] == "CORROBORATION_REQUIRED"
+
+        # (b) 2 báo cáo độc lập (2 ví khác nhau) → corroboration 2
+        for w in ("W-LAN", "W-HUNG"):
+            inc = c.post("/v1/incidents/analyze", headers=h, json={
+                "text": LAN_CHAT, "consent_handoff": True, "protect_wallet_id": w}).json()
+        rid2 = c.post("/v1/fraudops/rules/compile", headers=h, json={"incident_id": inc["incident_id"]}).json()["rule_id"]
+        reg = c.post(f"/v1/fraudops/rules/{rid2}/regression-test", headers=h).json()
+        extra = {"override_reason": "Test bất biến: chấp nhận khớp nhầm đã biết"} if reg["benign_flagged"] else {}
+        r = c.post(f"/v1/fraudops/rules/{rid2}/approve", headers=h, json={"stage": "ENFORCE_HOLD", **extra})
+        assert r.status_code == 409 and r.json()["error"]["code"] == "INVALID_STAGE_TRANSITION"   # chưa qua ASK_ONLY
+        assert c.post(f"/v1/fraudops/rules/{rid2}/approve", headers=h,
+                      json={"stage": "ASK_ONLY", **extra}).status_code == 200
+        r = c.post(f"/v1/fraudops/rules/{rid2}/approve", headers=h, json={"stage": "ENFORCE_HOLD", **extra})
+        assert r.status_code == 200, r.text
+        assert r.json()["rule"]["stage"] == "ENFORCE_HOLD"
+        assert r.json()["rule"]["rule"]["lifecycle"]["corroboration_count"] >= 2
