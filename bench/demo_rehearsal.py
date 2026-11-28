@@ -114,8 +114,8 @@ class Rehearsal:
         if reg["benign_flagged"]:
             self.check("FraudOps · Approve bị khóa", bool(r and r.get("error", {}).get("code") == "APPROVE_LOCKED"),
                        str(r and r.get("error", {}).get("code")))
-            # chuyên viên xóa anchor gây nhầm rồi chạy lại (mỗi mẫu sạch chỉ quy về anchor có cosine cao nhất,
-            # nên có thể cần thêm vòng); không bao giờ xóa hết anchor
+            # chuyên viên xóa mọi anchor được tô đậm rồi chạy lại (thường một vòng là đủ; vòng lặp để phòng
+            # trường hợp anchor sau khi sửa lại khớp mẫu khác); không bao giờ xóa hết anchor
             draft, removed_all = comp["draft"], []
             for round_ in range(1, 4):
                 bad = set(reg["flags_by_anchor"])

@@ -1,7 +1,6 @@
 import asyncio
 import re
 
-import pytest
 
 from app.core.assembler import assemble_rule
 from app.core.layer1 import semantic_phrases
