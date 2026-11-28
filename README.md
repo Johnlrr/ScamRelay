@@ -181,7 +181,8 @@ Một lượt thử với LLM thật (`bench/results/injection_probe_20261128.md
 - **Khoản nhỏ hơn 200.000đ** không bị hỏi (điều kiện sàn).
 - **Ngưỡng hiệu chỉnh trên tập dev nhỏ** (12 ca), và cosine thay đổi theo từng lần biên dịch. Kiểm thử hồi quy cùng chuyên viên là lớp bảo vệ bắt buộc, không phải tùy chọn.
 - **Số liệu đo trên sandbox và dữ liệu tổng hợp:** chứng minh cơ chế, không đại diện cho tỷ lệ ngoài thực tế.
-- **Gói miễn phí của Gemini:** quota embedding chạm 429 sau khoảng 100–150 câu mỗi phút (đo đêm 27/11).
+- **Gói miễn phí của Gemini:** quota embedding chạm 429 sau khoảng 100–150 câu mỗi phút (đo đêm 27/11). Hết quota thì hệ thống chạy ở chế độ dự phòng và gắn `degraded`.
+- **Quyền riêng tư:** bản deploy dùng gói miễn phí của Gemini, nên Google có thể dùng nội dung gửi lên để cải thiện sản phẩm. Trang `/help` báo rõ điều này trước khi gửi và nhắc che thông tin cá nhân; server vẫn tự che SĐT, OTP, số tài khoản, CCCD trước khi gọi Gemini. Chỉ dùng dữ liệu tổng hợp khi thử.
 
 ### Tái lập
 

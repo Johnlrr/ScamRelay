@@ -768,9 +768,10 @@ as_final = PARTNER_MAP[decision]        # WARN → HOLD_15M, mô phỏng "khoả
 
 **Quyền riêng tư khi dùng Gemini**
 - Với gói miễn phí, Google được dùng nội dung gửi lên để cải thiện sản phẩm, và có thể có người đọc duyệt. Mà `/help` là luồng cho người dùng thật dán đoạn chat thật.
-- Cần chọn một trong hai cách, **bao chốt trước khi deploy public ngày 28/11**:
-  - (Khuyến nghị) Bật billing cho project deploy (Tier 1) và đặt budget alert.
-  - Hoặc giữ gói miễn phí, và `/help` hiện thông báo rõ trước khi gửi: *"Nội dung sẽ được xử lý bởi Google Gemini; vui lòng che thông tin cá nhân"*. README và slide ghi đúng như vậy.
+- **bao chốt 28/11: giữ gói miễn phí.** Hệ quả bắt buộc:
+  - `/help` hiện thông báo rõ **trước khi gửi**: *"Nội dung sẽ được xử lý bởi Google Gemini; vui lòng che thông tin cá nhân"*. README và slide ghi đúng như vậy.
+  - Key Gemini của bản deploy lấy từ project **không** gắn billing (gắn billing là thành gói trả phí). Cloud Run vẫn cần billing nhưng nằm ở project khác.
+  - Không xoay vòng nhiều key hay nhiều project để cộng dồn quota: quota tính theo project, và điều khoản Google APIs không cho lách giới hạn sử dụng. Hết quota thì đi đường dự phòng (`degraded`).
 - Lớp che PII bằng regex luôn chạy, dù chọn cách nào. Chân trang `/help` có dòng: dành cho người dùng từ 18 tuổi.
 
 **Workspace và Reset**
@@ -987,7 +988,7 @@ engine = create_engine(
   1. Cache embedding trong DB và seed sẵn.
   2. Gửi anchor theo lô.
   3. Dùng **project riêng** cho bench và calibrate.
-  4. Bật billing cho project deploy (§10).
+  4. Rate limit theo phiên và IP (§10), cùng đường dự phòng khi 429. Không bật billing cho project Gemini của bản deploy (bao chốt 28/11, §10).
 
 ### 14.7 Vận hành tới 11/12
 
