@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "note": "Hợp đồng SPEC §5.2. Chỉ được THÊM id; không đổi hay xóa id cũ. Dữ liệu tổng hợp, không có tài khoản thật.",
+  "wallets": [
+    {
+      "id": "W-LAN",
+      "label": "Ví cô Lan",
+      "owner_name": "Cô Lan (tiệm tạp hóa)",
+      "balance_vnd": 6000000,
+      "known_contacts": ["ACC-TUAN"]
+    },
+    {
+      "id": "W-HUNG",
+      "label": "Ví chú Hùng",
+      "owner_name": "Chú Hùng (tiệm sửa xe)",
+      "balance_vnd": 8000000,
+      "known_contacts": ["ACC-LANDLORD", "ACC-SUPPLIER"]
+    }
+  ],
+  "accounts": [
+    { "id": "ACC-EVN", "display_name": "Điện lực", "age_days": 3000, "is_verified_biller": true },
+    { "id": "ACC-WATER", "display_name": "Cấp nước", "age_days": 3000, "is_verified_biller": true },
+    { "id": "ACC-TAX-GOV", "display_name": "Nộp thuế điện tử (kênh chính thức)", "age_days": 3000, "is_verified_biller": true },
+    { "id": "ACC-TUAN", "display_name": "Tuấn (con trai cô Lan)", "age_days": 1500, "is_verified_biller": false },
+    { "id": "ACC-LANDLORD", "display_name": "Chủ nhà của chú Hùng", "age_days": 1200, "is_verified_biller": false },
+    { "id": "ACC-SUPPLIER", "display_name": "Đại lý phụ tùng", "age_days": 900, "is_verified_biller": false },
+    { "id": "ACC-SHOP", "display_name": "Shop online quen", "age_days": 700, "is_verified_biller": false },
+    { "id": "ACC-OLD-7731", "display_name": "Tài khoản cá nhân …7731", "age_days": 420, "is_verified_biller": false },
+    { "id": "ACC-OLD-5520", "display_name": "Tài khoản cá nhân …5520", "age_days": 380, "is_verified_biller": false },
+    { "id": "ACC-NEW-01", "display_name": "Tài khoản cá nhân mới mở …01", "age_days": 2, "is_verified_biller": false },
+    { "id": "ACC-NEW-02", "display_name": "Tài khoản cá nhân mới mở …02", "age_days": 5, "is_verified_biller": false },
+    { "id": "ACC-NEW-03", "display_name": "Tài khoản cá nhân mới mở …03", "age_days": 12, "is_verified_biller": false }
+  ]
+}
