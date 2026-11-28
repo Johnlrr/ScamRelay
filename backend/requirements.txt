@@ -1,0 +1,11 @@
+# Runtime (một image, python:3.12-slim). Không thêm thư viện ML nặng (AGENTS.md §3).
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+sqlmodel>=0.0.22
+psycopg[binary]>=3.2
+numpy>=1.26
+google-genai>=1.0
+pyjwt>=2.9
+slowapi>=0.1.9
+httpx>=0.27
