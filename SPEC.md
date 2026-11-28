@@ -45,7 +45,7 @@
 | D10 | **Gateway không gọi LLM.** Mỗi giao dịch chỉ tốn tối đa 1 lần embed, có cache | Latency và quota ổn định khi giám khảo dùng |
 
 **Đã chốt (27/11):**
-1. **LLM:** `gemini-3.5-flash-lite` (bao chốt 28/11: đêm 27/11 các bản Flash thường 503/timeout, `gemini-2.5-flash` không còn mở cho người dùng mới; flash-lite phản hồi ~4–5 giây/lượt compile). Bản ổn định, có structured output; không dùng bản preview hoặc experimental. Gọi qua lớp `LLMClient`; đổi model thì chạy lại `compile_dev` → `calibrate` → `save_fallback`.
+1. **LLM:** `gemini-3.5-flash-lite` (bao chốt 28/11: đêm 27/11 các bản Flash thường 503/timeout, `gemini-2.5-flash` không còn mở cho người dùng mới; flash-lite: compile P50 2,90 giây, analyze P50 1,32 giây trên 12 ca dev, `bench/results/latency_20261128T0044Z.md`). Bản ổn định, có structured output; không dùng bản preview hoặc experimental. Gọi qua lớp `LLMClient`; đổi model thì chạy lại `compile_dev` → `calibrate` → `save_fallback`.
 2. **Embedding:** `gemini-embedding-001`, dùng chung API key.
 3. **Hosting:** Cloud Run (`asia-southeast1`) + Neon Postgres (Singapore). CI chỉ chạy `pytest`; deploy tay bằng `scripts/deploy.sh`.
 
