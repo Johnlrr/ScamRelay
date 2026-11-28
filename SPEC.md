@@ -599,6 +599,7 @@ Mọi tín hiệu trong `DerivedTx` đều **do server tự suy ra** từ sổ v
 **h) Bảng theo dõi luật (có thể có, chỉ làm nếu 30/11 còn dư giờ)**
 - `GET /v1/fraudops/rules/{id}/stats` trả về: `asked`, `answered` (`TACTIC_MATCH` / `BENIGN` / `UNCLEAR`), `shadow_hits`, `fp_reports`, `last_hit_at`.
 - `suggest_upgrade = (answered.TACTIC_MATCH ≥ 2 và stage == ASK_ONLY)`. Đây chỉ là gợi ý cho chuyên viên, **không tự nâng giai đoạn**.
+- Đã làm 28/11 (bao): `core/stats.py` đếm từ `rule_event` (`CHALLENGE_ISSUED`, `ANSWERED`, `SHADOW_HIT`, `FP_REPORTED`); response `RuleStats` (thêm `stage`, `suggest_upgrade_reason_vi`). `feedback` chưa làm (PLAN §7 H7).
 - `POST /v1/gateway/feedback` (body `{tx_id, kind: "FALSE_POSITIVE", note?}`) do nút "Báo nhầm" trên màn kết quả gọi, ghi `rule_event FP_REPORTED`.
 
 ### 7.3 Luồng 3: Chặn đúng (`POST /v1/gateway/evaluate-transfer`)

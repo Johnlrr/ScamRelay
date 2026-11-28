@@ -13,6 +13,7 @@ from sqlmodel import Session, select
 from app import config
 from app.ai.interfaces import assemble_rule, compile_rule, run_regression, validate_llm_output
 from app.core.assembler import AssembleError
+from app.core.stats import RuleStats, rule_stats
 from app.core.gateway import anchors_for, expire_rules_lazily, log_event, rule_of
 from app.db import get_session
 from app.models import Incident, RelayRuleRow, new_id, utcnow
@@ -220,6 +221,15 @@ def get_rule(rule_id: str, p: Principal = Depends(require_judge), s: Session = D
     row = _row(s, p, rule_id)
     s.commit()
     return rule_view(row)
+
+
+@router.get("/rules/{rule_id}/stats", response_model=RuleStats, summary="Bảng theo dõi luật (có thể có)",
+            description="Số lần hỏi, số lần người dùng tự chọn từng nhãn ý nghĩa, số lần khớp khi còn SHADOW_LOG, "
+                        "số báo nhầm. `suggest_upgrade` chỉ là gợi ý cho chuyên viên, **không tự nâng giai đoạn**.")
+def get_rule_stats(rule_id: str, p: Principal = Depends(require_judge), s: Session = Depends(get_session)) -> RuleStats:
+    row = _row(s, p, rule_id)
+    s.commit()
+    return rule_stats(s, row)
 
 
 @router.put("/rules/{rule_id}/draft", response_model=RuleView, summary="Chuyên viên sửa bản nháp",
