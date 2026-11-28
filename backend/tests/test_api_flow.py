@@ -10,11 +10,13 @@ import copy
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session, select
 
 from app import config, db
 from app.ai import llm_client
 from app.ai.llm_client import LLMRateLimited
 from app.core import gateway as core_gateway
+from app.models import RuleEvent, Transaction
 from tests._fixtures import HKD_ANALYSIS, FakeLLM
 
 HUNG_TX = {"wallet_id": "W-HUNG", "to_account_id": "ACC-OLD-7731", "amount_vnd": 1_200_000,
@@ -280,3 +282,33 @@ def test_healthz_reads_multi_key_env(client, monkeypatch):
     assert client.get("/healthz").json()["gemini_configured"] is False
     monkeypatch.setenv("GEMINI_API_KEYS", "fake-a,fake-b")
     assert client.get("/healthz").json()["gemini_configured"] is True
+
+
+def test_feedback_false_positive(client):
+    """Báo nhầm: ghi FP_REPORTED một lần/giao dịch, che PII, không đổi quyết định (SPEC §11, PLAN H7)."""
+    c = client
+    h = login(c)
+    _, rid = build_live_rule(c, h)
+    ev = c.post("/v1/gateway/evaluate-transfer", headers=h, json=HUNG_TX).json()
+    assert ev["status"] == "CHALLENGE_JIT"
+    sub = c.post("/v1/gateway/submit-challenge", headers=h, json={
+        "challenge_id": ev["challenge"]["challenge_id"], "option_id": tactic_option(c, h, rid)}).json()
+
+    body = {"tx_id": ev["tx_id"], "kind": "FALSE_POSITIVE", "note": "toi chuyen that, goi 0912345678"}
+    r = c.post("/v1/gateway/feedback", headers=h, json=body)
+    assert r.status_code == 200 and r.json()["recorded"] is True and r.json()["rule_id"] == rid
+    assert c.post("/v1/gateway/feedback", headers=h, json=body).json()["recorded"] is False   # không đếm 2 lần
+    assert c.get(f"/v1/fraudops/rules/{rid}/stats", headers=h).json()["fp_reports"] == 1
+
+    with Session(db.get_engine()) as s:
+        ev_row = s.exec(select(RuleEvent).where(RuleEvent.event == "FP_REPORTED")).one()
+        tx = s.get(Transaction, ev["tx_id"])
+    assert "0912345678" not in str(ev_row.payload)
+    assert tx.decision == sub["decision"]                                                      # quyết định giữ nguyên
+
+    # giao dịch không khớp luật / của workspace khác
+    ok = c.post("/v1/gateway/evaluate-transfer", headers=h, json={
+        "wallet_id": "W-LAN", "to_account_id": "ACC-TUAN", "amount_vnd": 100_000, "transfer_note": "an trua"}).json()
+    assert c.post("/v1/gateway/feedback", headers=h, json={"tx_id": ok["tx_id"]}).json()["error"]["code"] == "NO_RULE_MATCHED"
+    h2 = login(c, "judge_02", "pw2")
+    assert c.post("/v1/gateway/feedback", headers=h2, json=body).status_code == 404
