@@ -9,7 +9,8 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from app.core._contract_draft import PARTNER_WARN_SCORE, BaselineResult, DerivedTx
+from app.config import PARTNER_WARN_SCORE
+from app.schemas.gateway import BaselineResult, DerivedTx
 from app.core.preprocess import norm_match
 
 KEYWORDS_PATH = Path(__file__).resolve().parents[2] / "data" / "static_scam_keywords.json"

@@ -9,11 +9,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from app.core._contract_draft import (
-    ANTI_COACHING_NOTICE_VI,
-    DEFAULT_RULE_TTL_HOURS,
-    MIN_ASK_AMOUNT_VND,
-    SEMANTIC_THRESHOLD,
+from app.config import ANTI_COACHING_NOTICE_VI, DEFAULT_RULE_TTL_HOURS, MIN_ASK_AMOUNT_VND, SEMANTIC_THRESHOLD
+from app.schemas.rule import (
     Approval,
     Condition,
     JitQuestion,

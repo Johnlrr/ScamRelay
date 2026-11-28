@@ -10,7 +10,8 @@ import numpy as np
 from app.ai import llm_client
 from app.ai.incident_ai import analyze_incident
 from app.ai.llm_client import LLMError
-from app.core._contract_draft import SEMANTIC_THRESHOLD, AnchorSet
+from app.config import SEMANTIC_THRESHOLD
+from app.schemas.rule import AnchorSet
 from app.core.assembler import assemble_rule
 from app.core.layer1 import layer1_match, semantic_phrases
 from app.core.preprocess import mask_pii

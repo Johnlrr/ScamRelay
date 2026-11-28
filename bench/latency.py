@@ -20,7 +20,8 @@ import _common
 
 from app.ai import incident_ai, llm_client, rule_ai
 from app.ai.llm_client import LLMError
-from app.core._contract_draft import IncidentAnalysisLLM, RelayRuleDraftLLM
+from app.schemas.llm_incident import IncidentAnalysisLLM
+from app.schemas.llm_rule import RelayRuleDraftLLM
 from app.core.preprocess import mask_pii
 
 PAUSE_S = 4

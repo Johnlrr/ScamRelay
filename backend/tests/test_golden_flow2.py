@@ -13,7 +13,7 @@ from app.ai import llm_client
 from app.ai.incident_ai import analyze_incident
 from app.ai.llm_client import LLMRateLimited
 from app.ai.rule_ai import compile_rule
-from app.core._contract_draft import SEMANTIC_THRESHOLD
+from app.config import SEMANTIC_THRESHOLD
 from app.core.assembler import assemble_rule, rule_to_draft
 from app.core.baseline import baseline_score
 from app.core.layer1 import layer1_match, semantic_phrases

@@ -19,8 +19,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-# TODO(contract-drop): đổi sang `from app.schemas.rule import ...` rồi xóa _contract_draft.py
-from app.core._contract_draft import Condition, RelayRuleDraft, ValidationResult
+from app.schemas.rule import Condition, RelayRuleDraft, ValidationResult
 from app.core.preprocess import _PHONE, norm, norm_match
 
 # ---------------------------------------------------------------- hằng số

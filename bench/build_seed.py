@@ -17,7 +17,7 @@ import numpy as np
 
 import _common
 
-from app.core._contract_draft import EMBED_DIM, EMBED_MODEL
+from app.config import EMBED_DIM, EMBED_MODEL
 from app.core.preprocess import norm_match
 from app.core.regression import load_benign_corpus
 from app.core.semantic import GeminiEmbedder, NpzEmbeddingCache, SemanticMatcher, cache_key

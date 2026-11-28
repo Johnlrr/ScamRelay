@@ -17,7 +17,7 @@ import sys
 
 import _common  # noqa: F401  (sys.path + .env)
 
-from app.core._contract_draft import SEMANTIC_THRESHOLD
+from app.config import SEMANTIC_THRESHOLD
 from app.core.preprocess import norm, norm_match
 from app.core.semantic import GeminiEmbedder, NpzEmbeddingCache, SemanticMatcher, best_cosine, best_trigram
 

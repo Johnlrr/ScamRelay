@@ -6,7 +6,7 @@ from app.ai import incident_ai, llm_client, rule_ai
 from app.ai.incident_ai import analyze_incident, keyword_fallback, merge_analysis
 from app.ai.llm_client import LLMError, LLMRateLimited
 from app.ai.rule_ai import CompileUnavailable, compile_rule
-from app.core._contract_draft import IncidentAnalysis
+from app.schemas.incident import IncidentAnalysis
 from tests._fixtures import HKD_ANALYSIS, VALID_DRAFT, FakeLLM
 
 

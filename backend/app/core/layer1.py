@@ -15,7 +15,9 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from app.core._contract_draft import TRIGRAM_THRESHOLD, AnchorSet, Condition, DerivedTx, RelayRule
+from app.config import TRIGRAM_THRESHOLD
+from app.schemas.gateway import DerivedTx
+from app.schemas.rule import AnchorSet, Condition, RelayRule
 from app.core.preprocess import norm_match
 from app.core.semantic import MIN_NOTE_LEN, best_cosine, best_trigram
 

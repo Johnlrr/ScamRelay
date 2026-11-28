@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 
 import _common
 
-from app.core._contract_draft import DerivedTx
+from app.schemas.gateway import DerivedTx
 from app.core.assembler import assemble_rule
 from app.core.layer1 import layer1_explain, semantic_phrases
 from app.core.preprocess import norm_match

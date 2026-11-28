@@ -19,7 +19,9 @@ from string import Template
 
 from app.ai.incident_ai import load_fallback_tactics
 from app.ai.llm_client import LLMError, get_llm
-from app.core._contract_draft import CompileResult, IncidentAnalysis, RelayRuleDraftLLM
+from app.schemas.incident import IncidentAnalysis
+from app.schemas.llm_rule import RelayRuleDraftLLM
+from app.schemas.rule import CompileResult
 
 PROMPT_VERSION = "rule_compile.v3"
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"

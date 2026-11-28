@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel
 
-from app.core._contract_draft import LLM_MODEL
+from app.config import LLM_MODEL
 
 
 class LLMError(RuntimeError):

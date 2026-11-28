@@ -16,7 +16,8 @@ from pathlib import Path
 
 import numpy as np
 
-from app.core._contract_draft import AnchorSet, DerivedTx, FlaggedExample, RegressionResult, RelayRule
+from app.schemas.gateway import DerivedTx
+from app.schemas.rule import AnchorSet, FlaggedExample, RegressionResult, RelayRule
 from app.core.layer1 import layer1_explain
 from app.core.preprocess import norm_match
 from app.core.semantic import SemanticMatcher, get_matcher

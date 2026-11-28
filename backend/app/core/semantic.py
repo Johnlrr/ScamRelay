@@ -20,7 +20,8 @@ from typing import Protocol
 
 import numpy as np
 
-from app.core._contract_draft import EMBED_DIM, EMBED_MODEL, AnchorSet
+from app.config import EMBED_DIM, EMBED_MODEL
+from app.schemas.rule import AnchorSet
 from app.core.preprocess import norm_match
 
 EMBED_BATCH = 100          # SPEC §8.2: 50–100 câu/request

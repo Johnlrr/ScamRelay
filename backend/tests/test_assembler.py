@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from app.core._contract_draft import ANTI_COACHING_NOTICE_VI, MIN_ASK_AMOUNT_VND, SEMANTIC_THRESHOLD, RelayRuleDraft
+from app.config import ANTI_COACHING_NOTICE_VI, MIN_ASK_AMOUNT_VND, SEMANTIC_THRESHOLD
+from app.schemas.rule import RelayRuleDraft
 from app.core.assembler import AssembleError, assemble_rule, rule_to_draft
 from app.core.validator import validate_llm_output
 from tests._fixtures import draft_dict

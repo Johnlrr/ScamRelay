@@ -19,7 +19,8 @@ from string import Template
 from pydantic import ValidationError
 
 from app.ai.llm_client import LLMError, get_llm
-from app.core._contract_draft import AnalyzeResult, Fact, IncidentAnalysis, IncidentAnalysisLLM
+from app.schemas.incident import AnalyzeResult, Fact, IncidentAnalysis
+from app.schemas.llm_incident import IncidentAnalysisLLM
 from app.core.preprocess import norm_match
 
 PROMPT_VERSION = "incident_extract.v2"

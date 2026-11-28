@@ -2,7 +2,7 @@
 
 import copy
 
-from app.core._contract_draft import DerivedTx
+from app.schemas.gateway import DerivedTx
 from app.core.preprocess import norm_match
 
 HKD_ANCHORS = [

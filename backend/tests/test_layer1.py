@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from app.core._contract_draft import AnchorSet
+from app.schemas.rule import AnchorSet
 from app.core.assembler import assemble_rule
 from app.core.layer1 import layer1_explain, layer1_match, semantic_phrases
 from app.core.validator import validate_llm_output
