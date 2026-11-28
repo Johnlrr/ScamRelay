@@ -1,0 +1,538 @@
+{
+ "set": "dev",
+ "mode": "auto",
+ "generated_at": "20261128T1019Z",
+ "metrics": {
+  "unsafe_allow_rate": {
+   "scamrelay": "2/10 (20.0%)",
+   "baseline": "7/10 (70.0%)"
+  },
+  "scam_decision_breakdown": {
+   "scamrelay": {
+    "STOP_AND_EXPLAIN": 6,
+    "BLOCK": 1,
+    "ALLOW_WITH_WARNING": 1,
+    "HOLD_15M": 1,
+    "ALLOW": 1
+   },
+   "baseline": {
+    "ALLOW": 7,
+    "BLOCK": 1,
+    "HOLD_15M": 2
+   }
+  },
+  "legitimate_allow_rate": "10/11 (90.9%)",
+  "friction_rate": "0/11 (0.0%)",
+  "variant_trigger_rate": "8/9 (88.9%)",
+  "stopped_by_category": {
+   "COACHED": "1/2 (50.0%)",
+   "EMPTY_NOTE": "0/1 (0.0%)"
+  },
+  "ai_seconds": {
+   "n": 12,
+   "p50": 5.39,
+   "p95": 8.69
+  },
+  "cases_with_error": [],
+  "tx_errors": 0,
+  "overrides_used": [
+   "D-01",
+   "D-02",
+   "D-03",
+   "D-04",
+   "D-07",
+   "D-08",
+   "D-09",
+   "D-10",
+   "D-12"
+  ]
+ },
+ "cases": [
+  {
+   "case_id": "D-01",
+   "category": "VARIANT_NEW_TACTIC",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-21802AB68545",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 7.4,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-01",
+     "tx_id": "D-01-1",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-21802AB68545",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Đóng phí để cơ quan hoặc tổ chức xử lý hồ sơ, tài khoản",
+     "error": null
+    },
+    {
+     "case_id": "D-01",
+     "tx_id": "D-01-2",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-02",
+   "category": "VARIANT_NEW_TACTIC",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-55F50EB35D88",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 8.69,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-02",
+     "tx_id": "D-02-1",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-55F50EB35D88",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Nộp các khoản phí yêu cầu để cơ quan hoặc tổ chức xử lý, kích hoạt tài liệu",
+     "error": null
+    },
+    {
+     "case_id": "D-02",
+     "tx_id": "D-02-2",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-03",
+   "category": "VARIANT_NEW_TACTIC",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-46EC36FB33B6",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 7.0,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-03",
+     "tx_id": "D-03-1",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-46EC36FB33B6",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Đóng phí trực tuyến để cập nhật hoặc hoàn thiện hồ sơ",
+     "error": null
+    },
+    {
+     "case_id": "D-03",
+     "tx_id": "D-03-2",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-04",
+   "category": "VARIANT_NEW_TACTIC",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-E06D0F2D05D3",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 2,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 4.38,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-04",
+     "tx_id": "D-04-1",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-E06D0F2D05D3",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Đóng phí để cơ quan nhà nước xử lý hoặc điều chỉnh hồ sơ",
+     "error": null
+    },
+    {
+     "case_id": "D-04",
+     "tx_id": "D-04-2",
+     "category": "VARIANT_NEW_TACTIC",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-05",
+   "category": "RECOVERY",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "RECOVERY_FEE_SCAM",
+   "compile_source": "LLM",
+   "rule_id": "RL-6CC25EE7A38C",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 0,
+   "benign_checked": 265,
+   "override_used": false,
+   "ai_seconds": 6.5,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-05",
+     "tx_id": "D-05-1",
+     "category": "RECOVERY",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-6CC25EE7A38C",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Đóng phí để được hỗ trợ thủ tục thu hồi tài sản hoặc xử lý khiếu nại",
+     "error": null
+    },
+    {
+     "case_id": "D-05",
+     "tx_id": "D-05-2",
+     "category": "RECOVERY",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-06",
+   "category": "OTP",
+   "analyze_mode": "COMPROMISE",
+   "tactic_family": "FAKE_SUPPORT_REMOTE_APP",
+   "compile_source": "LLM",
+   "rule_id": "RL-A9D116AD17A6",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 0,
+   "benign_checked": 265,
+   "override_used": false,
+   "ai_seconds": 5.16,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-06",
+     "tx_id": "D-06-1",
+     "category": "OTP",
+     "label": "SCAM",
+     "is_variant": false,
+     "relay_final": "BLOCK",
+     "baseline_final": "BLOCK",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    },
+    {
+     "case_id": "D-06",
+     "tx_id": "D-06-2",
+     "category": "OTP",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "BLOCK",
+     "baseline_final": "BLOCK",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-07",
+   "category": "COACHED",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-5EF35F0E3D6E",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 8.75,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-07",
+     "tx_id": "D-07-1",
+     "category": "COACHED",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "ALLOW_WITH_WARNING",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": "RL-5EF35F0E3D6E",
+     "challenged": true,
+     "chosen_option": "o1",
+     "chosen_label": "Thanh toán mua hàng, dịch vụ hoặc trả tiền hàng hóa",
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-08",
+   "category": "COACHED",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-13502F14F6F2",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 4.71,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-08",
+     "tx_id": "D-08-1",
+     "category": "COACHED",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "HOLD_15M",
+     "baseline_final": "HOLD_15M",
+     "matched_rule_id": "RL-13502F14F6F2",
+     "challenged": true,
+     "chosen_option": "o1",
+     "chosen_label": "Thanh toán mua hàng, dịch vụ hoặc chi phí kinh doanh thông thường",
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-09",
+   "category": "EMPTY_NOTE",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-D6CAEC5164CA",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 2,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 5.63,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-09",
+     "tx_id": "D-09-1",
+     "category": "EMPTY_NOTE",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-10",
+   "category": "LEGIT_HARD",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-25C6A0039812",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 1,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 4.63,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-10",
+     "tx_id": "D-10-1",
+     "category": "LEGIT_HARD",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    },
+    {
+     "case_id": "D-10",
+     "tx_id": "D-10-2",
+     "category": "LEGIT_HARD",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-11",
+   "category": "LEGIT_HARD",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "IMPERSONATE_AUTHORITY",
+   "compile_source": "LLM",
+   "rule_id": "RL-1FD78CA95184",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 0,
+   "benign_checked": 265,
+   "override_used": false,
+   "ai_seconds": 5.04,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-11",
+     "tx_id": "D-11-1",
+     "category": "LEGIT_HARD",
+     "label": "SCAM",
+     "is_variant": true,
+     "relay_final": "STOP_AND_EXPLAIN",
+     "baseline_final": "HOLD_15M",
+     "matched_rule_id": "RL-1FD78CA95184",
+     "challenged": true,
+     "chosen_option": "o3",
+     "chosen_label": "Chuyển tiền theo yêu cầu của cơ quan chức năng để phục vụ điều tra",
+     "error": null
+    },
+    {
+     "case_id": "D-11",
+     "tx_id": "D-11-2",
+     "category": "LEGIT_HARD",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  },
+  {
+   "case_id": "D-12",
+   "category": "LEGIT_HARD",
+   "analyze_mode": "MANIPULATION",
+   "tactic_family": "FAKE_HKD_TAX_VERIFICATION",
+   "compile_source": "LLM",
+   "rule_id": "RL-04C911352C90",
+   "rule_stage": "ASK_ONLY",
+   "benign_flagged": 3,
+   "benign_checked": 265,
+   "override_used": true,
+   "ai_seconds": 3.88,
+   "error": null,
+   "txs": [
+    {
+     "case_id": "D-12",
+     "tx_id": "D-12-1",
+     "category": "LEGIT_HARD",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    },
+    {
+     "case_id": "D-12",
+     "tx_id": "D-12-2",
+     "category": "LEGIT_HARD",
+     "label": "LEGIT",
+     "is_variant": false,
+     "relay_final": "ALLOW",
+     "baseline_final": "ALLOW",
+     "matched_rule_id": null,
+     "challenged": false,
+     "chosen_option": null,
+     "chosen_label": null,
+     "error": null
+    }
+   ]
+  }
+ ]
+}

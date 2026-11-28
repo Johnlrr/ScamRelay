@@ -67,7 +67,7 @@ ScamRelay không dừng ở chatbot tư vấn hay danh sách đen tài khoản. 
 **Trúng trọng tâm "Imagine the Future Workspace".** Nhân vật chính của ScamRelay là **chuyên viên FraudOps và CSKH**. Thay vì đọc hàng chục ảnh chụp rời rạc và viết luật thủ công, họ nhận hồ sơ có cấu trúc. Họ cũng nhận một bản nháp luật mà AI đã kiểm thử sẵn, nên chỉ cần dành thời gian cho việc đòi hỏi phán đoán: sửa, duyệt hoặc thu hồi luật. Người dùng cuối là hai đầu của câu chuyện; màn hình làm việc của chuyên viên là trung tâm.
 
 **Bổ sung đúng mảnh còn thiếu, không làm lại thứ MoMo đã có.**
-- MoMo đã đầu tư vào chấm điểm rủi ro thời gian thực và cho biết đang hợp tác với Bộ Công an dùng AI phát hiện giao dịch bất thường (*cần kiểm chứng và trích nguồn, xem Phụ lục B*).
+- MoMo đã đầu tư vào chấm điểm rủi ro thời gian thực và cho biết đang hợp tác với Bộ Công an (A05) dùng AI phát hiện giao dịch bất thường ([MoMo, 09/07/2026](https://www.momo.vn/tin-tuc/thong-bao/momo-va-bo-cong-an-dong-hop-tac-day-lui-lua-dao-8893); xem Phụ lục B).
 - ScamRelay không làm lại bộ lọc danh sách đen, chatbot chi tiêu hay hệ thống chấm điểm rủi ro.
 - Sản phẩm tập trung vào **tốc độ biến ngữ cảnh của 1 nạn nhân thành câu hỏi phòng vệ đúng lúc cho người tiếp theo**.
 - Điểm rủi ro sẵn có của ví đối tác được đưa vào luật qua trường `partner_risk_score`. Như vậy ScamRelay là lớp ngữ cảnh đặt **bên trên** hệ thống hiện có.
@@ -519,10 +519,35 @@ Cơ cấu gợi ý của tập held-out:
 
 ## Phụ lục B. Việc đội phải tự kiểm chứng trước khi nộp
 
-- [ ] Các tính năng MoMo được nhắc ở mục 2.2: chấm điểm rủi ro thời gian thực, cảnh báo tài khoản nhận, khoảng dừng giao dịch, hạn mức theo ứng dụng liên kết, Bảo hiểm An toàn chuyển tiền và phạm vi áp dụng, hợp tác với Bộ Công an. Đối chiếu với nguồn chính thức của MoMo và ghi nguồn.
-- [ ] Mọi số liệu thống kê lừa đảo (GASA, cơ quan chức năng Việt Nam): mở báo cáo gốc.
-- [ ] Mô tả thủ đoạn "chuẩn hóa tài khoản hộ kinh doanh theo quy định thuế 2026" và "dịch vụ thu hồi tiền": có cảnh báo chính thức nào để trích dẫn không.
-- [ ] Đối chiếu Điều 11–12 thể lệ (công cụ AI, dữ liệu, mã nguồn) và mọi quy định về nhận diện thương hiệu MoMo.
-- [ ] Đối chiếu tiêu chí chấm chính thức của cuộc thi, đảm bảo mỗi tiêu chí có ít nhất 1 slide trả lời trực tiếp.
-- [ ] Câu demo vượt ngưỡng `SEMANTIC_MATCH` sau khi chuẩn hóa.
-- [ ] Cách diễn đạt về dừng hoặc tạm giữ tiền của người dùng: tránh khẳng định pháp lý chưa kiểm chứng.
+*Cập nhật 28/11 (bao): đã mở bản gốc của từng nguồn dưới đây. Số liệu do MoMo tự công bố thì ghi rõ là tự công bố.*
+
+- [x] **Tính năng MoMo ở mục 2.2.** Có nguồn chính thức cho 5/6 ý; chỉ ý "khoảng dừng giao dịch" phải hiểu là "tạm chặn":
+  - **Chấm điểm rủi ro thời gian thực và hợp tác với Bộ Công an:** "AI phân tích và chấm điểm rủi ro theo thời gian thực, phát hiện khoảng 29.000 giao dịch bất thường mỗi ngày"; "phối hợp cùng Cục An ninh mạng và phòng, chống tội phạm sử dụng công nghệ cao (A05) - Bộ Công an". Nguồn: [MoMo, 09/07/2026](https://www.momo.vn/tin-tuc/thong-bao/momo-va-bo-cong-an-dong-hop-tac-day-lui-lua-dao-8893). Số 29.000 là MoMo tự công bố.
+  - **Cảnh báo tài khoản nhận:** nhãn Xanh/Vàng/Đỏ ở màn hình chuyển tiền, có mô hình AI phân tích hành vi. Nguồn: [MoMo, 10/07/2025](https://www.momo.vn/tin-tuc/thong-bao/an-tam-giao-dich-voi-2-tinh-nang-an-toan-bao-mat-7646), lúc đăng ghi là "thử nghiệm"; [blog MoMo, không ghi ngày](https://www.momo.vn/blog/momo-co-an-toan-khong-giai-dap-tu-a-z-thong-tin-c198dt2342).
+  - **"Khoảng dừng giao dịch":** MoMo mô tả là **tạm chặn** giao dịch nghi ngờ trước khi xác nhận, kèm cảnh báo và hướng dẫn gọi tổng đài. Nguồn: [MoMo, 12/05/2026](https://www.momo.vn/tin-tuc/thong-bao/momo-co-chuc-nang-chan-giao-dich-bat-thuong-bao-8059). Trên slide dùng chữ "tạm chặn giao dịch bất thường", không dùng "khoảng dừng".
+  - **Hạn mức theo ứng dụng liên kết:** hạn mức theo giao dịch và theo ngày, đặt trong mục Liên Kết Thanh Toán; vượt hạn mức thì MoMo chặn giao dịch. Nguồn: [MoMo, 09/11/2026](https://www.momo.vn/tin-tuc/thong-bao/dat-han-muc-thanh-toan-cho-tung-ung-dung-khong-so-9112).
+  - **Bảo hiểm An toàn chuyển tiền:**
+    - Áp dụng cho giao dịch 10.000đ–2.000.000đ, phí 1.000đ/giao dịch, bồi thường tối đa 2.000.000đ/giao dịch.
+    - Áp dụng cho chuyển MoMo→MoMo và MoMo→ngân hàng khi mua hàng hoặc thanh toán dịch vụ.
+    - Không áp dụng cho cho vay mượn, trả nợ, tặng cho, góp vốn, đầu tư.
+    - MoMo ghi rõ "Việc mua bảo hiểm không đồng nghĩa với mọi trường hợp bị lừa đảo đều được bồi thường."
+    - Nguồn: [MoMo, 09/11/2026](https://www.momo.vn/tin-tuc/thong-bao/momo-ra-mat-bao-hiem-an-toan-chuyen-tien-boi-9119).
+  - **Lưu ý định vị:** MoMo đã có tạm chặn và cảnh báo tài khoản nhận. ScamRelay không nói MoMo "thiếu" các tính năng này. Điểm khác là mang ngữ cảnh ngoài app của nạn nhân đầu tiên thành luật và câu hỏi cho người tiếp theo.
+- [x] **Số liệu thống kê lừa đảo.**
+  - GASA × Chongluadao ước tính thiệt hại tại Việt Nam là 391,8 nghìn tỷ đồng (16,23 tỷ USD), bằng 3,6% GDP. Có 1.063 người tham gia khảo sát. Nguồn: [GASA, 06/12/2023](https://gasa.org/knowledge-base/reports/state-of-scams-in-vietnam-report-2023).
+  - Các tỷ lệ chi tiết (% mất tiền, % lấy lại được, % không trình báo) chỉ có trong bản đầy đủ dành cho hội viên GASA. Đội chưa đọc được bản này nên **không dùng** các tỷ lệ đó.
+  - Chưa có số liệu của cơ quan chức năng Việt Nam đã đọc bản gốc, nên slide không dùng.
+- [x] **Cảnh báo chính thức cho hai thủ đoạn.**
+  - **Giả danh cán bộ thuế:**
+    - Bối cảnh: chiến dịch "Làm sạch mã số thuế - Tháo gỡ điểm nghẽn trong kinh doanh" theo Quyết định 595/QĐ-CT ngày 8/5/2026 của Cục Thuế. Thuế TP Hà Nội cảnh báo đối tượng giả danh cán bộ thuế liên hệ qua điện thoại, tin nhắn, mạng xã hội. Nguồn: [CafeF theo Hà Nội Mới, 30/07/2026](https://cafef.vn/canh-giac-voi-cac-thu-doan-mao-danh-trong-chien-dich-lam-sach-ma-so-thue-188260730155859222.chn).
+    - Thuế TP Hà Nội: "Cơ quan thuế cũng không yêu cầu người nộp thuế chuyển tiền vào tài khoản cá nhân hoặc tài khoản trung gian". Nguồn: [CafeF theo Đời sống & Pháp luật, 21/08/2026](https://cafef.vn/co-quan-thue-co-thong-bao-quan-trong-den-nguoi-dan-188260821055236969.chn).
+    - Kịch bản "chuẩn hóa tài khoản hộ kinh doanh, đóng phí xác minh" trong demo là **kịch bản tổng hợp dựa trên các cảnh báo này**, không phải một vụ cụ thể. Slide nên ghi đúng như vậy.
+  - **"Dịch vụ thu hồi tiền":**
+    - Cục An ninh mạng và Phòng, chống tội phạm công nghệ cao, Bộ Công an: "Bộ Công an và các đơn vị liên quan không ủy quyền cho bất kỳ đơn vị nào để tiếp nhận hồ sơ". Nguồn: [Nhân Dân, 28/04/2025](https://nhandan.vn/can-trong-bay-thu-hoi-tien-bi-lua-dao-post875719.html).
+    - Công an TP. Đà Nẵng cảnh báo "lừa đảo lần hai" với lời hứa hỗ trợ thu hồi tiền, đòi đóng phí trước. Nguồn: [CafeF theo Thời báo Ngân hàng, 31/08/2026](https://cafef.vn/canh-giac-voi-lua-dao-lan-hai-sau-khi-mat-tien-188260831155826124.chn).
+- [ ] **Điều 11–12 thể lệ** (công cụ AI, dữ liệu, mã nguồn) và quy định về nhận diện thương hiệu MoMo. Thể lệ không có trên web công khai (đã tìm 28/11), nên cần đội đối chiếu với bản thể lệ nhận từ ban tổ chức.
+- [ ] **Tiêu chí chấm chính thức:** cũng không tìm thấy công khai. Đối chiếu với bản của ban tổ chức, đảm bảo mỗi tiêu chí có ít nhất 1 slide trả lời trực tiếp.
+- [x] **Câu demo vượt ngưỡng `SEMANTIC_MATCH` sau khi chuẩn hóa.**
+  - Câu demo vượt 0,90 ở 9/9 luật HKD dev (cosine 0,911–0,951).
+  - Sau khi chuyên viên xóa anchor gây khớp nhầm, câu demo còn khớp ở 3/5 lượt tập dượt live (`bench/results/demo_rehearsal_summary_20261128.md`). **Xem lại cách demo bước sửa luật.**
+- [ ] **Cách diễn đạt về dừng hoặc tạm giữ tiền** của người dùng: tránh khẳng định pháp lý chưa kiểm chứng. ABOUT đã ghi gói hồ sơ "không kết luận quyền bồi thường". Còn phải rà lại slide và video ngày 02/12.
