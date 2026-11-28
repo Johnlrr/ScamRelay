@@ -53,7 +53,8 @@ Câu demo "xac thuc ho so cap nhat thue HKD" vượt 0,90 ở 9/9 luật HKD dev
 
 ## 4. Tập dượt kịch bản demo (`demo_rehearsal_summary_20261128.md`)
 
-- Sau khi chuyên viên xóa hết anchor gây khớp nhầm, chú Hùng vẫn bị hỏi ở **3/5 lượt live**. Trên 9 luật dev chạy offline thì 9/9.
+- Cách sửa đã chốt là **thêm cụm loại trừ**. Sau khi sửa, chú Hùng vẫn bị hỏi ở **5/5 lượt live**; với cách cũ (xóa câu mẫu) là 3/5.
+- Offline trên 9 luật HKD dev: thêm loại trừ giữ câu demo khớp 9/9, xóa câu mẫu 8/9 (`demo_edit_eval_20261128T1034Z.md`).
 - Các bước còn lại PASS ở mọi lượt.
 
 ## 5. Nguồn bên ngoài đã đọc bản gốc

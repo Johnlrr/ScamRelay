@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import _common  # noqa: F401  (đưa backend vào sys.path)
+from _expert import add_exclusions
 from run_bench import Api, ApiError, http_transport
 
 from app.core.preprocess import norm_match
@@ -114,23 +115,26 @@ class Rehearsal:
         if reg["benign_flagged"]:
             self.check("FraudOps · Approve bị khóa", bool(r and r.get("error", {}).get("code") == "APPROVE_LOCKED"),
                        str(r and r.get("error", {}).get("code")))
-            # chuyên viên xóa mọi anchor được tô đậm rồi chạy lại (thường một vòng là đủ; vòng lặp để phòng
-            # trường hợp anchor sau khi sửa lại khớp mẫu khác); không bao giờ xóa hết anchor
-            draft, removed_all = comp["draft"], []
+            # chuyên viên thêm cụm loại trừ cho mẫu sạch bị khớp (cách sửa đã chốt cho demo, bench/_expert.py);
+            # không tìm được cụm phù hợp thì mới xóa câu mẫu được tô đậm
+            draft, changes = comp["draft"], []
             for round_ in range(1, 4):
-                bad = set(reg["flags_by_anchor"])
-                for cond in draft["conditions"]:
-                    if cond.get("op") == "SEMANTIC_MATCH":
-                        keep = [x for x in cond["anchor_phrases"] if norm_match(x) not in bad]
-                        removed_all += [x for x in cond["anchor_phrases"] if norm_match(x) in bad]
-                        cond["anchor_phrases"] = keep or cond["anchor_phrases"]
+                added = add_exclusions(draft, [f["transfer_note"] for f in reg["flagged_examples"]])
+                changes += [f"+loại trừ '{x}'" for x in added]
+                if not added:
+                    bad = set(reg["flags_by_anchor"])
+                    for cond in draft["conditions"]:
+                        if cond.get("op") == "SEMANTIC_MATCH":
+                            keep = [x for x in cond["anchor_phrases"] if norm_match(x) not in bad]
+                            changes += [f"-câu mẫu '{x}'" for x in cond["anchor_phrases"] if norm_match(x) in bad]
+                            cond["anchor_phrases"] = keep or cond["anchor_phrases"]
                 edited = api.call("PUT", f"/v1/fraudops/rules/{rid}/draft", draft)
                 draft = edited["draft"]
                 reg = api.call("POST", f"/v1/fraudops/rules/{rid}/regression-test")
                 if reg["benign_flagged"] == 0:
                     break
-            self.check("FraudOps · xóa anchor gây nhầm, chạy lại", reg["benign_flagged"] == 0,
-                       f"{round_} vòng, xóa {removed_all}; v{edited['version']}: khớp nhầm "
+            self.check("FraudOps · chuyên viên sửa luật, chạy lại", reg["benign_flagged"] == 0,
+                       f"{round_} vòng: {', '.join(changes)}; v{edited['version']}: khớp nhầm "
                        f"{reg['benign_flagged']}/{reg['benign_checked']}, biến thể "
                        f"{reg['variants_triggered']}/{reg['variants_checked']}")
         body = {"stage": "ASK_ONLY", "ttl_hours": 24}
@@ -148,8 +152,7 @@ class Rehearsal:
         ev = self.transfer(**HUNG_TX)
         asked = ev["status"] == "CHALLENGE_JIT"
         if not asked:
-            print("        (chú Hùng không bị hỏi: anchor còn lại sau khi xóa không đủ gần câu demo — chuyên viên nên "
-                  "thêm lại một câu mẫu sát hơn hoặc dùng cụm loại trừ thay vì xóa anchor cốt lõi)")
+            print("        (chú Hùng không bị hỏi: câu mẫu còn lại không đủ gần câu demo)")
         self.check("Hùng sau luật · bị hỏi mục đích", asked and bool(ev["challenge"]["anti_coaching_notice_vi"]),
                    f"{ev['status']}, câu hỏi: {ev['challenge']['question_vi'] if asked else '-'}")
         if asked:

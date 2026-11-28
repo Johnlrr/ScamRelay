@@ -131,7 +131,7 @@ scripts/       deploy.sh, smoke.sh
 | 0,93 | 6/9 | 0/3.191 |
 
 - Biến thể thứ 9 có nội dung chuyển khoản trống, nên không ngưỡng nào bắt được. Đây là giới hạn đã biết.
-- **Vì sao chọn 0,90 mà không chọn 0,93 (0 khớp nhầm):** ở 0,93, câu demo "xac thuc ho so cap nhat thue HKD" chỉ khớp 4/9 lần biên dịch luật HKD trên dev, vì cosine dao động 0,911–0,951 giữa các lần. Ở 0,90 thì khớp 9/9. Số khớp nhầm còn lại (trung bình khoảng 1 mẫu sạch mỗi luật) bị kiểm thử hồi quy bắt và **khóa nút Approve**. Chuyên viên xóa câu mẫu gây khớp nhầm rồi chạy lại. Đây là chỗ con người kiểm soát AI.
+- **Vì sao chọn 0,90 mà không chọn 0,93 (0 khớp nhầm):** ở 0,93, câu demo "xac thuc ho so cap nhat thue HKD" chỉ khớp 4/9 lần biên dịch luật HKD trên dev, vì cosine dao động 0,911–0,951 giữa các lần. Ở 0,90 thì khớp 9/9. Số khớp nhầm còn lại (trung bình khoảng 1 mẫu sạch mỗi luật) bị kiểm thử hồi quy bắt và **khóa nút Approve**. Chuyên viên thêm cụm loại trừ cho khoản hợp lệ bị khớp nhầm (ví dụ "dịch vụ kế toán"), hoặc xóa câu mẫu quá rộng, rồi chạy lại. Đây là chỗ con người kiểm soát AI. Trên 9 luật HKD dev, thêm loại trừ giữ câu demo khớp 9/9, còn xóa câu mẫu chỉ 8/9 (`bench/results/demo_edit_eval_20261128T1034Z.md`).
 - Dự phòng trigram khi API embedding lỗi dùng ngưỡng 0,60, chọn theo cùng quy tắc.
 
 ### Kiểm tra bản nháp (DeterministicValidator)

@@ -89,3 +89,43 @@ def test_demo_flow2_real_output(matcher):
     assert layer1_match(rule2, shop, anchors2, note_vec=run(matcher.note_vector(shop.note_norm))) is None
     tax = make_tx("nop thue mon bai 2026", amount=1_000_000, to_account_id="ACC-TAX-GOV", is_verified_biller=True)
     assert layer1_match(rule2, tax, anchors2, note_vec=None) is None
+
+
+def test_demo_flow2_exclusion_edit(matcher):
+    """Cách sửa đã chốt cho demo (ABOUT §7, 28/11): THÊM CỤM LOẠI TRỪ thay vì xóa câu mẫu cốt lõi.
+
+    Output thật đã lưu: regression bắt khớp nhầm → chuyên viên (mô phỏng bằng bench/_expert.py, không nhìn câu demo)
+    thêm loại trừ → 0 khớp nhầm, biến thể không giảm, chú Hùng vẫn khớp Lớp 1.
+    """
+    import sys
+    from pathlib import Path
+
+    bench = Path(__file__).resolve().parents[2] / "bench"
+    if str(bench) not in sys.path:
+        sys.path.insert(0, str(bench))
+    from _expert import add_exclusions
+
+    a = run(analyze_incident("Cán bộ thuế bảo đóng phí xác minh hộ kinh doanh", None, False, []))
+    c = run(compile_rule(a.analysis))
+    v = validate_llm_output(c.raw)
+    rule = assemble_rule(v.sanitized_draft, rule_id="RL-DEMO", version=1, source_incident_id="INC-LAN", ttl_hours=24)
+    anchors = run(matcher.prepare_anchors(semantic_phrases(rule)))
+    r1 = run(run_regression(rule, anchors, matcher=matcher))
+    assert r1.benign_flagged >= 1
+
+    draft = rule_to_draft(rule).model_dump()
+    n_anchors = len(draft["conditions"][0]["anchor_phrases"])
+    added = add_exclusions(draft, [f.transfer_note for f in r1.flagged_examples])
+    assert added, [f.transfer_note for f in r1.flagged_examples]
+    v2 = validate_llm_output(draft)
+    assert v2.ok, v2.errors
+    rule2 = assemble_rule(v2.sanitized_draft, rule_id="RL-DEMO", version=2, source_incident_id="INC-LAN",
+                          ttl_hours=24, edited_by_human=True)
+    anchors2 = run(matcher.prepare_anchors(semantic_phrases(rule2)))
+    r2 = run(run_regression(rule2, anchors2, matcher=matcher))
+    assert r2.benign_flagged == 0 and r2.variants_triggered == r1.variants_triggered
+    assert len(rule2.observable_signals.conditions[0].anchor_phrases) == n_anchors        # không mất câu mẫu nào
+
+    hung = make_tx(HUNG_NOTE, amount=1_200_000)
+    score = layer1_match(rule2, hung, anchors2, note_vec=run(matcher.note_vector(hung.note_norm)))
+    assert score is not None and score >= SEMANTIC_THRESHOLD

@@ -1,0 +1,425 @@
+[
+ [
+  "D-01",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.943
+    },
+    "rounds": 1,
+    "changes": [
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.943,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.943
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xac minh thong tin ho kinh doanh"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.943,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-02",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 0,
+     "notes": [],
+     "hung": true,
+     "hung_score": 0.911
+    },
+    "rounds": 0,
+    "changes": [],
+    "errors": [],
+    "flagged": 0,
+    "variants": "5/6",
+    "hung": true,
+    "hung_score": 0.911,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 0,
+     "notes": [],
+     "hung": true,
+     "hung_score": 0.911
+    },
+    "rounds": 0,
+    "changes": [],
+    "errors": [],
+    "flagged": 0,
+    "variants": "5/6",
+    "hung": true,
+    "hung_score": 0.911,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-03",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.947
+    },
+    "rounds": 1,
+    "changes": [
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "5/6",
+    "hung": true,
+    "hung_score": 0.947,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.947
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xac minh thue ho kinh doanh",
+     "-nop phi ho tro ho kinh doanh"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "5/6",
+    "hung": true,
+    "hung_score": 0.932,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-04",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 3,
+     "notes": [
+      "phí gia hạn hợp đồng thuê",
+      "đóng học phí lớp kế toán thuế",
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.927
+    },
+    "rounds": 1,
+    "changes": [
+     "+gia han hop dong",
+     "+hoc phi lop ke",
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.927,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 3,
+     "notes": [
+      "phí gia hạn hợp đồng thuê",
+      "đóng học phí lớp kế toán thuế",
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.927
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xu ly ho so thue",
+     "-nop phi ho so thue"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.927,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-07",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.927
+    },
+    "rounds": 1,
+    "changes": [
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.927,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.927
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xac minh ho kinh doanh",
+     "-phi kiem tra ho so kinh doanh",
+     "-phi ho tro dang ky ho kinh doanh",
+     "-chi phi xac thuc thue ho kinh doanh"
+    ],
+    "errors": [
+     "V4: conditions[0]: cần 3–12 anchor khác nhau, đang có 2"
+    ],
+    "flagged": null,
+    "variants": null,
+    "hung": null,
+    "hung_score": null,
+    "degraded": null
+   }
+  }
+ ],
+ [
+  "D-08",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 4,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh",
+      "thanh toan don trung",
+      "thanh toán đơn bia",
+      "thanh toán đơn gạo"
+     ],
+     "hung": true,
+     "hung_score": 0.947
+    },
+    "rounds": 2,
+    "changes": [
+     "+dich vu ke toan",
+     "+toan don trung",
+     "+toan don bia",
+     "-thanh toan tien xac nhan thue"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.947,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 4,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh",
+      "thanh toan don trung",
+      "thanh toán đơn bia",
+      "thanh toán đơn gạo"
+     ],
+     "hung": true,
+     "hung_score": 0.947
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xac minh thue ho kinh doanh",
+     "-thanh toan tien xac nhan thue",
+     "-phi tham dinh ho so thue hkd"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.924,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-09",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.926
+    },
+    "rounds": 1,
+    "changes": [
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.926,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 1,
+     "notes": [
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.926
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi xac minh ho kinh doanh",
+     "-phi cap nhat ho so ho kinh doanh",
+     "-chi phi xac minh thue ho kinh doanh"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.919,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-10",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 0,
+     "notes": [],
+     "hung": true,
+     "hung_score": 0.914
+    },
+    "rounds": 0,
+    "changes": [],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.914,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 0,
+     "notes": [],
+     "hung": true,
+     "hung_score": 0.914
+    },
+    "rounds": 0,
+    "changes": [],
+    "errors": [],
+    "flagged": 0,
+    "variants": "6/6",
+    "hung": true,
+    "hung_score": 0.914,
+    "degraded": false
+   }
+  }
+ ],
+ [
+  "D-12",
+  {
+   "exclude": {
+    "first": {
+     "flagged": 3,
+     "notes": [
+      "đóng học phí lớp kế toán thuế",
+      "phí công chứng hợp đồng",
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.951
+    },
+    "rounds": 1,
+    "changes": [
+     "+hoc phi lop ke",
+     "+cong chung hop",
+     "+dich vu ke toan"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "5/6",
+    "hung": true,
+    "hung_score": 0.951,
+    "degraded": false
+   },
+   "remove": {
+    "first": {
+     "flagged": 3,
+     "notes": [
+      "đóng học phí lớp kế toán thuế",
+      "phí công chứng hợp đồng",
+      "phí dịch vụ kế toán hộ kinh doanh"
+     ],
+     "hung": true,
+     "hung_score": 0.951
+    },
+    "rounds": 1,
+    "changes": [
+     "-phi cap nhat thue ho kinh doanh",
+     "-nop phi ho so thue",
+     "-phi ho so thue"
+    ],
+    "errors": [],
+    "flagged": 0,
+    "variants": "4/6",
+    "hung": true,
+    "hung_score": 0.951,
+    "degraded": false
+   }
+  }
+ ]
+]

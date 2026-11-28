@@ -154,7 +154,7 @@ Trước khi hồ sơ được chuyển sang FraudOps, cô Lan (hoặc Tuấn) t
 **Con người sửa, duyệt và thu hồi**
 
 Đây là khoảnh khắc chứng minh giá trị của con người trong vòng lặp:
-- Chuyên viên **sửa trực tiếp** các câu mẫu, ví dụ xóa một cụm quá rộng khiến giao dịch sạch bị khớp nhầm, rồi chạy lại kiểm thử.
+- Chuyên viên **sửa trực tiếp** luật rồi chạy lại kiểm thử. Ví dụ: thêm **cụm loại trừ** cho một khoản chi hợp lệ bị khớp nhầm ("dịch vụ kế toán"), hoặc xóa một câu mẫu quá rộng.
 - Chuyên viên chọn giai đoạn triển khai và bấm **Approve**.
 - Đồng hồ kích hoạt luật ghi **hai mốc riêng**: thời gian AI biên dịch + kiểm thử, và thời gian con người xem xét.
 - Luôn có nút **Rollback 1 chạm** để tắt luật ngay.
@@ -428,7 +428,7 @@ Cơ cấu gợi ý của tập held-out:
 | **0:00 – 0:15** | **Vấn đề "phút 89":** cô Lan nhận cuộc gọi giả danh cán bộ thuế yêu cầu "chuẩn hóa tài khoản hộ kinh doanh 2026". Mọi thao túng diễn ra ngoài app; khi vào đến ví đã là phút cuối. | Đặt vấn đề trung thực, sát thời sự. |
 | **0:15 – 0:45** | **Khoanh vùng:** Tuấn kích hoạt hộ cho mẹ từ máy khác và dán đoạn chat yêu cầu chuyển 1,8 triệu "phí xác minh". App hiện **3 việc cần làm**, xuất bộ hồ sơ, tạm giữ khoản nghi vấn, nhưng hóa đơn điện 400k vẫn qua. Nhập thêm *"Mẹ lỡ đọc OTP"* → khóa cứng cả hóa đơn điện. | Nhân văn, gọn gàng, chặn có mức độ. |
 | **0:45 – 1:00** | **Chú Hùng, trước khi có luật:** chuyển 1,2 triệu tới một tài khoản không mới, nội dung diễn đạt khác (*"xac thuc ho so cap nhat thue HKD"*). Baseline hành vi thuần → **lọt (`ALLOW`)**. | Mốc so sánh công bằng trên cùng một giao dịch. |
-| **1:00 – 1:55** | **Tiếp sức (FraudOps Workspace):** chị Mai đăng nhập. AI biên dịch `RelayRule`. Kiểm thử hồi quy **bắt được 3 giao dịch sạch bị khớp nhầm** do câu mẫu quá rộng *"cap nhat thong tin tai khoan"*, và nút Approve bị khóa. Chị Mai xóa câu mẫu đó, chạy lại → **0/240 khớp nhầm**, 6/6 biến thể bật câu hỏi. Approve (`ASK_ONLY`) → đồng hồ: *"AI: X giây · Con người xem xét: Y giây"*. | Khoảnh khắc **Future Workspace**: AI làm phần nặng, kiểm thử phát hiện lỗi của AI, con người sửa và chịu trách nhiệm. |
+| **1:00 – 1:55** | **Tiếp sức (FraudOps Workspace):** chị Mai đăng nhập. AI biên dịch `RelayRule`. Kiểm thử hồi quy **bắt được giao dịch sạch bị khớp nhầm**, thường là *"phí dịch vụ kế toán hộ kinh doanh"*, một khoản hộ kinh doanh trả thật. Nút Approve bị khóa. Chị Mai nhận ra đây là chi phí hợp lệ, **thêm cụm loại trừ "dịch vụ kế toán"**, chạy lại → **0/265 khớp nhầm**, biến thể vẫn bật câu hỏi. Approve (`ASK_ONLY`) → đồng hồ: *"AI: X giây · Con người xem xét: Y giây"*. *(Tập dượt live 28/11: mẫu này bị bắt ở 4/5 lượt; sau khi sửa, chú Hùng vẫn bị hỏi ở 5/5 lượt. Lượt nào bắt mẫu khác, ví dụ "học phí lớp kế toán" hay "gia hạn hợp đồng thuê", thì chị Mai làm y như vậy.)* | Khoảnh khắc **Future Workspace**: AI làm phần nặng, kiểm thử phát hiện lỗi của AI, con người sửa và chịu trách nhiệm. |
 | **1:55 – 2:30** | **Chặn đúng, sau khi có luật:** chạy lại đúng giao dịch của chú Hùng (hoặc giám khảo tự gõ biến thể khác, **không cần dán chat**). Câu hỏi mục đích bật lên kèm dòng chống bị dặn trước. Chú Hùng chọn *"Nộp phí… theo yêu cầu người tự xưng cán bộ"* → **giao dịch dừng lại, 0đ rời ví**, kèm giải thích thủ đoạn. Thử giao dịch mua hàng thật → vẫn qua bình thường. | Khoảnh khắc **wow**: không bắt nạn nhân tự nhận bị lừa, không làm phiền người mua thật. |
 | **2:30 – 3:00** | **Bằng chứng và tầm nhìn:** 3 chỉ số đo trên tập held-out (dạng x/n, có cả các ca hệ thống bỏ lọt). Mở nhanh `/docs` để chứng minh khả năng tích hợp liên ví/ngân hàng. Nêu rõ ranh giới của bản sandbox. | Trung thực kỹ thuật, tầm nhìn hệ sinh thái rõ ràng. |
 
@@ -495,6 +495,7 @@ Cơ cấu gợi ý của tập held-out:
 | Vì sao không chặn thẳng luôn? | Tiền là của người dùng. Một báo cáo đơn lẻ chưa đủ để chặn cứng. Dừng mềm kèm giải thích bảo vệ được người dùng mà vẫn tôn trọng quyền của họ. Chỉ khi có nhiều xác nhận độc lập mới tạm giữ đến khi xác minh. |
 | Dữ liệu của cô Lan được lưu bao lâu, ai xem? | Chỉ chia sẻ sau khi đồng ý; chỉ gồm tóm tắt đã che định danh; bản thật xóa theo TTL (sandbox xóa khi Reset); ảnh gốc không rời Privacy Gate. |
 | Làm sao biết tập held-out không bị "học tủ"? | Người viết held-out không tinh chỉnh prompt; người tinh chỉnh không xem tập này và chỉ chỉnh trên tập dev. Held-out chạy đúng một lần sau freeze. Bảng ánh xạ câu trả lời được công bố. |
+| Kẻ gian chèn chữ "kế toán" vào nội dung chuyển khoản để né cụm loại trừ thì sao? | Đúng là né được luật đó. Cụm loại trừ là quyết định có trách nhiệm của chuyên viên: ghi vào log kiểm toán, gỡ hoặc rollback được ngay, và bảng theo dõi luật cho thấy luật bỗng ít khớp. Lớp đối tác vẫn là mức sàn. Còn để luật khóa nhầm người làm ăn thật thì hại lâu dài hơn. |
 | Sau cuộc thi triển khai thật thế nào? | Ví đối tác gọi 2 endpoint gateway; FraudOps dùng workspace; bắt đầu ở `SHADOW_LOG` để đo trên giao dịch thật trước khi hỏi người dùng. |
 
 ---
@@ -549,5 +550,5 @@ Cơ cấu gợi ý của tập held-out:
 - [ ] **Tiêu chí chấm chính thức:** cũng không tìm thấy công khai. Đối chiếu với bản của ban tổ chức, đảm bảo mỗi tiêu chí có ít nhất 1 slide trả lời trực tiếp.
 - [x] **Câu demo vượt ngưỡng `SEMANTIC_MATCH` sau khi chuẩn hóa.**
   - Câu demo vượt 0,90 ở 9/9 luật HKD dev (cosine 0,911–0,951).
-  - Sau khi chuyên viên xóa anchor gây khớp nhầm, câu demo còn khớp ở 3/5 lượt tập dượt live (`bench/results/demo_rehearsal_summary_20261128.md`). **Xem lại cách demo bước sửa luật.**
+  - Bước sửa luật trong demo: nếu xóa câu mẫu gây khớp nhầm thì câu demo chỉ còn khớp ở 3/5 lượt live. **Đã chốt 28/11:** chuyên viên **thêm cụm loại trừ** thay vì xóa câu mẫu. Cách này cho 5/5 lượt live, và offline trên 9 luật dev là 9/9 (`bench/results/demo_rehearsal_summary_20261128.md`, `demo_edit_eval_20261128T1034Z.md`).
 - [ ] **Cách diễn đạt về dừng hoặc tạm giữ tiền** của người dùng: tránh khẳng định pháp lý chưa kiểm chứng. ABOUT đã ghi gói hồ sơ "không kết luận quyền bồi thường". Còn phải rà lại slide và video ngày 02/12.
