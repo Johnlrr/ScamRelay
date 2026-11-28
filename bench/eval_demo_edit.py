@@ -15,7 +15,6 @@ import asyncio
 import copy
 import json
 from datetime import datetime, timezone
-from pathlib import Path
 
 import _common
 from _expert import add_exclusions
@@ -63,9 +62,7 @@ async def run_strategy(m: SemanticMatcher, raw: dict, strategy: str) -> dict:
         if strategy == "exclude":
             added = add_exclusions(draft, [f.transfer_note for f in reg.flagged_examples])
             changes += [f"+{a}" for a in added]
-            if added:
-                pass
-            else:
+            if not added:
                 # không còn cụm loại trừ phù hợp: xóa câu mẫu được tô đậm cho các mẫu còn lại (cách cũ)
                 bad = set(reg.flags_by_anchor)
                 for c in draft["conditions"]:
