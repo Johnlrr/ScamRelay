@@ -199,6 +199,17 @@ output dự phòng đã lưu (bao, 29/11) ─► demo không chết khi LLM lỗ
 ```
 **Đã kích hoạt 28/11 (P9):** bao nhận route `/ops` (`routers/fraudops.py`), vì phía sau là `regression.py` và `assembler.py` của bao. Đổi schema mà route `/ops` cần thì vẫn theo quy trình file hợp đồng (§2).
 
+**Bàn giao 28/11 — linh đọc khi pull (P9):**
+
+| # | Việc | Ai |
+|---|---|---|
+| H1 | Từ nay **không sửa** `routers/fraudops.py` và `app/ratelimit.py` (cùng dòng `app.add_middleware(LlmRateLimitMiddleware)` trong `main.py`). Cần đổi gì ở `/ops` thì nhắn bao | linh |
+| H2 | **Rate limit đã xong** (SPEC §10): 10 lần/phút/phiên, 200 lần/ngày/IP cho `analyze` và `compile`; 429 `RATE_LIMITED` kèm `Retry-After`. linh không cần làm nữa; `slowapi` trong `requirements.txt` giữ nguyên (kéo theo `limits`) | xong |
+| H3 | **Lỗi đã sửa trong `fraudops.py`:** compile và sửa bản nháp giữ transaction đọc của request qua lúc chờ LLM/embedding; `DbEmbeddingCache.put_many` ghi ở kết nối khác → SQLite "database is locked" → 500. Lỗi chỉ lộ khi có anchor mới (LLM thật); test cũ không bắt vì mọi anchor đã có trong seed. Đã có test `tests/test_fraudops_sqlite.py`. Quy tắc cho mọi route: **`s.commit()` trước mọi `await` gọi LLM hoặc embedding** (gateway đã làm đúng) | xong |
+| H4 | **Cần sửa trong `db.py`:** sau khi một `COMMIT` thất bại, kết nối SQLite quay về pool vẫn còn transaction dở → mọi request sau dùng kết nối đó lỗi "cannot start a transaction within a transaction". Hướng sửa: trong sự kiện `begin`, nếu `dbapi_connection.in_transaction` thì `ROLLBACK` trước khi `BEGIN`; hoặc bắt lỗi commit ở `put_many` và `rollback()` | linh |
+| H5 | `Dockerfile` chạy uvicorn với `--forwarded-allow-ips="*"`, nên `X-Forwarded-For` giả được và hạn mức theo IP dễ lách. Chấp nhận cho demo; nếu kịp thì chỉ tin proxy của Cloud Run | linh, nếu dư giờ |
+| H6 | `run_bench.py` đã chạy thật trên server local 3 lượt (`bench/results/dev_*`). Hình dạng API đúng như `schemas/`; không cần đổi gì phía linh | xong |
+
 ---
 
 ## 8. Phạm vi và cắt giảm
