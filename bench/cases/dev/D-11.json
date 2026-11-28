@@ -14,7 +14,7 @@
    "tx_id": "D-11-1",
    "from_wallet": "W-HUNG",
    "to_account_id": "ACC-NEW-03",
-   "amount_vnd": 10000000,
+   "amount_vnd": 7000000,
    "transfer_note": "chuyen tien xac minh tai khoan tam giu",
    "label": "SCAM",
    "is_variant": true,

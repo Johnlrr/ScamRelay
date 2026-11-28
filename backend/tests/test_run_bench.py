@@ -13,7 +13,7 @@ rb = importlib.util.module_from_spec(spec)
 sys.modules["run_bench"] = rb          # dataclass cần module có trong sys.modules
 spec.loader.exec_module(rb)
 
-RULE = {"rule_id": "RL-1", "lifecycle": {"stage": "SHADOW_LOG"},
+RULE = {"rule_id": "RL-1",
         "jit_purpose_question": {"options": [
             {"id": "o1", "label_vi": "Mua hàng", "outcome": "BENIGN"},
             {"id": "o2", "label_vi": "Người quen", "outcome": "BENIGN"},
@@ -33,13 +33,14 @@ class FakeApi:
         if path == "/v1/incidents/analyze":
             return 200, {"incident_id": "INC-1", "mode": "MANIPULATION", "analysis": {"tactic_family": "FAKE_HKD_TAX_VERIFICATION"}}
         if path == "/v1/fraudops/rules/compile":
-            return 200, {"rule": RULE, "source": "LLM", "validation": {"errors": []}}
+            return 200, {"rule_id": "RL-1", "stage": "SHADOW_LOG", "rule": RULE, "source": "LLM", "validation": {"errors": []}}
         if path.endswith("/regression-test"):
             return 200, {"benign_flagged": self.flagged, "benign_checked": 265}
         if path.endswith("/approve"):
             if self.flagged and not body.get("override_reason"):
                 return 409, {"error": {"code": "APPROVE_LOCKED"}}
-            return 200, {"rule": {**RULE, "lifecycle": {"stage": "ASK_ONLY"}}, "ai_seconds": 7.5}
+            return 200, {"rule": {"rule_id": "RL-1", "stage": "ASK_ONLY", "rule": RULE},
+                         "clock": {"ai_seconds": 7.5, "human_seconds": 30.0, "report_to_live_seconds": None}}
         if path == "/v1/gateway/evaluate-transfer":
             base = {"baseline": {"decision": "ALLOW", "risk_score": 30, "as_final": "ALLOW"}}
             if "thue" in body["transfer_note"]:
@@ -104,3 +105,16 @@ def test_markdown_reports_x_over_n():
     r = rb.run_case(api, case([tx(1, "thue", "SCAM", "TACTIC_MATCH")]), rb.auto_chooser)
     md = rb.to_markdown("dev", rb.metrics([r]), [r])
     assert "1/1" in md and "Unsafe Allow Rate" in md
+
+
+def test_dev_cases_fit_seed_workspace():
+    """Ca dev phải chạy được trên workspace seed: ví/tài khoản tồn tại, số tiền ≤ số dư và ≤ hạn mức API."""
+    seed = json.loads((ROOT / "backend" / "data" / "seed_workspace.json").read_text(encoding="utf-8"))
+    bal = {w["id"]: w["balance_vnd"] for w in seed["wallets"]}
+    accounts = {a["id"] for a in seed["accounts"]}
+    for p in sorted((ROOT / "bench" / "cases" / "dev").glob("*.json")):
+        case = json.loads(p.read_text(encoding="utf-8"))
+        assert case["incident_A"].get("protect_wallet_id") in (None, *bal), p.name
+        for t in case["transactions_B"]:
+            assert t["from_wallet"] in bal and t["to_account_id"] in accounts, t["tx_id"]
+            assert 0 < t["amount_vnd"] <= min(bal[t["from_wallet"]], 50_000_000), t["tx_id"]

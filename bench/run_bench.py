@@ -163,21 +163,23 @@ def run_case(api: Api, case: dict, choose: Chooser) -> CaseResult:
         res.analyze_mode = inc.get("mode")
         res.tactic_family = (inc.get("analysis") or {}).get("tactic_family")
 
+        # compile trả RuleView: {rule_id, stage, rule: RelayRule | None, validation, source, ...}
         comp = api.call("POST", "/v1/fraudops/rules/compile", {"incident_id": inc["incident_id"]})
+        res.rule_id, res.compile_source = comp["rule_id"], comp.get("source")
+        if comp["stage"] == "DRAFT_INVALID" or comp.get("rule") is None:
+            raise ApiError("luật DRAFT_INVALID: " + "; ".join((comp.get("validation") or {}).get("errors", [])[:3]))
         rule = comp["rule"]
-        res.rule_id, res.compile_source = rule["rule_id"], comp.get("source")
-        if rule["lifecycle"]["stage"] == "DRAFT_INVALID":
-            raise ApiError("luật DRAFT_INVALID: " + "; ".join(comp.get("validation", {}).get("errors", [])[:3]))
-        reg = api.call("POST", f"/v1/fraudops/rules/{rule['rule_id']}/regression-test")
+        reg = api.call("POST", f"/v1/fraudops/rules/{comp['rule_id']}/regression-test")
         res.benign_flagged, res.benign_checked = reg["benign_flagged"], reg["benign_checked"]
         approve = {"stage": "ASK_ONLY", "ttl_hours": 24}
         if reg["benign_flagged"] > 0:
             approve["override_reason"] = OVERRIDE_REASON
             res.override_used = True
-        appr = api.call("POST", f"/v1/fraudops/rules/{rule['rule_id']}/approve", approve)
-        rule = appr.get("rule", rule)
-        res.rule_stage = rule["lifecycle"]["stage"]
-        res.ai_seconds = appr.get("ai_seconds")
+        # approve trả {rule: RuleView, clock: {ai_seconds, human_seconds, report_to_live_seconds}}
+        appr = api.call("POST", f"/v1/fraudops/rules/{comp['rule_id']}/approve", approve)
+        rule = appr["rule"]["rule"] or rule
+        res.rule_stage = appr["rule"]["stage"]
+        res.ai_seconds = (appr.get("clock") or {}).get("ai_seconds")
     except ApiError as e:
         res.error = str(e)
         rule = None if res.rule_stage is None else rule
@@ -242,8 +244,8 @@ def metrics(cases: list[CaseResult]) -> dict:
         "friction_rate": ratio(sum(t.challenged for t in legit), len(legit)),
         "variant_trigger_rate": ratio(sum(t.matched_rule_id is not None for t in variants), len(variants)),
         "stopped_by_category": by_cat,
-        "ai_seconds": {"n": len(ai), "p50": statistics.median(ai) if ai else None,
-                       "p95": ai[min(len(ai) - 1, round(0.95 * (len(ai) - 1)))] if ai else None},
+        "ai_seconds": {"n": len(ai), "p50": round(statistics.median(ai), 2) if ai else None,
+                       "p95": round(ai[min(len(ai) - 1, round(0.95 * (len(ai) - 1)))], 2) if ai else None},
         "cases_with_error": [c.case_id for c in cases if c.error],
         "tx_errors": sum(t.error is not None for c in cases for t in c.txs),
         "overrides_used": [c.case_id for c in cases if c.override_used],
